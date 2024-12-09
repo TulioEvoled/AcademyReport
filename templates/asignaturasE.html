@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asignaturas</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+
+<body>
+    <div class="header-container3">
+        <h1>Lista de Asignaturas Especiales</h1>
+        <button onclick="window.location.href='/index';">Volver</button>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <!-- <th>ID</th> -->
+                <th>Nombre</th>
+                <th>Horas</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for asignaturaE in asignaturasE %}
+            <tr>
+                <!-- <td>{{ asignaturaE['_id'] }}</td> -->
+                <td>{{ asignaturaE['nombre'] }}</td>
+                <td>{{ asignaturaE['horas'] }}</td>
+                <td>
+                    <button onclick="deleteAsignaturaE(`{{ asignaturaE['_id'] }}`)">Eliminar</button>
+                    <a class="edit-button" href="{{ url_for('edit_asignaturaE', id=asignaturaE['_id']) }}">Editar</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+
+</html>

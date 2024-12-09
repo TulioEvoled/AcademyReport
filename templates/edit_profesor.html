@@ -1,0 +1,2098 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Profesor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+
+<body>
+    <div class="header-container3">
+        <h1>Editar Profesor</h1>
+        <button onclick="window.location.href='/profesores';">Volver</button>
+    </div>
+    <form id="edit-profesor-form" onsubmit="transformarMayusculas()">
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" name="nombre" value="{{ profesor.nombre }}" required><br>
+
+        <label for="profesion">Profesión:</label>
+        <input type="text" id="profesion" name="profesion" value="{{ profesor.profesion }}" required><br>
+
+        <label for="adscripcion">Adscripción:</label>
+        <input type="text" id="adscripcion" name="adscripcion" value="{{ profesor.adscripcion }}" required><br>
+
+        <label for="fecha_ingreso">Fecha de Ingreso:</label>
+        <input type="text" id="fecha_ingreso" name="fecha_ingreso" placeholder="01 de MARZO de 2011" value="{{ profesor.fecha_ingreso }}" required><br>
+
+        <label for="tiempo_indeterminado">Tiempo Indeterminado:</label>
+        <select id="tiempo_indeterminado" name="tiempo_indeterminado" required>
+            <option value="SI" {% if profesor.tiempo_indeterminado == "SI" %}selected{% endif %}>SI</option>
+            <option value="NO" {% if profesor.tiempo_indeterminado == "NO" %}selected{% endif %}>NO</option>
+        </select><br>
+
+        <label for="periodo_actual">Periodo Actual:</label>
+        <input type="text" id="periodo_actual" name="periodo_actual" value="{{ profesor.periodo_actual }}" required><br>
+
+        <label for="horas_a">Horas A:</label>
+        <input type="number" id="horas_a" name="horas_a" value="{{ profesor.horas_a }}" oninput="calcularTotalHoras()"><br>
+
+        <label for="horas_b">Horas B:</label>
+        <input type="number" id="horas_b" name="horas_b" value="{{ profesor.horas_b }}" oninput="calcularTotalHoras()"><br>
+
+        <label for="total_horas">Total Horas:</label>
+        <input type="number" id="total_horas" name="total_horas" value="{{ profesor.total_horas }}" required><br>
+
+        <!-- Nuevos campos para asignatura y horas -->
+        <table class="form-group">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Asignaturas</th>
+                    <th>Grupo</th>
+                    <th>Horas</th>
+                    <th>Lunes</th>
+                    <th>Martes</th>
+                    <th>Miércoles</th>
+                    <th>Jueves</th>
+                    <th>Viernes</th>
+                    <th>Sábado</th>
+                </tr>
+            </thead>
+            <tr>
+                <td><label for="asignatura1">1.</label></td>
+                <!-- ASIGNATURA -->
+                <td>
+                    <input type="text" id="asignatura1" name="asignatura1" value="{{ profesor.asignatura1 }}" list="asignatura-list1">
+                    <datalist id="asignatura-list1"></datalist>
+                </td>
+                <!-- GRUPO ASIGNATURAS -->
+                <td>
+                    <select id="grupo1" name="grupo1" class="group">
+                        <option value=" " {% if profesor.grupo1 == " " %}selected{% endif %}> </option>
+                        {% for grupo in grupos %}
+                        <option value="{{ grupo }}" {% if profesor.grupo1 == grupo %}selected{% endif %}>{{ grupo }}</option>
+                        {% endfor %}
+                </select>
+                </td>
+                <!-- HORAS ASIGNATURAS -->
+                <td>
+                    <input type="number" id="horas1" name="horas1" class="groupHoras" value="{{ profesor.horas1 }}">
+                </td>
+                <!-- HORARIOS -->
+                <!-- LUNES -->
+                <td>
+                    <select id="hora_inicio11" name="hora_inicio11" class="hora-inicio">
+                        <option value="" {% if profesor.hora_inicio11 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicio11 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                    <select id="hora_fin11" name="hora_fin11" class="hora-fin">
+                        <option value=" " {% if profesor.hora_fin11 == " " %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_fin11 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+
+                <!-- MARTES -->
+                <td>
+                    <select id="hora_inicio12" name="hora_inicio12" class="hora-inicio">
+                        <option value="" {% if profesor.hora_inicio12 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicio12 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                    </select>
+                    <select id="hora_fin12" name="hora_fin12" class="hora-fin">
+                        <option value="" {% if profesor.hora_fin12 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_fin12 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                    </select>
+                </td>
+
+                <!-- MIERCOLES -->
+                <td>
+                    <select id="hora_inicio13" name="hora_inicio13" class="hora-inicio">
+                        <option value="" {% if profesor.hora_inicio13 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicio13 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                    <select id="hora_fin13" name="hora_fin13" class="hora-fin" value="{{ profesor.hora_fin12 }}">
+                        <option value="" {% if profesor.hora_fin13 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_fin13 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+
+                <!-- JUEVES -->
+                <td>
+                    <select id="hora_inicio14" name="hora_inicio14" class="hora-inicio">
+                        <option value="" {% if profesor.hora_inicio14 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicio14 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                    <select id="hora_fin14" name="hora_fin14" class="hora-fin">
+                        <option value="" {% if profesor.hora_fin14 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_fin14 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+
+                <!-- VIERNES -->
+                <td>
+                    <select id="hora_inicio15" name="hora_inicio15" class="hora-inicio">
+                        <option value="" {% if profesor.hora_inicio15 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicio15 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                    <select id="hora_fin15" name="hora_fin15" class="hora-fin">
+                        <option value="" {% if profesor.hora_fin15 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_fin15 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+
+                <!-- SABADO -->
+                <td>
+                    <select id="hora_inicio16" name="hora_inicio16" class="hora-inicio">
+                        <option value="" {% if profesor.hora_inicio16 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicio16 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                    <select id="hora_fin16" name="hora_fin16" class="hora-fin">
+                        <option value="" {% if profesor.hora_fin16 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_fin16 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="asignatura2">2.</label></td>
+                <td>
+                    <input type="text" id="asignatura2" name="asignatura2" value="{{ profesor.asignatura2 }}" list="asignatura-list2">
+                    <datalist id="asignatura-list2"></datalist>
+                </td>
+
+                <td>
+                    <select id="grupo2" name="grupo2" class="group">
+                            <option value=" " {% if profesor.grupo2 == " " %}selected{% endif %}> </option>
+                            {% for grupo in grupos %}
+                            <option value="{{ grupo }}" {% if profesor.grupo2 == grupo %}selected{% endif %}>{{ grupo }}</option>
+                            {% endfor %}
+                    </select>
+                </td>
+
+                <td>
+                    <input type="number" id="horas2" name="horas2" class="groupHoras" value="{{ profesor.horas2 }}">
+                </td>
+                <!-- HORARIOS -->
+                <!-- LUNES -->
+                <td>
+                    <select id="hora_inicio21" name="hora_inicio21" class="hora-inicio">
+                        <option value="" {% if profesor.hora_inicio21 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicio21 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                    <select id="hora_fin21" name="hora_fin21" class="hora-fin">
+                        <option value="" {% if profesor.hora_fin21 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_fin21 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+
+                <!-- MARTES -->
+                <td>
+                    <select id="hora_inicio22" name="hora_inicio22" class="hora-inicio">
+                        <option value="" {% if profesor.hora_inicio22 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicio22 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                    <select id="hora_fin22" name="hora_fin22" class="hora-fin">
+                        <option value="" {% if profesor.hora_fin22 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_fin22 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+
+                <!-- MIERCOLES -->
+                <td>
+                    <select id="hora_inicio23" name="hora_inicio23" class="hora-inicio">
+                        <option value="" {% if profesor.hora_inicio23 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicio23 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                    <select id="hora_fin23" name="hora_fin23" class="hora-fin">
+                        <option value="" {% if profesor.hora_fin23 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_fin23 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+
+                <!-- JUEVES -->
+                <td>
+                    <select id="hora_inicio24" name="hora_inicio24" class="hora-inicio">
+                        <option value="" {% if profesor.hora_inicio24 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicio24 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                    <select id="hora_fin24" name="hora_fin24" class="hora-fin">
+                        <option value="" {% if profesor.hora_fin24 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_fin24 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+
+                <!-- VIERNES -->
+                <td>
+                    <select id="hora_inicio25" name="hora_inicio25" class="hora-inicio">
+                        <option value="" {% if profesor.hora_inicio25 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicio25 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                    <select id="hora_fin25" name="hora_fin25" class="hora-fin">
+                        <option value="" {% if profesor.hora_fin25 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_fin25 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+
+                <!-- SABADO -->
+                <td>
+                    <select id="hora_inicio26" name="hora_inicio26" class="hora-inicio">
+                        <option value="" {% if profesor.hora_inicio26 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicio26 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                    <select id="hora_fin26" name="hora_fin26" class="hora-fin">
+                        <option value="" {% if profesor.hora_fin26 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_fin26 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td><label for="asignatura3">3.</label></td>
+                <td>
+                    <input type="text" id="asignatura3" name="asignatura3" value="{{ profesor.asignatura3 }}" list="asignatura-list3">
+                    <datalist id="asignatura-list3"></datalist>
+                </td>
+
+                <td>
+                    <select id="grupo3" name="grupo3" class="group">
+                        <option value=" " {% if profesor.grupo3 == " " %}selected{% endif %}> </option>
+                            {% for grupo in grupos %}
+                            <option value="{{ grupo }}" {% if profesor.grupo3 == grupo %}selected{% endif %}>{{ grupo }}</option>
+                            {% endfor %}
+                    </select>
+                </td>
+
+                <td>
+                    <input type="number" id="horas3" name="horas3" class="groupHoras" value="{{ profesor.horas3 }}">
+                </td>
+                <!-- HORARIOS -->
+                <!-- LUNES -->
+                <td>
+                    <select id="hora_inicio31" name="hora_inicio31" class="hora-inicio">
+                        <option value="" {% if profesor.hora_inicio31 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicio31 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                    <select id="hora_fin31" name="hora_fin31" class="hora-fin">
+                        <option value="" {% if profesor.hora_fin31 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_fin31 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+
+                <!-- MARTES -->
+                <td>
+                    <select id="hora_inicio32" name="hora_inicio32" class="hora-inicio">
+                        <option value="" {% if profesor.hora_inicio32 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicio32 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                    <select id="hora_fin32" name="hora_fin32" class="hora-fin">
+                        <option value="" {% if profesor.hora_fin32 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_fin32 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+
+                <!-- MIERCOLES -->
+                <td>
+                    <select id="hora_inicio33" name="hora_inicio33" class="hora-inicio">
+                        <option value="" {% if profesor.hora_inicio33 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicio33 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                    <select id="hora_fin33" name="hora_fin33" class="hora-fin">
+                        <option value="" {% if profesor.hora_fin33 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_fin33 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+
+                <!-- JUEVES -->
+                <td>
+                    <select id="hora_inicio34" name="hora_inicio34" class="hora-inicio">
+                        <option value="" {% if profesor.hora_inicio34 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicio34 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                    <select id="hora_fin34" name="hora_fin34" class="hora-fin">
+                        <option value="" {% if profesor.hora_fin34 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_fin34 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+
+                <!-- VIERNES -->
+                <td>
+                    <select id="hora_inicio35" name="hora_inicio35" class="hora-inicio">
+                        <option value="" {% if profesor.hora_inicio35 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicio35 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                    <select id="hora_fin35" name="hora_fin35" class="hora-fin">
+                        <option value="" {% if profesor.hora_fin35 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_fin35 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+
+                <!-- SABADO -->
+                <td>
+                    <select id="hora_inicio36" name="hora_inicio36" class="hora-inicio">
+                        <option value="" {% if profesor.hora_inicio36 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicio36 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                    <select id="hora_fin36" name="hora_fin36" class="hora-fin">
+                        <option value="" {% if profesor.hora_fin36 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_fin36 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+            </tr>
+
+            <tr>
+                <td><label for="asignatura1">4.</label>
+                    <td>
+                        <input type="text" id="asignatura4" name="asignatura4" value="{{ profesor.asignatura4 }}" list="asignatura-list4">
+                        <datalist id="asignatura-list4"></datalist>
+                    </td>
+
+                    <td>
+                        <select id="grupo4" name="grupo4" class="group">
+                        <option value=" " {% if profesor.grupo4 == " " %}selected{% endif %}> </option>
+                        {% for grupo in grupos %}
+                        <option value="{{ grupo }}" {% if profesor.grupo4 == grupo %}selected{% endif %}>{{ grupo }}</option>
+                        {% endfor %}
+                    </select>
+                    </td>
+
+                    <td>
+                        <input type="number" id="horas4" name="horas4" class="groupHoras" value="{{ profesor.horas4 }}">
+                    </td>
+                    <!-- HORARIOS -->
+                    <!-- LUNES -->
+                    <td>
+                        <select id="hora_inicio41" name="hora_inicio41" class="hora-inicio">
+                        <option value="" {% if profesor.hora_inicio41 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicio41 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                        <select id="hora_fin41" name="hora_fin41" class="hora-fin">
+                            <option value="" {% if profesor.hora_fin41 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_fin41 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                    </select>
+                    </td>
+
+                    <!-- MARTES -->
+                    <td>
+                        <select id="hora_inicio42" name="hora_inicio42" class="hora-inicio">
+                            <option value="" {% if profesor.hora_inicio42 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicio42 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                        </select>
+                        <select id="hora_fin42" name="hora_fin42" class="hora-fin">
+                            <option value="" {% if profesor.hora_fin42 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_fin42 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                        </select>
+                    </td>
+
+                    <!-- MIERCOLES -->
+                    <td>
+                        <select id="hora_inicio43" name="hora_inicio43" class="hora-inicio">
+                            <option value="" {% if profesor.hora_inicio43 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicio43 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                        </select>
+                        <select id="hora_fin43" name="hora_fin43" class="hora-fin">
+                            <option value="" {% if profesor.hora_fin43 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_fin43 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                        </select>
+                    </td>
+
+                    <!-- JUEVES -->
+                    <td>
+                        <select id="hora_inicio44" name="hora_inicio44" class="hora-inicio">
+                            <option value="" {% if profesor.hora_inicio44 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicio44 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                        </select>
+                        <select id="hora_fin44" name="hora_fin44" class="hora-fin">
+                            <option value="" {% if profesor.hora_fin44 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_fin44 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                        </select>
+                    </td>
+
+                    <!-- VIERNES -->
+                    <td>
+                        <select id="hora_inicio45" name="hora_inicio45" class="hora-inicio">
+                            <option value="" {% if profesor.hora_inicio45 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicio45 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                        </select>
+                        <select id="hora_fin45" name="hora_fin45" class="hora-fin">
+                            <option value="" {% if profesor.hora_fin45 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_fin45 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                        </select>
+                    </td>
+
+                    <!-- SABADO -->
+                    <td>
+                        <select id="hora_inicio46" name="hora_inicio46" class="hora-inicio">
+                            <option value="" {% if profesor.hora_inicio46 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicio46 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                        </select>
+                        <select id="hora_fin46" name="hora_fin46" class="hora-fin">
+                            <option value="" {% if profesor.hora_fin46 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_fin46 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                        </select>
+                    </td>
+            </tr>
+
+            <tr>
+                <td><label for="asignatura1">5.</label>
+                    <td>
+                        <input type="text" id="asignatura5" name="asignatura5" value="{{ profesor.asignatura5 }}" list="asignatura-list5">
+                        <datalist id="asignatura-list5"></datalist>
+                    </td>
+
+                    <td>
+                        <select id="grupo5" name="grupo5" class="group">
+                            <option value=" " {% if profesor.grupo5 == " " %}selected{% endif %}> </option>
+                            {% for grupo in grupos %}
+                            <option value="{{ grupo }}" {% if profesor.grupo5 == grupo %}selected{% endif %}>{{ grupo }}</option>
+                            {% endfor %}
+                    </select>
+                    </td>
+
+                    <td>
+                        <input type="number" id="horas5" name="horas5" class="groupHoras" value="{{ profesor.horas5 }}">
+                    </td>
+                    <!-- HORARIOS -->
+                    <!-- LUNES -->
+                    <td>
+                        <select id="hora_inicio51" name="hora_inicio51" class="hora-inicio">
+                            <option value="" {% if profesor.hora_inicio51 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicio51 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                        </select>
+                        <select id="hora_fin51" name="hora_fin51" class="hora-fin">
+                            <option value="" {% if profesor.hora_fin51 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_fin51 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                        </select>
+                    </td>
+
+                    <!-- MARTES -->
+                    <td>
+                        <select id="hora_inicio52" name="hora_inicio52" class="hora-inicio">
+                            <option value="" {% if profesor.hora_inicio52 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicio52 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                        </select>
+                        <select id="hora_fin52" name="hora_fin52" class="hora-fin">
+                            <option value="" {% if profesor.hora_fin52 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_fin52 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                        </select>
+                    </td>
+
+                    <!-- MIERCOLES -->
+                    <td>
+                        <select id="hora_inicio53" name="hora_inicio53" class="hora-inicio">
+                            <option value="" {% if profesor.hora_inicio53 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicio53 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                        </select>
+                        <select id="hora_fin53" name="hora_fin53" class="hora-fin">
+                            <option value="" {% if profesor.hora_fin53 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_fin53 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                        </select>
+                    </td>
+
+                    <!-- JUEVES -->
+                    <td>
+                        <select id="hora_inicio54" name="hora_inicio54" class="hora-inicio">
+                            <option value="" {% if profesor.hora_inicio54 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicio54 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                        </select>
+                        <select id="hora_fin54" name="hora_fin54" class="hora-fin">
+                            <option value="" {% if profesor.hora_fin54 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_fin54 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                        </select>
+                    </td>
+
+                    <!-- VIERNES -->
+                    <td>
+                        <select id="hora_inicio55" name="hora_inicio55" class="hora-inicio">
+                            <option value="" {% if profesor.hora_inicio55 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicio55 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                        </select>
+                        <select id="hora_fin55" name="hora_fin55" class="hora-fin">
+                            <option value="" {% if profesor.hora_fin55 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_fin55 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                        </select>
+                    </td>
+
+                    <!-- SABADO -->
+                    <td>
+                        <select id="hora_inicio56" name="hora_inicio56" class="hora-inicio">
+                            <option value="" {% if profesor.hora_inicio56 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicio56 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                        </select>
+                        <select id="hora_fin56" name="hora_fin56" class="hora-fin">
+                            <option value="" {% if profesor.hora_fin56 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_fin56 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                        </select>
+                    </td>
+            </tr>
+            </tr>
+
+            <tr>
+                <td><label for="asignatura1">6.</label>
+                    <td>
+                        <input type="text" id="asignatura6" name="asignatura6" value="{{ profesor.asignatura6 }}" list="asignatura-list6">
+                        <datalist id="asignatura-list6"></datalist>
+                    </td>
+
+                    <td>
+                        <select id="grupo6" name="grupo6" class="group">
+                            <option value=" " {% if profesor.grupo6 == " " %}selected{% endif %}> </option>
+                            {% for grupo in grupos %}
+                            <option value="{{ grupo }}" {% if profesor.grupo6
+                                 == grupo %}selected{% endif %}>{{ grupo }}</option>
+                            {% endfor %}
+                    </select>
+                    </td>
+
+                    <td>
+                        <input type="number" id="horas6" name="horas6" class="groupHoras" value="{{ profesor.horas6 }}">
+                    </td>
+                    <!-- HORARIOS -->
+                    <!-- LUNES -->
+                    <td>
+                        <select id="hora_inicio61" name="hora_inicio61" class="hora-inicio">
+                            <option value="" {% if profesor.hora_inicio61 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicio61 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                        </select>
+                        <select id="hora_fin61" name="hora_fin61" class="hora-fin">
+                            <option value="" {% if profesor.hora_fin61 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_fin61 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                        </select>
+                    </td>
+
+                    <!-- MARTES -->
+                    <td>
+                        <select id="hora_inicio62" name="hora_inicio62" class="hora-inicio">
+                            <option value="" {% if profesor.hora_inicio62 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicio62 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}''
+                        </select>
+                        <select id="hora_fin62" name="hora_fin62" class="hora-fin">
+                            <option value="" {% if profesor.hora_fin62 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_fin62 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                        </select>
+                    </td>
+
+                    <!-- MIERCOLES -->
+                    <td>
+                        <select id="hora_inicio63" name="hora_inicio63" class="hora-inicio">
+                            <option value="" {% if profesor.hora_inicio63 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicio63 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                        </select>
+                        <select id="hora_fin63" name="hora_fin63" class="hora-fin">
+                            <option value="" {% if profesor.hora_fin63 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_fin63 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                        </select>
+                    </td>
+
+                    <!-- JUEVES -->
+                    <td>
+                        <select id="hora_inicio64" name="hora_inicio64" class="hora-inicio">
+                            <option value="" {% if profesor.hora_inicio64 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicio64 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                        </select>
+                        <select id="hora_fin64" name="hora_fin64" class="hora-fin">
+                            <option value="" {% if profesor.hora_fin64 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_fin64 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                        </select>
+                    </td>
+
+                    <!-- VIERNES -->
+                    <td>
+                        <select id="hora_inicio65" name="hora_inicio65" class="hora-inicio">
+                            <option value="" {% if profesor.hora_inicio65 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicio65 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                        </select>
+                        <select id="hora_fin65" name="hora_fin65" class="hora-fin">
+                            <option value="" {% if profesor.hora_fin65 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_fin65 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                        </select>
+                    </td>
+
+                    <!-- SABADO -->
+                    <td>
+                        <select id="hora_inicio66" name="hora_inicio66" class="hora-inicio">
+                            <option value="" {% if profesor.hora_inicio66 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicio66 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                        </select>
+                        <select id="hora_fin66" name="hora_fin66" class="hora-fin">
+                            <option value="" {% if profesor.hora_fin66 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_fin66 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                        </select>
+                    </td>
+            </tr>
+            </tr>
+
+            <tr>
+                <td><label for="asignatura1">7.</label>
+                    <td>
+                        <input type="text" id="asignatura7" name="asignatura7" value="{{ profesor.asignatura7 }}" list="asignatura-list7">
+                        <datalist id="asignatura-list7"></datalist>
+                    </td>
+
+                    <td>
+                        <select id="grupo7" name="grupo7" class="group">
+                            <option value=" " {% if profesor.grupo7 == " " %}selected{% endif %}> </option>
+                            {% for grupo in grupos %}
+                            <option value="{{ grupo }}" {% if profesor.grupo7 == grupo %}selected{% endif %}>{{ grupo }}</option>
+                            {% endfor %}
+                    </select>
+                    </td>
+
+                    <td>
+                        <input type="number" id="horas7" name="horas7" class="groupHoras" value="{{ profesor.horas7 }}">
+                    </td>
+                    <!-- HORARIOS -->
+                    <!-- LUNES -->
+                    <td>
+                        <select id="hora_inicio71" name="hora_inicio71" class="hora-inicio">
+                            <option value="" {% if profesor.hora_inicio71 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicio71 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                        </select>
+                        <select id="hora_fin71" name="hora_fin71" class="hora-fin">
+                            <option value="" {% if profesor.hora_fin71 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_fin71 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                        </select>
+                    </td>
+
+                    <!-- MARTES -->
+                    <td>
+                        <select id="hora_inicio72" name="hora_inicio72" class="hora-inicio">
+                            <option value="" {% if profesor.hora_inicio72 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicio72 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                        </select>
+                        <select id="hora_fin72" name="hora_fin72" class="hora-fin">
+                            <option value="" {% if profesor.hora_fin72 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_fin72 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                        </select>
+                    </td>
+
+                    <!-- MIERCOLES -->
+                    <td>
+                        <select id="hora_inicio73" name="hora_inicio23" class="hora-inicio">
+                            <option value="" {% if profesor.hora_inicio73 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicio73 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                        </select>
+                        <select id="hora_fin73" name="hora_fin73" class="hora-fin">
+                            <option value="" {% if profesor.hora_fin73 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_fin73 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                        </select>
+                    </td>
+
+                    <!-- JUEVES -->
+                    <td>
+                        <select id="hora_inicio74" name="hora_inicio74" class="hora-inicio">
+                            <option value="" {% if profesor.hora_inicio74 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicio74 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                        </select>
+                        <select id="hora_fin74" name="hora_fin74" class="hora-fin">
+                            <option value="" {% if profesor.hora_fin74 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_fin74 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                        </select>
+                    </td>
+
+                    <!-- VIERNES -->
+                    <td>
+                        <select id="hora_inicio75" name="hora_inicio75" class="hora-inicio">
+                            <option value="" {% if profesor.hora_inicio75 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_inicio75 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                        <select id="hora_fin75" name="hora_fin75" class="hora-fin">
+                            <option value="" {% if profesor.hora_fin75 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_fin75 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+
+                    <!-- SABADO -->
+                    <td>
+                        <select id="hora_inicio76" name="hora_inicio76" class="hora-inicio">
+                            <option value="" {% if profesor.hora_inicio76 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_inicio76 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                        <select id="hora_fin76" name="hora_fin76" class="hora-fin">
+                            <option value="" {% if profesor.hora_fin76 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_fin76 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+            </tr>
+            </tr>
+
+
+            <tr>
+                <td><label for="asignatura1">8.</label>
+                    <td>
+                        <input type="text" id="asignatura8" name="asignatura8" value="{{ profesor.asignatura8 }}" list="asignatura-list8">
+                        <datalist id="asignatura-list8"></datalist>
+                    </td>
+
+                    <td>
+                        <select id="grupo8" name="grupo8" class="group">
+                            <option value=" " {% if profesor.grupo8 == " " %}selected{% endif %}> </option>
+                            {% for grupo in grupos %}
+                            <option value="{{ grupo }}" {% if profesor.grupo8 == grupo %}selected{% endif %}>{{ grupo }}</option>
+                            {% endfor %}
+                    </select>
+                    </td>
+
+                    <td>
+                        <input type="number" id="horas8" name="horas8" class="groupHoras" value="{{ profesor.horas8 }}">
+                    </td>
+                    <!-- HORARIOS -->
+                    <!-- LUNES -->
+                    <td>
+                        <select id="hora_inicio81" name="hora_inicio81" class="hora-inicio">
+                            <option value="" {% if profesor.hora_inicio81 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_inicio81 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                        <select id="hora_fin81" name="hora_fin81" class="hora-fin">
+                            <option value="" {% if profesor.hora_fin81 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_fin81 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+
+                    <!-- MARTES -->
+                    <td>
+                        <select id="hora_inicio82" name="hora_inicio82" class="hora-inicio">
+                            <option value="" {% if profesor.hora_inicio82 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_inicio82 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                        <select id="hora_fin82" name="hora_fin82" class="hora-fin">
+                            <option value="" {% if profesor.hora_fin82 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_fin82 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+
+                    <!-- MIERCOLES -->
+                    <td>
+                        <select id="hora_inicio83" name="hora_inicio83" class="hora-inicio">
+                            <option value="" {% if profesor.hora_inicio83 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_inicio83 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                        <select id="hora_fin83" name="hora_fin83" class="hora-fin">
+                            <option value="" {% if profesor.hora_fin83 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_fin83 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+
+                    <!-- JUEVES -->
+                    <td>
+                        <select id="hora_inicio84" name="hora_inicio84" class="hora-inicio">
+                            <option value="" {% if profesor.hora_inicio84 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_inicio84 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                        <select id="hora_fin84" name="hora_fin84" class="hora-fin">
+                            <option value="" {% if profesor.hora_fin84 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_fin84 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+
+                    <!-- VIERNES -->
+                    <td>
+                        <select id="hora_inicio85" name="hora_inicio85" class="hora-inicio">
+                            <option value="" {% if profesor.hora_inicio85 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_inicio85 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                        <select id="hora_fin85" name="hora_fin85" class="hora-fin">
+                            <option value="" {% if profesor.hora_fin85 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_fin85 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+
+                    <!-- SABADO -->
+                    <td>
+                        <select id="hora_inicio86" name="hora_inicio86" class="hora-inicio">
+                            <option value="" {% if profesor.hora_inicio86 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_inicio86 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                        <select id="hora_fin86" name="hora_fin86" class="hora-fin">
+                            <option value="" {% if profesor.hora_fin86 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_fin86 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+            </tr>
+            </tr>
+
+        </table>
+
+        <label for="total_horas_grupo">Total de Horas:</label>
+        <input type="number" id="total_horas_grupo" name="total_horas_grupo" value="{{ profesor.total_horas_grupo }}" readonly><br>
+
+        <!-- Nuevos campos para asignatura especial y horas -->
+        <table class="form-groupE">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Asignatura</th>
+                    <th>Grupo</th>
+                    <th>Horas</th>
+                    <th>Lunes</th>
+                    <th>Martes</th>
+                    <th>Miércoles</th>
+                    <th>Jueves</th>
+                    <th>Viernes</th>
+                    <th>Sábado</th>
+                </tr>
+            </thead>
+            <tr>
+                <td><label for="asignaturaE1">1.</label></td>
+                <!-- ASIGNATURA -->
+                <td>
+                    <input type="text" id="asignaturaE1" name="asignaturaE1" value="{{ profesor.asignaturaE1 }}" list="asignaturaE-list1">
+                    <datalist id="asignaturaE-list1"></datalist>
+                </td>
+                <!-- GRUPO ASIGNATURAS -->
+                <td>
+                    <div class="input-group">
+                        <input id="grupoE1" type="text" class="custom-input" value="{{ profesor.grupoE1 }}" placeholder="Escribe o selecciona un grupo">
+                        <select id="grupoE1" name="grupoE1" class="group"></select>
+                    </div>
+                </td>
+                <!-- HORAS ASIGNATURAS -->
+                <td>
+                    <input type="number" id="horasE1" name="horasE1" class="groupHoras" value="{{ profesor.horasE1 }}">
+                </td>
+                <!-- HORARIOS -->
+                <!-- LUNES -->
+                <td>
+                    <select id="hora_inicioE11" name="hora_inicioE11" class="hora-inicio">
+                        <option value="" {% if profesor.hora_inicioE11 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicioE11 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                    <select id="hora_finE11" name="hora_finE11" class="hora-fin">
+                        <option value=" " {% if profesor.hora_finE11 == " " %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_finE11 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+
+                <!-- MARTES -->
+                <td>
+                    <select id="hora_inicioE12" name="hora_inicioE12" class="hora-inicio">
+                        <option value="" {% if profesor.hora_inicioE12 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicioE12 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                    <select id="hora_finE12" name="hora_finE12" class="hora-fin">
+                        <option value="" {% if profesor.hora_finE12 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_finE12 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+
+                <!-- MIERCOLES -->
+                <td>
+                    <select id="hora_inicioE13" name="hora_inicioE13" class="hora-inicio">
+                        <option value="" {% if profesor.hora_inicioE13 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicioE13 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                    <select id="hora_finE13" name="hora_finE13" class="hora-fin">
+                        <option value="" {% if profesor.hora_finE13 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_finE13 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+
+                <!-- JUEVES -->
+                <td>
+                    <select id="hora_inicioE14" name="hora_inicioE14" class="hora-inicio">
+                        <option value="" {% if profesor.hora_inicioE14 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicioE14 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                    <select id="hora_finE14" name="hora_finE14" class="hora-fin">
+                        <option value="" {% if profesor.hora_finE14 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_finE14 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+
+                <!-- VIERNES -->
+                <td>
+                    <select id="hora_inicioE15" name="hora_inicioE15" class="hora-inicio">
+                        <option value="" {% if profesor.hora_inicioE15 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicioE15 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                    <select id="hora_finE15" name="hora_finE15" class="hora-fin">
+                        <option value="" {% if profesor.hora_finE15 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_finE15 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+
+                <!-- SABADO -->
+                <td>
+                    <select id="hora_inicioE16" name="hora_inicioE16" class="hora-inicio">
+                        <option value="" {% if profesor.hora_inicioE16 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicioE16 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                    <select id="hora_finE16" name="hora_finE16" class="hora-fin">
+                        <option value="" {% if profesor.hora_finE16 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_finE16 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="asignaturaE2">2.</label></td>
+                <td>
+                    <input type="text" id="asignaturaE2" name="asignaturaE2" value="{{ profesor.asignaturaE2 }}" list="asignaturaE-list2">
+                    <datalist id="asignaturaE-list2"></datalist>
+                </td>
+
+                <td>
+                    <div class="input-group">
+                        <input id="grupoE2" type="text" class="custom-input" value="{{ profesor.grupoE2 }}" placeholder="Escribe o selecciona un grupo">
+                        <select id="grupoE2" name="grupoE2" class="group"></select>
+                    </div>
+                </td>
+
+                <td>
+                    <input type="number" id="horasE2" name="horasE2" class="groupHoras" value="{{ profesor.horasE2 }}">
+                </td>
+                <!-- HORARIOS -->
+                <!-- LUNES -->
+                <td>
+                    <select id="hora_inicioE21" name="hora_inicioE21" class="hora-inicio">
+                        <option value="" {% if profesor.hora_inicioE21 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicioE21 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                    <select id="hora_finE21" name="hora_finE21" class="hora-fin">
+                        <option value="" {% if profesor.hora_finE21 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_finE21 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+
+                <!-- MARTES -->
+                <td>
+                    <select id="hora_inicioE22" name="hora_inicioE22" class="hora-inicio">
+                        <option value="" {% if profesor.hora_inicioE22 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicioE22 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                    <select id="hora_finE22" name="hora_finE22" class="hora-fin">
+                        <option value="" {% if profesor.hora_finE22 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_finE22 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+
+                <!-- MIERCOLES -->
+                <td>
+                    <select id="hora_inicioE23" name="hora_inicioE23" class="hora-inicio">
+                        <option value="" {% if profesor.hora_inicioE23 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicioE23 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                    <select id="hora_finE23" name="hora_finE23" class="hora-fin">
+                        <option value="" {% if profesor.hora_finE23 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_finE23 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+
+                <!-- JUEVES -->
+                <td>
+                    <select id="hora_inicioE24" name="hora_inicioE24" class="hora-inicio">
+                        <option value="" {% if profesor.hora_inicioE24 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicioE24 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                    <select id="hora_finE24" name="hora_finE24" class="hora-fin">
+                        <option value="" {% if profesor.hora_finE24 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_finE24 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+
+                <!-- VIERNES -->
+                <td>
+                    <select id="hora_inicioE25" name="hora_inicioE25" class="hora-inicio">
+                        <option value="" {% if profesor.hora_inicioE25 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicioE25 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                    <select id="hora_finE25" name="hora_finE25" class="hora-fin">
+                        <option value="" {% if profesor.hora_finE25 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_finE25 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+
+                <!-- SABADO -->
+                <td>
+                    <select id="hora_inicioE26" name="hora_inicioE26" class="hora-inicio">
+                        <option value="" {% if profesor.hora_inicioE26 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicioE26 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                    <select id="hora_finE26" name="hora_finE26" class="hora-fin">
+                        <option value="" {% if profesor.hora_finE26 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_finE26 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td><label for="asignaturaE3">3.</label></td>
+                <td>
+                    <input type="text" id="asignaturaE3" name="asignaturaE3" value="{{ profesor.asignaturaE3 }}" list="asignaturaE-list3">
+                    <datalist id="asignaturaE-list3"></datalist>
+                </td>
+
+                <td>
+                    <div class="input-group">
+                        <input id="grupoE3" type="text" class="custom-input" value="{{ profesor.grupoE3 }}" placeholder="Escribe o selecciona un grupo">
+                        <select id="grupoE3" name="grupoE3" class="group"></select>
+                    </div>
+                </td>
+
+                <td>
+                    <input type="number" id="horasE3" name="horasE3" class="groupHoras" value="{{ profesor.horasE3 }}">
+                </td>
+                <!-- HORARIOS -->
+                <!-- LUNES -->
+                <td>
+                    <select id="hora_inicioE31" name="hora_inicioE31" class="hora-inicio">
+                        <option value="" {% if profesor.hora_inicioE31 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicioE31 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                    <select id="hora_finE31" name="hora_finE31" class="hora-fin">
+                        <option value="" {% if profesor.hora_finE31 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_finE31 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+
+                <!-- MARTES -->
+                <td>
+                    <select id="hora_inicioE32" name="hora_inicioE32" class="hora-inicio">
+                        <option value="" {% if profesor.hora_inicioE32 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicioE32 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                    <select id="hora_finE32" name="hora_finE32" class="hora-fin">
+                        <option value="" {% if profesor.hora_finE32 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_finE32 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+
+                <!-- MIERCOLES -->
+                <td>
+                    <select id="hora_inicioE33" name="hora_inicioE33" class="hora-inicio">
+                        <option value="" {% if profesor.hora_inicioE33 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicioE33 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                    <select id="hora_finE33" name="hora_finE33" class="hora-fin">
+                        <option value="" {% if profesor.hora_finE33 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_finE33 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+
+                <!-- JUEVES -->
+                <td>
+                    <select id="hora_inicioE34" name="hora_inicioE34" class="hora-inicio">
+                        <option value="" {% if profesor.hora_inicioE34 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicioE34 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                    <select id="hora_finE34" name="hora_finE34" class="hora-fin">
+                        <option value="" {% if profesor.hora_finE34 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_finE34 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+
+                <!-- VIERNES -->
+                <td>
+                    <select id="hora_inicioE35" name="hora_inicioE35" class="hora-inicio">
+                        <option value="" {% if profesor.hora_inicioE35 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicioE35 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                    <select id="hora_finE35" name="hora_finE35" class="hora-fin">
+                        <option value="" {% if profesor.hora_finE35 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_finE35 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+
+                <!-- SABADO -->
+                <td>
+                    <select id="hora_inicioE36" name="hora_inicioE36" class="hora-inicio">
+                        <option value="" {% if profesor.hora_inicioE36 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicioE36 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                    <select id="hora_finE36" name="hora_finE36" class="hora-fin">
+                        <option value="" {% if profesor.hora_finE36 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_finE36 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+            </tr>
+
+            <tr>
+                <td><label for="asignaturaE4">4.</label>
+                    <td>
+                        <input type="text" id="asignaturaE4" name="asignaturaE4" value="{{ profesor.asignaturaE4 }}" list="asignaturaE-list4">
+                        <datalist id="asignaturaE-list4"></datalist>
+                    </td>
+
+                    <td>
+                        <div class="input-group">
+                            <input id="grupoE4" type="text" class="custom-input" value="{{ profesor.grupoE4 }}" placeholder="Escribe o selecciona un grupo">
+                            <select id="grupoE4" name="grupoE4" class="group"></select>
+                        </div>
+                    </td>
+
+                    <td>
+                        <input type="number" id="horasE4" name="horasE4" class="groupHoras" value="{{ profesor.horasE4 }}">
+                    </td>
+                    <!-- HORARIOS -->
+                    <!-- LUNES -->
+                    <td>
+                        <select id="hora_inicioE41" name="hora_inicioE41" class="hora-inicio">
+                            <option value="" {% if profesor.hora_inicioE41 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_inicioE41 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                        <select id="hora_finE41" name="hora_finE41" class="hora-fin">
+                            <option value="" {% if profesor.hora_finE41 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_finE41 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+
+                    <!-- MARTES -->
+                    <td>
+                        <select id="hora_inicioE42" name="hora_inicioE42" class="hora-inicio">
+                            <option value="" {% if profesor.hora_inicioE42 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_inicioE42 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                        <select id="hora_finE42" name="hora_finE42" class="hora-fin">
+                            <option value="" {% if profesor.hora_finE42 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_finE42 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+
+                    <!-- MIERCOLES -->
+                    <td>
+                        <select id="hora_inicioE43" name="hora_inicioE43" class="hora-inicio">
+                            <option value="" {% if profesor.hora_inicioE43 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_inicioE43 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                        <select id="hora_finE43" name="hora_finE43" class="hora-fin">
+                            <option value="" {% if profesor.hora_finE43 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_finE43 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+
+                    <!-- JUEVES -->
+                    <td>
+                        <select id="hora_inicioE44" name="hora_inicioE44" class="hora-inicio">
+                            <option value="" {% if profesor.hora_inicioE44 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_inicioE44 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                        <select id="hora_finE44" name="hora_finE44" class="hora-fin">
+                            <option value="" {% if profesor.hora_finE44 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_finE44 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+
+                    <!-- VIERNES -->
+                    <td>
+                        <select id="hora_inicioE45" name="hora_inicioE45" class="hora-inicio">
+                            <option value="" {% if profesor.hora_inicioE45 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_inicioE45 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                        <select id="hora_finE45" name="hora_finE45" class="hora-fin">
+                            <option value="" {% if profesor.hora_finE45 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_finE45 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+
+                    <!-- SABADO -->
+                    <td>
+                        <select id="hora_inicioE46" name="hora_inicioE46" class="hora-inicio">
+                            <option value="" {% if profesor.hora_inicioE46 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_inicioE46 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                        <select id="hora_finE46" name="hora_finE46" class="hora-fin">
+                            <option value="" {% if profesor.hora_finE46 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_finE46 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+            </tr>
+
+            <tr>
+                <td><label for="asignaturaE5">5.</label>
+                    <td>
+                        <input type="text" id="asignaturaE5" name="asignaturaE5" value="{{ profesor.asignaturaE5 }}" list="asignaturaE-list5">
+                        <datalist id="asignaturaE-list5"></datalist>
+                    </td>
+
+                    <td>
+                        <div class="input-group">
+                            <input id="grupoE5" type="text" class="custom-input" value="{{ profesor.grupoE5 }}" placeholder="Escribe o selecciona un grupo">
+                            <select id="grupoE5" name="grupoE5" class="group"></select>
+                        </div>
+                    </td>
+
+                    <td>
+                        <input type="number" id="horasE5" name="horasE5" class="groupHoras" value="{{ profesor.horasE5 }}">
+                    </td>
+                    <!-- HORARIOS -->
+                    <!-- LUNES -->
+                    <td>
+                        <select id="hora_inicioE51" name="hora_inicioE51" class="hora-inicio">
+                            <option value="" {% if profesor.hora_inicioE51 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_inicioE51 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                        <select id="hora_finE51" name="hora_finE51" class="hora-fin">
+                            <option value="" {% if profesor.hora_finE51 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_finE51 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+
+                    <!-- MARTES -->
+                    <td>
+                        <select id="hora_inicioE52" name="hora_inicioE52" class="hora-inicio">
+                            <option value="" {% if profesor.hora_inicioE52 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_inicioE52 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                        <select id="hora_finE52" name="hora_finE52" class="hora-fin">
+                            <option value="" {% if profesor.hora_finE52 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_finE52 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+
+                    <!-- MIERCOLES -->
+                    <td>
+                        <select id="hora_inicioE53" name="hora_inicioE53" class="hora-inicio">
+                            <option value="" {% if profesor.hora_inicioE53 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_inicioE53 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                        <select id="hora_finE53" name="hora_finE53" class="hora-fin">
+                            <option value="" {% if profesor.hora_finE53 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_finE53 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+
+                    <!-- JUEVES -->
+                    <td>
+                        <select id="hora_inicioE54" name="hora_inicioE54" class="hora-inicio">
+                            <option value="" {% if profesor.hora_inicioE54 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_inicioE54 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                        <select id="hora_finE54" name="hora_finE54" class="hora-fin">
+                            <option value="" {% if profesor.hora_finE54 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_finE54 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+
+                    <!-- VIERNES -->
+                    <td>
+                        <select id="hora_inicioE55" name="hora_inicioE55" class="hora-inicio">
+                            <option value="" {% if profesor.hora_inicioE55 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_inicioE55 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                        <select id="hora_finE55" name="hora_finE55" class="hora-fin">
+                            <option value="" {% if profesor.hora_finE55 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_finE55 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+
+                    <!-- SABADO -->
+                    <td>
+                        <select id="hora_inicioE56" name="hora_inicioE56" class="hora-inicio">
+                            <option value="" {% if profesor.hora_inicioE56 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_inicioE56 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                        <select id="hora_finE56" name="hora_finE56" class="hora-fin">
+                            <option value="" {% if profesor.hora_finE56 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_finE56 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+            </tr>
+
+            <tr>
+                <td><label for="asignaturaE6">6.</label>
+                    <td>
+                        <input type="text" id="asignaturaE6" name="asignaturaE6" value="{{ profesor.asignaturaE6 }}" list="asignaturaE-list6">
+                        <datalist id="asignaturaE-list6"></datalist>
+                    </td>
+
+                    <td>
+                        <div class="input-group">
+                            <input id="grupoE6" type="text" class="custom-input" value="{{ profesor.grupoE6 }}" placeholder="Escribe o selecciona un grupo">
+                            <select id="grupoE6" name="grupoE6" class="group"></select>
+                        </div>
+                    </td>
+
+                    <td>
+                        <input type="number" id="horasE6" name="horasE6" class="groupHoras" value="{{ profesor.horasE6 }}">
+                    </td>
+                    <!-- HORARIOS -->
+                    <!-- LUNES -->
+                    <td>
+                        <select id="hora_inicioE61" name="hora_inicioE61" class="hora-inicio">
+                            <option value="" {% if profesor.hora_inicioE61 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_inicioE61 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                        <select id="hora_finE61" name="hora_finE61" class="hora-fin">
+                            <option value="" {% if profesor.hora_finE61 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_finE61 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+
+                    <!-- MARTES -->
+                    <td>
+                        <select id="hora_inicioE62" name="hora_inicioE62" class="hora-inicio">
+                            <option value="" {% if profesor.hora_inicioE62 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_inicioE62 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                        <select id="hora_finE62" name="hora_finE62" class="hora-fin">
+                            <option value="" {% if profesor.hora_finE62 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_finE62 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+
+                    <!-- MIERCOLES -->
+                    <td>
+                        <select id="hora_inicioE63" name="hora_inicioE63" class="hora-inicio">
+                            <option value="" {% if profesor.hora_inicioE63 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_inicioE63 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                        <select id="hora_finE63" name="hora_finE63" class="hora-fin">
+                            <option value="" {% if profesor.hora_finE63 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_finE63 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+
+                    <!-- JUEVES -->
+                    <td>
+                        <select id="hora_inicioE64" name="hora_inicioE64" class="hora-inicio">
+                            <option value="" {% if profesor.hora_inicioE64 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_inicioE64 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                        <select id="hora_finE64" name="hora_finE64" class="hora-fin">
+                            <option value="" {% if profesor.hora_finE64 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_finE64 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+
+                    <!-- VIERNES -->
+                    <td>
+                        <select id="hora_inicioE65" name="hora_inicioE65" class="hora-inicio">
+                            <option value="" {% if profesor.hora_inicioE65 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_inicioE65 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                        <select id="hora_finE65" name="hora_finE65" class="hora-fin">
+                            <option value="" {% if profesor.hora_finE65 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_finE65 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+
+                    <!-- SABADO -->
+                    <td>
+                        <select id="hora_inicioE66" name="hora_inicioE66" class="hora-inicio">
+                            <option value="" {% if profesor.hora_inicioE66 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_inicioE66 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                        <select id="hora_finE66" name="hora_finE66" class="hora-fin">
+                            <option value="" {% if profesor.hora_finE66 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_finE66 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+            </tr>
+
+            <tr>
+                <td><label for="asignaturaE7">7.</label>
+                    <td>
+                        <input type="text" id="asignaturaE7" name="asignaturaE7" value="{{ profesor.asignaturaE7 }}" list="asignaturaE-list7">
+                        <datalist id="asignaturaE-list7"></datalist>
+                    </td>
+
+                    <td>
+                        <div class="input-group">
+                            <input id="grupoE7" type="text" class="custom-input" value="{{ profesor.grupoE7 }}" placeholder="Escribe o selecciona un grupo">
+                            <select id="grupoE7" name="grupoE7" class="group"></select>
+                        </div>
+                    </td>
+
+                    <td>
+                        <input type="number" id="horasE7" name="horasE7" class="groupHoras" value="{{ profesor.horasE7 }}">
+                    </td>
+                    <!-- HORARIOS -->
+                    <!-- LUNES -->
+                    <td>
+                        <select id="hora_inicioE71" name="hora_inicioE71" class="hora-inicio">
+                            <option value="" {% if profesor.hora_inicioE71 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_inicioE71 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                        <select id="hora_finE71" name="hora_finE71" class="hora-fin">
+                            <option value="" {% if profesor.hora_finE71 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_finE71 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+
+                    <!-- MARTES -->
+                    <td>
+                        <select id="hora_inicioE72" name="hora_inicioE72" class="hora-inicio">
+                            <option value="" {% if profesor.hora_inicioE72 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_inicioE72 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                        <select id="hora_finE72" name="hora_finE72" class="hora-fin">
+                            <option value="" {% if profesor.hora_finE72 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_finE72 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+
+                    <!-- MIERCOLES -->
+                    <td>
+                        <select id="hora_inicioE73" name="hora_inicioE73" class="hora-inicio">
+                            <option value="" {% if profesor.hora_inicioE73 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_inicioE73 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                        <select id="hora_finE73" name="hora_finE73" class="hora-fin">
+                            <option value="" {% if profesor.hora_finE73 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_finE73 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+
+                    <!-- JUEVES -->
+                    <td>
+                        <select id="hora_inicioE74" name="hora_inicioE74" class="hora-inicio">
+                            <option value="" {% if profesor.hora_inicioE74 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_inicioE74 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                        <select id="hora_finE74" name="hora_finE74" class="hora-fin">
+                            <option value="" {% if profesor.hora_finE74 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_finE74 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+
+                    <!-- VIERNES -->
+                    <td>
+                        <select id="hora_inicioE75" name="hora_inicioE75" class="hora-inicio">
+                            <option value="" {% if profesor.hora_inicioE75 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_inicioE75 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                        <select id="hora_finE75" name="hora_finE75" class="hora-fin">
+                            <option value="" {% if profesor.hora_finE75 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_finE75 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+
+                    <!-- SABADO -->
+                    <td>
+                        <select id="hora_inicioE76" name="hora_inicioE76" class="hora-inicio">
+                            <option value="" {% if profesor.hora_inicioE76 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_inicioE76 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                        <select id="hora_finE76" name="hora_finE76" class="hora-fin">
+                            <option value="" {% if profesor.hora_finE76 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_finE76 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+            </tr>
+
+            <tr>
+                <td><label for="asignaturaE8">8.</label>
+                    <td>
+                        <input type="text" id="asignaturaE8" name="asignaturaE8" value="{{ profesor.asignaturaE8 }}" list="asignaturaE-list8">
+                        <datalist id="asignaturaE-list8"></datalist>
+                    </td>
+
+                    <td>
+                        <div class="input-group">
+                            <input id="grupoE8" type="text" class="custom-input" value="{{ profesor.grupoE8 }}" placeholder="Escribe o selecciona un grupo">
+                            <select id="grupoE8" name="grupoE8" class="group"></select>
+                        </div>
+                    </td>
+
+                    <td>
+                        <input type="number" id="horasE8" name="horasE8" class="groupHoras" value="{{ profesor.horasE8 }}">
+                    </td>
+                    <!-- HORARIOS -->
+                    <!-- LUNES -->
+                    <td>
+                        <select id="hora_inicioE81" name="hora_inicioE81" class="hora-inicio">
+                            <option value="" {% if profesor.hora_inicioE81 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_inicioE81 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                        <select id="hora_finE81" name="hora_finE81" class="hora-fin">
+                            <option value="" {% if profesor.hora_finE81 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_finE81 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+
+                    <!-- MARTES -->
+                    <td>
+                        <select id="hora_inicioE82" name="hora_inicioE82" class="hora-inicio">
+                            <option value="" {% if profesor.hora_inicioE82 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_inicioE82 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                        <select id="hora_finE82" name="hora_finE82" class="hora-fin">
+                            <option value="" {% if profesor.hora_finE82 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_finE82 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+
+                    <!-- MIERCOLES -->
+                    <td>
+                        <select id="hora_inicioE83" name="hora_inicioE83" class="hora-inicio">
+                            <option value="" {% if profesor.hora_inicioE83 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_inicioE83 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                        <select id="hora_finE83" name="hora_finE83" class="hora-fin">
+                            <option value="" {% if profesor.hora_finE83 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_finE83 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+
+                    <!-- JUEVES -->
+                    <td>
+                        <select id="hora_inicioE84" name="hora_inicioE84" class="hora-inicio">
+                            <option value="" {% if profesor.hora_inicioE84 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_inicioE84 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                        <select id="hora_finE84" name="hora_finE84" class="hora-fin">
+                            <option value="" {% if profesor.hora_finE84 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_finE84 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+
+                    <!-- VIERNES -->
+                    <td>
+                        <select id="hora_inicioE85" name="hora_inicioE85" class="hora-inicio">
+                            <option value="" {% if profesor.hora_inicioE85 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_inicioE85 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                        <select id="hora_finE85" name="hora_finE85" class="hora-fin">
+                            <option value="" {% if profesor.hora_finE85 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_finE85 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+
+                    <!-- SABADO -->
+                    <td>
+                        <select id="hora_inicioE86" name="hora_inicioE86" class="hora-inicio">
+                            <option value="" {% if profesor.hora_inicioE86 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_inicioE86 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                        <select id="hora_finE86" name="hora_finE86" class="hora-fin">
+                            <option value="" {% if profesor.hora_finE86 == "" %}selected{% endif %}> </option>
+                            {% for horario in horarios %}
+                            <option value="{{ horario }}" {% if profesor.hora_finE86 == horario %}selected{% endif %}>{{ horario }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+            </tr>
+
+        </table>
+
+        <label for="total_horasE_grupo">Total de Horas:</label>
+        <input type="number" id="total_horasE_grupo" name="total_horasE_grupo" value="{{ profesor.total_horasE_grupo }}" readonly><br>
+
+        <!-- Nuevos campos para cargo -->
+        <table class="form-groupC">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Cargo</th>
+                    <th>Vigencia</th>
+                    <th>Horas</th>
+                    <th>Lunes</th>
+                    <th>Martes</th>
+                    <th>Miércoles</th>
+                    <th>Jueves</th>
+                    <th>Viernes</th>
+                    <th>Sábado</th>
+                </tr>
+            </thead>
+            <tr>
+                <td><label for="cargo">1.</label></td>
+                <!-- CARGO -->
+                <td>
+                    <select id="cargo" name="cargo" required>
+                        <option value=" " {% if profesor.cargo == " " %}selected{% endif %}>NO APLICA</option>
+                        <option value="PRESINDENTE DE ACADÉMIA" {% if profesor.cargo == "PRESINDENTE DE ACADÉMIA" %}selected{% endif %}>PRESINDENTE DE ACADEMIA</option>
+                        <option value="SECRETARIO DE ACADÉMIA" {% if profesor.cargo == "SECRETARIO DE ACADÉMIA" %}selected{% endif %}>SECRETARIO DE ACADEMIA</option>
+                </select>
+                </td>
+                <!-- VIGENCIA CARGO -->
+                <td>
+                    <input type="text" id="vigenciaCargo" name="vigenciaCargo" value="{{ profesor.vigenciaCargo }}">
+                </td>
+                <!-- HORAS CARGO -->
+                <td>
+                    <input type="number" id="horasC" name="horasC" class="groupHoras" value="{{ profesor.horasC }}">
+                </td>
+                <!-- HORARIOS -->
+                <!-- LUNES -->
+                <td>
+                    <select id="hora_inicioC11" name="hora_inicioC11" class="hora-inicio">
+                        <option value="" {% if profesor.hora_inicioC11 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicioC11 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                    <select id="hora_finC11" name="hora_finC11" class="hora-fin">
+                        <option value=" " {% if profesor.hora_finC11 == " " %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_finC11 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+
+                <!-- MARTES -->
+                <td>
+                    <select id="hora_inicioC12" name="hora_inicioC12" class="hora-inicio">
+                        <option value="" {% if profesor.hora_inicioC12 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicioC12 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                    <select id="hora_finC12" name="hora_finC12" class="hora-fin">
+                        <option value="" {% if profesor.hora_finC12 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_finC12 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+
+                <!-- MIERCOLES -->
+                <td>
+                    <select id="hora_inicioC13" name="hora_inicioC13" class="hora-inicio">
+                        <option value="" {% if profesor.hora_inicioC13 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicioC13 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                    <select id="hora_finC13" name="hora_finC13" class="hora-fin">
+                        <option value="" {% if profesor.hora_finC13 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_finC13 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+
+                <!-- JUEVES -->
+                <td>
+                    <select id="hora_inicioC14" name="hora_inicioC14" class="hora-inicio">
+                        <option value="" {% if profesor.hora_inicioC14 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicioC14 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                    <select id="hora_finC14" name="hora_finC14" class="hora-fin">
+                        <option value="" {% if profesor.hora_finC14 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_finC14 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+
+                <!-- VIERNES -->
+                <td>
+                    <select id="hora_inicioC15" name="hora_inicioC15" class="hora-inicio">
+                        <option value="" {% if profesor.hora_inicioC15 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicioC15 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                    <select id="hora_finC15" name="hora_finC15" class="hora-fin">
+                        <option value="" {% if profesor.hora_finC15 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_finC15 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+
+                <!-- SABADO -->
+                <td>
+                    <select id="hora_inicioC16" name="hora_inicioC16" class="hora-inicio">
+                        <option value="" {% if profesor.hora_inicioC16 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_inicioC16 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                    <select id="hora_finC16" name="hora_finC16" class="hora-fin">
+                        <option value="" {% if profesor.hora_finC16 == "" %}selected{% endif %}> </option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor.hora_finC16 == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+            </tr>
+        </table>
+
+        <br><button type="submit">Guardar</button>
+    </form>
+
+    <script>
+        const id = "{{ profesor['_id'] }}";
+    </script>
+    <script src="{{url_for('static', filename = 'js/editProfesor.js') }}">
+    </script>
+</body>
+
+</html>
