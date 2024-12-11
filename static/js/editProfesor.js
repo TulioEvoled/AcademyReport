@@ -621,3 +621,89 @@ document.addEventListener("DOMContentLoaded", function() {
             .join("");
     }
 });
+
+///VALIDAR HORAS ASIGNADAS
+let interactionCounter = 0; // Contador de interacciones
+
+// Función para calcular horas desde hora_inicio y hora_fin
+function calculateAssignedHours(prefix, asignatura) {
+    let totalAssignedHours = 0;
+
+    for (let day = 1; day <= 6; day++) {
+        const startSelect = document.getElementById(`hora_inicio${prefix}${asignatura}${day}`);
+        const endSelect = document.getElementById(`hora_fin${prefix}${asignatura}${day}`);
+
+        if (startSelect && endSelect) {
+            const startTime = startSelect.value;
+            const endTime = endSelect.value;
+
+            if (startTime && endTime) {
+                const startMinutes = getMinutes(startTime);
+                const endMinutes = getMinutes(endTime);
+
+                totalAssignedHours += (endMinutes - startMinutes) / 60; // Convertir minutos a horas
+            }
+        }
+    }
+
+    return totalAssignedHours;
+}
+
+// Validar horas asignadas para todas las asignaturas
+function validateWeeklyHours() {
+    if (interactionCounter < 2) return; // No mostrar mensajes hasta que haya dos interacciones
+
+    let warnings = [];
+
+    // Validar asignaturas normales
+    for (let asignatura = 1; asignatura <= 8; asignatura++) {
+        const totalHoursInput = document.getElementById(`horas${asignatura}`);
+        if (totalHoursInput) {
+            const totalHours = parseFloat(totalHoursInput.value) || 0;
+            const assignedHours = calculateAssignedHours('', asignatura);
+
+            if (assignedHours !== totalHours) {
+                warnings.push(`Asignatura ${asignatura}: Horas asignadas (${assignedHours}) no coinciden con las configuradas (${totalHours}).`);
+            }
+        }
+    }
+
+    // Validar asignaturas especiales
+    for (let asignatura = 1; asignatura <= 8; asignatura++) {
+        const totalHoursInput = document.getElementById(`horasE${asignatura}`);
+        if (totalHoursInput) {
+            const totalHours = parseFloat(totalHoursInput.value) || 0;
+            const assignedHours = calculateAssignedHours('E', asignatura);
+
+            if (assignedHours !== totalHours) {
+                warnings.push(`Asignatura especial ${asignatura}: Horas asignadas (${assignedHours}) no coinciden con las configuradas (${totalHours}).`);
+            }
+        }
+    }
+
+    // Validar horario del cargo
+    const totalCargoHoursInput = document.getElementById(`horasC`);
+    if (totalCargoHoursInput) {
+        const totalHours = parseFloat(totalCargoHoursInput.value) || 0;
+        const assignedHours = calculateAssignedHours('C', 1);
+
+        if (assignedHours !== totalHours) {
+            warnings.push(`Cargo: Horas asignadas (${assignedHours}) no coinciden con las configuradas (${totalHours}).`);
+        }
+    }
+
+    if (warnings.length > 0) {
+        alert(warnings.join('\n'));
+    }
+}
+
+// Escuchar cambios en horarios y totales
+document.addEventListener("DOMContentLoaded", function() {
+    const hourSelectors = document.querySelectorAll("[id^='hora_inicio'], [id^='hora_fin'], [id^='horas']");
+    hourSelectors.forEach(selector => {
+        selector.addEventListener("change", () => {
+            interactionCounter++; // Incrementar contador en cada interacción
+            validateWeeklyHours();
+        });
+    });
+});
