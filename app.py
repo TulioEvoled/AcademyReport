@@ -9,15 +9,10 @@ from io import StringIO
 
 #IMPORTS PDF INICIO
 from reportlab.lib.pagesizes import letter
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
-from reportlab.lib import colors
-from io import BytesIO
-
-from reportlab.pdfgen import canvas
-from reportlab.lib.units import inch
-
-from reportlab.platypus import Paragraph, Spacer
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib import colors
+from reportlab.lib.units import inch
 
 
 
@@ -367,84 +362,12 @@ def principal():
     return render_template('principal.html')
 
 
-# RECEMOS
-@app.route('/reporte/<id_profesor>', methods=['GET'])
-def reporte(id_profesor):
-    profesor = profesores.find_one({'_id': ObjectId(id_profesor)})  # Obtén los datos
-    rendered = render_template('exportar.html', profesor=profesor)  # Renderiza la vista
-    pdf = pdfkit.from_string(rendered, False)  # Convierte a PDF
-
-    response = make_response(pdf)
-    response.headers['Content-Type'] = 'application/pdf'
-    response.headers['Content-Disposition'] = f'inline; filename=reporte_{id_profesor}.pdf'
-    return response
-
 #RUTA PDF INICIO
 
-@app.route('/profesores/pdf', methods=['GET'])
-def generate_pdf_template():
-    buffer = BytesIO()
-    c = canvas.Canvas(buffer, pagesize=letter)
-    width, height = letter
-
-    # Encabezado
-    c.setFont("Helvetica-Bold", 16)
-    c.drawString(1 * inch, height - 1 * inch, "Reporte de Profesor")
-
-    # Asignación de Academia (Tabla 1)
-    table1_data = [["Asignatura", "Grupo", "Horas", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"]]
-    table1 = Table(table1_data, colWidths=[1.2 * inch] * 9)
-    table1.setStyle(TableStyle([
-        ('GRID', (0, 0), (-1, -1), 1, 'black'),
-        ('BACKGROUND', (0, 0), (-1, 0), '#D3D3D3'),
-        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-    ]))
-    table1.wrapOn(c, width, height)
-    table1.drawOn(c, 1 * inch, height - 2 * inch)
-
-    # Asignación de Horas Frente a Grupo (Tabla 2)
-    c.setFont("Helvetica-Bold", 12)
-    c.drawString(1 * inch, height - 4.5 * inch, "Asignación de Horas Frente a Grupo")
-    table2_data = [["Actividad", "Horas"]]
-    table2 = Table(table2_data, colWidths=[4 * inch, 1.5 * inch])
-    table2.setStyle(TableStyle([
-        ('GRID', (0, 0), (-1, -1), 1, 'black'),
-        ('BACKGROUND', (0, 0), (-1, 0), '#D3D3D3'),
-        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-    ]))
-    table2.wrapOn(c, width, height)
-    table2.drawOn(c, 1 * inch, height - 5 * inch)
-
-    # Asignación de Horas de Descarga para Otras Actividades (Tabla 3)
-    c.setFont("Helvetica-Bold", 12)
-    c.drawString(1 * inch, height - 6.5 * inch, "Asignación de Horas de Descarga para Otras Actividades")
-    table3_data = [["Actividad", "Horas"]]
-    table3 = Table(table3_data, colWidths=[4 * inch, 1.5 * inch])
-    table3.setStyle(TableStyle([
-        ('GRID', (0, 0), (-1, -1), 1, 'black'),
-        ('BACKGROUND', (0, 0), (-1, 0), '#D3D3D3'),
-        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-    ]))
-    table3.wrapOn(c, width, height)
-    table3.drawOn(c, 1 * inch, height - 7 * inch)
-
-    # Asignación de Horas de Presidente y Secretario de Academia (Tabla 4)
-    c.setFont("Helvetica-Bold", 12)
-    c.drawString(1 * inch, height - 8.5 * inch, "Asignación de Horas de Presidente y Secretario de Academia")
-    table4_data = [["Rol", "Horas"]]
-    table4 = Table(table4_data, colWidths=[4 * inch, 1.5 * inch])
-    table4.setStyle(TableStyle([
-        ('GRID', (0, 0), (-1, -1), 1, 'black'),
-        ('BACKGROUND', (0, 0), (-1, 0), '#D3D3D3'),
-        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-    ]))
-    table4.wrapOn(c, width, height)
-    table4.drawOn(c, 1 * inch, height - 9 * inch)
-
-    c.save()
-    buffer.seek(0)
-
-    return send_file(buffer, as_attachment=False, mimetype='application/pdf')
+# Ruta para previsualizar exportacion
+@app.route('/reporte.html')
+def reporte():
+    return render_template('reporte.html')
 
 #RUTA PDF FIN
 

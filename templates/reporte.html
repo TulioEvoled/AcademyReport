@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Previsualización de Reporte</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+        }
+        
+        h1 {
+            text-align: center;
+            font-size: 24px;
+        }
+        
+        .encabezado {
+            margin-bottom: 20px;
+            border: 1px solid #000;
+            padding: 10px;
+        }
+        
+        .encabezado-imagen {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .encabezado-imagen img {
+            width: 100%;
+            max-width: 19.80cm;
+            height: auto;
+        }
+        
+        .tabla {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        
+        .tabla th,
+        .tabla td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: center;
+        }
+        
+        .tabla th {
+            background-color: #f2f2f2;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Encabezado con Imagen -->
+    <div class="encabezado-imagen">
+        <img src="/static/src/Encabezado.png" alt="Encabezado">
+    </div>
+
+    <!-- Encabezado de Información -->
+    <div class="encabezado">
+        <h1>Asignación Académica</h1>
+        <p><strong>Nombre:</strong> Olvera Saldivar Aniceto</p>
+        <p><strong>Profesión:</strong> Contador Público / Lic. en Derecho</p>
+        <p><strong>Adscripción:</strong> Profesor de Asignatura de Ing. Industrial</p>
+        <p><strong>Fecha de Ingreso:</strong> 01 de Febrero de 2003</p>
+        <p><strong>Periodo:</strong> 2024-2 (Septiembre 2024 - Febrero 2025)</p>
+    </div>
+
+    <!-- Tabla de asignación de horas frente a grupo -->
+    <h2>Asignación de Horas Frente a Grupo</h2>
+    <table class="tabla">
+        <thead>
+            <tr>
+                <th>Carrera</th>
+                <th>Asignatura</th>
+                <th>Grupo</th>
+                <th>Horas</th>
+                <th>Lunes</th>
+                <th>Martes</th>
+                <th>Miércoles</th>
+                <th>Jueves</th>
+                <th>Viernes</th>
+                <th>Sábado</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Industrial</td>
+                <td>Economía (AEC-1018)</td>
+                <td>1351</td>
+                <td>4</td>
+                <td>17:00-19:00</td>
+                <td>17:00-19:00</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Industrial</td>
+                <td>Gestión de Costos (AEC-1392)</td>
+                <td>1581</td>
+                <td>4</td>
+                <td>15:00-16:00</td>
+                <td></td>
+                <td>17:00-18:00</td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Tabla de horas de descarga para otras actividades -->
+    <h2>Asignación de Horas de Descarga para otras Actividades</h2>
+    <table class="tabla">
+        <thead>
+            <tr>
+                <th>Carrera</th>
+                <th>Asignatura</th>
+                <th>Grupo</th>
+                <th>Horas</th>
+                <th>Lunes</th>
+                <th>Martes</th>
+                <th>Miércoles</th>
+                <th>Jueves</th>
+                <th>Viernes</th>
+                <th>Sábado</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Industrial</td>
+                <td>Tutorías</td>
+                <td>1851</td>
+                <td>1</td>
+                <td>16:00-17:00</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Industrial</td>
+                <td>Mentoría Dual</td>
+                <td>NG</td>
+                <td>1</td>
+                <td></td>
+                <td>14:00-15:00</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>2024. Año del Bicentenario de la Erección del Estado Libre y Soberano de México</p>
+    </div>
+</body>
+
+</html>
