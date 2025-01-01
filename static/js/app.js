@@ -985,3 +985,36 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 });
+
+// EXPORTACION DE ASIGNACION ACADEMICA
+// Cargar la lista de profesores
+document.getElementById('load-professors').addEventListener('click', function() {
+    fetch('/profesores/json')
+        .then(response => response.json())
+        .then(profesores => {
+            const container = document.getElementById('professor-list-container');
+            container.innerHTML = ''; // Limpiar la lista existente
+
+            profesores.forEach(profesor => {
+                // Crear cada elemento de la lista
+                const div = document.createElement('div');
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.name = 'profesor_ids';
+                checkbox.value = profesor._id;
+
+                const label = document.createElement('label');
+                label.textContent = profesor.nombre;
+
+                div.appendChild(checkbox);
+                div.appendChild(label);
+                container.appendChild(div);
+            });
+        });
+});
+
+// Seleccionar todos los profesores
+document.getElementById('select-all').addEventListener('click', function() {
+    const checkboxes = document.querySelectorAll("input[name='profesor_ids']");
+    checkboxes.forEach(checkbox => checkbox.checked = true);
+});

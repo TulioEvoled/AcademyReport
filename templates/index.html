@@ -1017,6 +1017,21 @@
 
         </form>
     </div>
+
+    <div>
+        <h2>Exportar Reporte de Profesores</h2>
+        <!-- Botones para cargar y seleccionar -->
+        <button id="load-professors">Cargar Profesores</button>
+        <button id="select-all">Seleccionar Todos</button>
+
+        <!-- Formulario para exportar profesores seleccionados -->
+        <form id="export-selected-form" method="POST" action="/export-selected">
+            <div id="professor-list-container">
+                <!-- Lista dinámica de profesores cargada desde el servidor -->
+            </div>
+            <button type="submit">Exportar Selección</button>
+        </form>
+    </div>
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 </body>
 

@@ -6,6 +6,7 @@ from io import BytesIO
 import xlsxwriter
 import pdfkit
 from io import StringIO
+import openpyxl
 
 #IMPORTS PDF INICIO
 from reportlab.lib.pagesizes import letter
@@ -13,8 +14,6 @@ from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, 
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib import colors
 from reportlab.lib.units import inch
-
-
 
 app = Flask(__name__)
 
@@ -75,6 +74,71 @@ def get_all_profesores():
     for profesor in all_profesores:
         profesor['_id'] = str(profesor['_id'])
     return render_template('profesores.html', profesores=all_profesores)
+
+# Ruta para obtener la lista de profesores en formato JSON
+@app.route('/profesores/json', methods=['GET'])
+def get_profesores_json():
+    all_profesores = list(profesores.find({}, {'_id': 1, 'nombre': 1}).sort("nombre", 1))
+    for profesor in all_profesores:
+        profesor['_id'] = str(profesor['_id'])
+    return jsonify(all_profesores)
+
+# Ruta para exportar los profesores seleccionados usando la plantilla con 32 hojas
+@app.route('/export-selected', methods=['POST'])
+def export_selected():
+    profesor_ids = request.form.getlist('profesor_ids')
+    selected_profesores = [profesores.find_one({'_id': ObjectId(profesor_id)}) for profesor_id in profesor_ids]
+
+    # Ruta de la plantilla con 32 hojas
+    template_path = "static/src/Plantilla_pie_reducido_1cm.xlsx"  # Cambia esta ruta si es necesario
+    workbook = openpyxl.load_workbook(template_path)
+
+    # Llenar las hojas necesarias con los datos seleccionados
+    for i, profesor in enumerate(selected_profesores):
+        if i >= len(workbook.sheetnames):  # Evitar exceder el número de hojas disponibles
+            break
+        sheet = workbook[workbook.sheetnames[i]]
+
+        # Mapear datos en la hoja
+        sheet["A7"] = profesor.get("nombre", "")
+        sheet["E7"] = profesor.get("profesion", "")
+        sheet["A9"] = profesor.get("adscripcion", "")
+        sheet["E9"] = profesor.get("fecha_ingreso", "")
+        sheet["H9"] = profesor.get("tiempo_indeterminado", "")
+        sheet["A11"] = profesor.get("periodo_actual", "")
+        sheet["F11"] = profesor.get("horas_a", 0)
+        sheet["H11"] = profesor.get("horas_b", 0)
+        sheet["J11"] = profesor.get("total_horas", 0)
+
+        # Mapear asignaturas y horarios
+        for j in range(1, 9):
+            row = 14 + j
+            sheet[f"B{row}"] = profesor.get(f"asignatura{j}", "")
+            sheet[f"C{row}"] = profesor.get(f"grupo{j}", "")
+            sheet[f"D{row}"] = profesor.get(f"horas{j}", 0)
+            sheet[f"E{row}"] = f"{profesor.get(f'hora_inicio{j}1', '')} - {profesor.get(f'hora_fin{j}1', '')}"
+            sheet[f"F{row}"] = f"{profesor.get(f'hora_inicio{j}2', '')} - {profesor.get(f'hora_fin{j}2', '')}"
+            sheet[f"G{row}"] = f"{profesor.get(f'hora_inicio{j}3', '')} - {profesor.get(f'hora_fin{j}3', '')}"
+            sheet[f"H{row}"] = f"{profesor.get(f'hora_inicio{j}4', '')} - {profesor.get(f'hora_fin{j}4', '')}"
+            sheet[f"I{row}"] = f"{profesor.get(f'hora_inicio{j}5', '')} - {profesor.get(f'hora_fin{j}5', '')}"
+            sheet[f"J{row}"] = f"{profesor.get(f'hora_inicio{j}6', '')} - {profesor.get(f'hora_fin{j}6', '')}"
+
+    # Eliminar las hojas no utilizadas
+    for i in range(len(selected_profesores), len(workbook.sheetnames)):
+        del workbook[workbook.sheetnames[-1]]
+
+    # Guardar el archivo en memoria
+    output = BytesIO()
+    workbook.save(output)
+    output.seek(0)
+
+    # Devolver el archivo actualizado como respuesta
+    return send_file(
+        output,
+        as_attachment=True,
+        download_name="Reporte_Profesores_Dinamico.xlsx",
+        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
 
 # Rutas CRUD para asignaturas
 @app.route('/asignaturas', methods=['POST'])
