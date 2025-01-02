@@ -765,14 +765,71 @@ function checkOverlapAndDisable(day) {
                         ) {
                             switch (prefix) {
                                 case '':
-                                    alert(`Solapamiento detectado para asignatura ${asignatura} en el día ${day}. Ajusta el horario.`);
-                                    break;
+                                    switch (day) {
+                                        case '1':
+                                            alert(`Solapamiento detectado para asignatura ${asignatura} el dia lunes. Ajusta el horario.`);
+                                            break;
+                                        case '2':
+                                            alert(`Solapamiento detectado para asignatura ${asignatura} el dia martes. Ajusta el horario.`);
+                                            break;
+                                        case '3':
+                                            alert(`Solapamiento detectado para asignatura ${asignatura} el dia miercoles. Ajusta el horario.`);
+                                            break; 
+                                        case '4':
+                                            alert(`Solapamiento detectado para asignatura ${asignatura} el dia jueves. Ajusta el horario.`);
+                                            break;
+                                        case '5':
+                                            alert(`Solapamiento detectado para asignatura ${asignatura} el dia viernes. Ajusta el horario.`);
+                                            break;    
+                                        case '6':
+                                            alert(`Solapamiento detectado para asignatura ${asignatura} el dia sabado. Ajusta el horario.`);
+                                            break;
+                                    }
+                                
                                 case 'E':
-                                    alert(`Solapamiento detectado para asignatura de descarga ${asignatura} en el día ${day}. Ajusta el horario.`);
-                                    break;
+                                    switch (day){
+                                        case '1':
+                                            alert(`Solapamiento detectado para asignatura de descarga ${asignatura} en el día lunes. Ajusta el horario.`);
+                                            break;
+                                        case '2':
+                                            alert(`Solapamiento detectado para asignatura de descarga ${asignatura} en el día martes. Ajusta el horario.`);
+                                            break;
+                                        case '3':
+                                            alert(`Solapamiento detectado para asignatura de descarga ${asignatura} en el día miercoles. Ajusta el horario.`);
+                                            break;
+                                        case '4':
+                                            alert(`Solapamiento detectado para asignatura de descarga ${asignatura} en el día jueves. Ajusta el horario.`);
+                                            break;
+                                        case '5':
+                                            alert(`Solapamiento detectado para asignatura de descarga ${asignatura} en el día viernes. Ajusta el horario.`);
+                                            break;
+                                        case '6':
+                                            alert(`Solapamiento detectado para asignatura de descarga ${asignatura} en el día sabado. Ajusta el horario.`);
+                                            break;
+                                    }
+                                    
                                 case 'C':
-                                    alert(`Solapamiento detectado para cargo en el día ${day}. Ajusta el horario.`);
-                                    break;
+                                    switch (day){
+                                        case '1':
+                                            alert(`Solapamiento detectado para cargo en el día lunes. Ajusta el horario.`);
+                                            break;
+                                        case '2':
+                                            alert(`Solapamiento detectado para cargo en el día martes. Ajusta el horario.`);
+                                            break;
+                                        case '3':
+                                            alert(`Solapamiento detectado para cargo en el día miercoles. Ajusta el horario.`);
+                                            break;
+                                        case '4':
+                                            alert(`Solapamiento detectado para cargo en el día jueves. Ajusta el horario.`);
+                                            break;
+                                        case '5':
+                                            alert(`Solapamiento detectado para cargo en el día viernes. Ajusta el horario.`);
+                                            break;
+                                        case '6':
+                                            alert(`Solapamiento detectado para cargo en el día sabado. Ajusta el horario.`);
+                                            break;
+
+                                    }
 
                             }
                             return false;
@@ -984,37 +1041,4 @@ document.addEventListener("DOMContentLoaded", function() {
             validateWeeklyHours();
         });
     });
-});
-
-// EXPORTACION DE ASIGNACION ACADEMICA
-// Cargar la lista de profesores
-document.getElementById('load-professors').addEventListener('click', function() {
-    fetch('/profesores/json')
-        .then(response => response.json())
-        .then(profesores => {
-            const container = document.getElementById('professor-list-container');
-            container.innerHTML = ''; // Limpiar la lista existente
-
-            profesores.forEach(profesor => {
-                // Crear cada elemento de la lista
-                const div = document.createElement('div');
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.name = 'profesor_ids';
-                checkbox.value = profesor._id;
-
-                const label = document.createElement('label');
-                label.textContent = profesor.nombre;
-
-                div.appendChild(checkbox);
-                div.appendChild(label);
-                container.appendChild(div);
-            });
-        });
-});
-
-// Seleccionar todos los profesores
-document.getElementById('select-all').addEventListener('click', function() {
-    const checkboxes = document.querySelectorAll("input[name='profesor_ids']");
-    checkboxes.forEach(checkbox => checkbox.checked = true);
 });
