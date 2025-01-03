@@ -123,6 +123,41 @@ def export_selected():
             sheet[f"I{row}"] = f"{profesor.get(f'hora_inicio{j}5', '')} - {profesor.get(f'hora_fin{j}5', '')}"
             sheet[f"J{row}"] = f"{profesor.get(f'hora_inicio{j}6', '')} - {profesor.get(f'hora_fin{j}6', '')}"
 
+        # Total horas grupo
+        sheet["D23"] = profesor.get("total_horas_grupo", 0)
+
+        # Asignaturas especiales y horarios
+        for j in range(1, 9):
+            row = 25 + j
+            sheet[f"B{row}"] = profesor.get(f"asignaturaE{j}", "")
+            sheet[f"C{row}"] = profesor.get(f"grupoE{j}", "")
+            sheet[f"D{row}"] = profesor.get(f"horasE{j}", 0)
+            sheet[f"E{row}"] = f"{profesor.get(f'hora_inicioE{j}1', '')} - {profesor.get(f'hora_finE{j}1', '')}"
+            sheet[f"F{row}"] = f"{profesor.get(f'hora_inicioE{j}2', '')} - {profesor.get(f'hora_finE{j}2', '')}"
+            sheet[f"G{row}"] = f"{profesor.get(f'hora_inicioE{j}3', '')} - {profesor.get(f'hora_finE{j}3', '')}"
+            sheet[f"H{row}"] = f"{profesor.get(f'hora_inicioE{j}4', '')} - {profesor.get(f'hora_finE{j}4', '')}"
+            sheet[f"I{row}"] = f"{profesor.get(f'hora_inicioE{j}5', '')} - {profesor.get(f'hora_finE{j}5', '')}"
+            sheet[f"J{row}"] = f"{profesor.get(f'hora_inicioE{j}6', '')} - {profesor.get(f'hora_finE{j}6', '')}"
+
+        # Total horas grupo especial
+        sheet["D34"] = profesor.get("total_horasE_grupo", 0)
+
+        # Datos del cargo
+        sheet["B37"] = profesor.get("cargo", "")
+        sheet["C37"] = profesor.get("vigenciaCargo", "")
+        sheet["D37"] = profesor.get("horasC", 0)
+
+        # Horarios del cargo
+        sheet["E37"] = f"{profesor.get('hora_inicioC11', '')} - {profesor.get('hora_finC11', '')}"
+        sheet["F37"] = f"{profesor.get('hora_inicioC12', '')} - {profesor.get('hora_finC12', '')}"
+        sheet["G37"] = f"{profesor.get('hora_inicioC13', '')} - {profesor.get('hora_finC13', '')}"
+        sheet["H37"] = f"{profesor.get('hora_inicioC14', '')} - {profesor.get('hora_finC14', '')}"
+        sheet["I37"] = f"{profesor.get('hora_inicioC15', '')} - {profesor.get('hora_finC15', '')}"
+        sheet["J37"] = f"{profesor.get('hora_inicioC16', '')} - {profesor.get('hora_finC16', '')}"
+
+        # Total horas generales
+        sheet["D39"] = profesor.get("total_horas", 0)
+
     # Eliminar las hojas no utilizadas
     for i in range(len(selected_profesores), len(workbook.sheetnames)):
         del workbook[workbook.sheetnames[-1]]
