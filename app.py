@@ -14,6 +14,7 @@ from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, 
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib import colors
 from reportlab.lib.units import inch
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -87,6 +88,13 @@ def get_profesores_json():
 @app.route('/export-selected', methods=['POST'])
 def export_selected():
     profesor_ids = request.form.getlist('profesor_ids')
+    fecha_aplicacion = request.form.get('fechaAplicacion', '')
+    consecutivo = request.form.get('consecutivo', '')
+
+    # Formatear la fecha de aplicación a DD/MM/YYYY
+    if fecha_aplicacion:
+        fecha_aplicacion = datetime.strptime(fecha_aplicacion, "%Y-%m-%d").strftime("%d/%m/%Y")
+
     selected_profesores = [profesores.find_one({'_id': ObjectId(profesor_id)}) for profesor_id in profesor_ids]
 
     # Ruta de la plantilla con 32 hojas
@@ -110,7 +118,16 @@ def export_selected():
         sheet["H11"] = profesor.get("horas_b", 0)
         sheet["J11"] = profesor.get("total_horas", 0)
 
-        # Mapear asignaturas y horarios
+        # Llenar las celdas de fecha de aplicación y consecutivo
+        sheet["G40"] = fecha_aplicacion
+        sheet["G41"] = consecutivo
+        
+        sheet["G44"] = profesor.get("nombre", "")
+
+        # Total horas grupo
+        sheet["D23"] = profesor.get("total_horas_grupo", 0)
+
+        # Asignaturas y horarios
         for j in range(1, 9):
             row = 14 + j
             sheet[f"B{row}"] = profesor.get(f"asignatura{j}", "")
@@ -123,8 +140,14 @@ def export_selected():
             sheet[f"I{row}"] = f"{profesor.get(f'hora_inicio{j}5', '')} - {profesor.get(f'hora_fin{j}5', '')}"
             sheet[f"J{row}"] = f"{profesor.get(f'hora_inicio{j}6', '')} - {profesor.get(f'hora_fin{j}6', '')}"
 
-        # Total horas grupo
-        sheet["D23"] = profesor.get("total_horas_grupo", 0)
+        # Llenar las celdas A15-A22 basándose en C15-C22
+        for row in range(15, 23):
+            grupo = sheet[f"C{row}"].value
+            if grupo:
+                if str(grupo).startswith("1"):
+                    sheet[f"A{row}"] = "INDUSTRIAL"
+                elif str(grupo).startswith("4"):
+                    sheet[f"A{row}"] = "SISTEMAS COMPUTACIONALES"
 
         # Asignaturas especiales y horarios
         for j in range(1, 9):

@@ -1024,11 +1024,16 @@
         <button id="load-professors">Cargar Profesores</button>
         <button id="select-all">Seleccionar Todos</button>
 
-        <!-- Formulario para exportar profesores seleccionados -->
+        <!-- Formulario emergente para solicitar FECHA DE APLICACIÓN y CONSECUTIVO -->
         <form id="export-selected-form" method="POST" action="/export-selected">
             <div id="professor-list-container">
                 <!-- Lista dinámica de profesores cargada desde el servidor -->
             </div>
+            <br><br>
+            <label for="fechaAplicacion">Fecha de Aplicación:</label>
+            <input type="date" id="fechaAplicacion" name="fechaAplicacion" required>
+            <label for="consecutivo">Consecutivo:</label>
+            <input type="text" id="consecutivo" name="consecutivo" required>
             <button type="submit">Exportar Selección</button>
         </form>
     </div>
