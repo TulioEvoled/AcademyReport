@@ -7,9 +7,13 @@ import xlsxwriter
 import pdfkit
 from io import StringIO
 import openpyxl
+import win32com.client
+import os
+import pythoncom
 
 #IMPORTS PDF INICIO
-from reportlab.lib.pagesizes import letter
+from reportlab.lib.pagesizes import letter, landscape
+from reportlab.pdfgen import canvas
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib import colors
@@ -196,6 +200,148 @@ def export_selected():
         as_attachment=True,
         download_name="Reporte_Profesores_Dinamico.xlsx",
         mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+
+# Función para convertir Excel a PDF usando win32com
+def excel_to_pdf(input_excel_path, output_pdf_path):
+    pythoncom.CoInitialize()  # Inicializa el entorno COM
+    try:
+        excel = win32com.client.Dispatch("Excel.Application")
+        excel.Visible = False  # Ejecutar Excel en segundo plano
+
+        workbook = excel.Workbooks.Open(os.path.abspath(input_excel_path))
+        workbook.ExportAsFixedFormat(0, os.path.abspath(output_pdf_path))
+        workbook.Close(False)
+        excel.Quit()
+    finally:
+        pythoncom.CoUninitialize()  # Liberar el entorno COM
+
+# Ruta para exportar los profesores seleccionados en PDF
+@app.route('/export-selected-pdf', methods=['POST'])
+def export_selected_pdf():
+    profesor_ids = request.form.getlist('profesor_ids')
+    print("Profesores seleccionados:", profesor_ids)  # Verificar si se reciben los IDs correctamente
+
+    if not profesor_ids:
+        return "Error: No se recibieron IDs de profesores", 400
+    
+    fecha_aplicacion = request.form.get('fechaAplicacion', '')
+    consecutivo = request.form.get('consecutivo', '')
+
+    # Formatear la fecha de aplicación a DD/MM/YYYY
+    if fecha_aplicacion:
+        fecha_aplicacion = datetime.strptime(fecha_aplicacion, "%Y-%m-%d").strftime("%d/%m/%Y")
+
+    selected_profesores = [profesores.find_one({'_id': ObjectId(profesor_id)}) for profesor_id in profesor_ids]
+
+    # Ruta de la plantilla con 32 hojas
+    template_path = "static/src/Plantilla_pie_reducido_1cm.xlsx"  # Cambia esta ruta si es necesario
+    workbook = openpyxl.load_workbook(template_path)
+
+    # Llenar las hojas necesarias con los datos seleccionados
+    for i, profesor in enumerate(selected_profesores):
+        if i >= len(workbook.sheetnames):  # Evitar exceder el número de hojas disponibles
+            break
+        sheet = workbook[workbook.sheetnames[i]]
+
+        # Mapear datos en la hoja
+        sheet["A7"] = profesor.get("nombre", "")
+        sheet["E7"] = profesor.get("profesion", "")
+        sheet["A9"] = profesor.get("adscripcion", "")
+        sheet["E9"] = profesor.get("fecha_ingreso", "")
+        sheet["H9"] = profesor.get("tiempo_indeterminado", "")
+        sheet["A11"] = profesor.get("periodo_actual", "")
+        sheet["F11"] = profesor.get("horas_a", 0)
+        sheet["H11"] = profesor.get("horas_b", 0)
+        sheet["J11"] = profesor.get("total_horas", 0)
+
+        # Llenar las celdas de fecha de aplicación y consecutivo
+        sheet["G40"] = fecha_aplicacion
+        sheet["G41"] = consecutivo
+        
+        sheet["G44"] = profesor.get("nombre", "")
+
+        # Total horas grupo
+        sheet["D23"] = profesor.get("total_horas_grupo", 0)
+
+        # Asignaturas y horarios
+        for j in range(1, 9):
+            row = 14 + j
+            sheet[f"B{row}"] = profesor.get(f"asignatura{j}", "")
+            sheet[f"C{row}"] = profesor.get(f"grupo{j}", "")
+            sheet[f"D{row}"] = profesor.get(f"horas{j}", 0)
+            sheet[f"E{row}"] = f"{profesor.get(f'hora_inicio{j}1', '')} {profesor.get(f'hora_fin{j}1', '')}"
+            sheet[f"F{row}"] = f"{profesor.get(f'hora_inicio{j}2', '')} {profesor.get(f'hora_fin{j}2', '')}"
+            sheet[f"G{row}"] = f"{profesor.get(f'hora_inicio{j}3', '')} {profesor.get(f'hora_fin{j}3', '')}"
+            sheet[f"H{row}"] = f"{profesor.get(f'hora_inicio{j}4', '')} {profesor.get(f'hora_fin{j}4', '')}"
+            sheet[f"I{row}"] = f"{profesor.get(f'hora_inicio{j}5', '')} {profesor.get(f'hora_fin{j}5', '')}"
+            sheet[f"J{row}"] = f"{profesor.get(f'hora_inicio{j}6', '')} {profesor.get(f'hora_fin{j}6', '')}"
+
+        # Llenar las celdas A15-A22 basándose en C15-C22
+        for row in range(15, 23):
+            grupo = sheet[f"C{row}"].value
+            if grupo:
+                if str(grupo).startswith("1"):
+                    sheet[f"A{row}"] = "INDUSTRIAL"
+                elif str(grupo).startswith("4"):
+                    sheet[f"A{row}"] = "SISTEMAS COMPUTACIONALES"
+
+        # Asignaturas especiales y horarios
+        for j in range(1, 9):
+            row = 25 + j
+            sheet[f"B{row}"] = profesor.get(f"asignaturaE{j}", "")
+            sheet[f"C{row}"] = profesor.get(f"grupoE{j}", "")
+            sheet[f"D{row}"] = profesor.get(f"horasE{j}", 0)
+            sheet[f"E{row}"] = f"{profesor.get(f'hora_inicioE{j}1', '')} {profesor.get(f'hora_finE{j}1', '')}"
+            sheet[f"F{row}"] = f"{profesor.get(f'hora_inicioE{j}2', '')} {profesor.get(f'hora_finE{j}2', '')}"
+            sheet[f"G{row}"] = f"{profesor.get(f'hora_inicioE{j}3', '')} {profesor.get(f'hora_finE{j}3', '')}"
+            sheet[f"H{row}"] = f"{profesor.get(f'hora_inicioE{j}4', '')} {profesor.get(f'hora_finE{j}4', '')}"
+            sheet[f"I{row}"] = f"{profesor.get(f'hora_inicioE{j}5', '')} {profesor.get(f'hora_finE{j}5', '')}"
+            sheet[f"J{row}"] = f"{profesor.get(f'hora_inicioE{j}6', '')} {profesor.get(f'hora_finE{j}6', '')}"
+
+        # Total horas grupo especial
+        sheet["D34"] = profesor.get("total_horasE_grupo", 0)
+
+        # Datos del cargo
+        sheet["B37"] = profesor.get("cargo", "")
+        sheet["C37"] = profesor.get("vigenciaCargo", "")
+        sheet["D37"] = profesor.get("horasC", 0)
+
+        # Horarios del cargo
+        sheet["E37"] = f"{profesor.get('hora_inicioC11', '')} {profesor.get('hora_finC11', '')}"
+        sheet["F37"] = f"{profesor.get('hora_inicioC12', '')} {profesor.get('hora_finC12', '')}"
+        sheet["G37"] = f"{profesor.get('hora_inicioC13', '')} {profesor.get('hora_finC13', '')}"
+        sheet["H37"] = f"{profesor.get('hora_inicioC14', '')} {profesor.get('hora_finC14', '')}"
+        sheet["I37"] = f"{profesor.get('hora_inicioC15', '')} {profesor.get('hora_finC15', '')}"
+        sheet["J37"] = f"{profesor.get('hora_inicioC16', '')} {profesor.get('hora_finC16', '')}"
+
+        # Total horas generales
+        sheet["D39"] = profesor.get("total_horas", 0)
+
+    # Asegurar que al menos una hoja quede visible antes de eliminar
+    if len(workbook.sheetnames) > len(selected_profesores):
+        for i in range(len(selected_profesores), len(workbook.sheetnames)):
+            if len(workbook.sheetnames) > 1:
+                del workbook[workbook.sheetnames[-1]]
+
+    # Asegurar que la última hoja es visible y activa
+    workbook.active = 0
+
+    # Guardar el archivo Excel temporalmente para la conversión a PDF
+    temp_excel_path = "temp_reporte.xlsx"
+    workbook.save(temp_excel_path)
+    workbook.close()
+
+    # Convertir el archivo Excel a PDF
+    pdf_path = "Reporte_Profesores.pdf"
+    excel_to_pdf(temp_excel_path, pdf_path)
+
+    # Enviar el archivo PDF como respuesta
+    return send_file(
+        pdf_path,
+        as_attachment=True,
+        download_name="Reporte_Profesores.pdf",
+        mimetype="application/pdf"
     )
 
 # Rutas CRUD para asignaturas

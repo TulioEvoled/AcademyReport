@@ -1036,6 +1036,19 @@
             <input type="text" id="consecutivo" name="consecutivo" required>
             <button type="submit">Exportar Selección</button>
         </form>
+
+        <!-- Botón para exportar a PDF -->
+        <form id="export-pdf-form" method="POST" action="/export-selected-pdf">
+            <div id="professor-list-container-pdf">
+                <!-- Lista dinámica de profesores cargada desde el servidor -->
+            </div>
+            <br><br>
+            <label for="fechaAplicacionPdf">Fecha de Aplicación:</label>
+            <input type="date" id="fechaAplicacionPdf" name="fechaAplicacion" required>
+            <label for="consecutivoPdf">Consecutivo:</label>
+            <input type="text" id="consecutivoPdf" name="consecutivo" required>
+            <button type="submit">Exportar PDF</button>
+        </form>
     </div>
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 </body>
