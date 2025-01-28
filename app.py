@@ -102,7 +102,7 @@ def export_selected():
     selected_profesores = [profesores.find_one({'_id': ObjectId(profesor_id)}) for profesor_id in profesor_ids]
 
     # Ruta de la plantilla con 32 hojas
-    template_path = "static/src/Plantilla_pie_reducido_1cm.xlsx"  # Cambia esta ruta si es necesario
+    template_path = "static/src/Plantilla_pie_reducido_2cm.xlsx"  # Cambia esta ruta si es necesario
     workbook = openpyxl.load_workbook(template_path)
 
     # Llenar las hojas necesarias con los datos seleccionados
@@ -127,6 +127,9 @@ def export_selected():
         sheet["G41"] = consecutivo
         
         sheet["G44"] = profesor.get("nombre", "")
+        # Jefa de Division 
+        sheet["A43"] = "JEFA DE DIVISIÓN DE ING. INDUSTRIAL"
+        sheet["A46"] = "M. EN R.I. VIANCA LISSETH PEREZ CRUZ"
 
         # Total horas grupo
         sheet["D23"] = profesor.get("total_horas_grupo", 0)
@@ -206,10 +209,22 @@ def export_selected():
 def excel_to_pdf(input_excel_path, output_pdf_path):
     pythoncom.CoInitialize()  # Inicializa el entorno COM
     try:
+        
         excel = win32com.client.Dispatch("Excel.Application")
         excel.Visible = False  # Ejecutar Excel en segundo plano
 
         workbook = excel.Workbooks.Open(os.path.abspath(input_excel_path))
+        
+        # Iterar por todas las hojas y deshabilitar encabezados/pies de página
+        for sheet in workbook.Sheets:
+            sheet.PageSetup.CenterFooter = ""  # Elimina el pie de página central
+            sheet.PageSetup.LeftFooter = ""    # Elimina el pie de página izquierdo
+            sheet.PageSetup.RightFooter = ""   # Elimina el pie de página derecho
+            sheet.PageSetup.CenterHeader = ""  # Elimina el encabezado central
+            sheet.PageSetup.LeftHeader = ""    # Elimina el encabezado izquierdo
+            sheet.PageSetup.RightHeader = ""   # Elimina el encabezado derecho
+        
+        # Exportar como PDF sin encabezado ni pie de página
         workbook.ExportAsFixedFormat(0, os.path.abspath(output_pdf_path))
         workbook.Close(False)
         excel.Quit()
@@ -235,7 +250,7 @@ def export_selected_pdf():
     selected_profesores = [profesores.find_one({'_id': ObjectId(profesor_id)}) for profesor_id in profesor_ids]
 
     # Ruta de la plantilla con 32 hojas
-    template_path = "static/src/Plantilla_pie_reducido_1cm.xlsx"  # Cambia esta ruta si es necesario
+    template_path = "static/src/Plantilla_pie_reducido_2cm.xlsx"  # Cambia esta ruta si es necesario
     workbook = openpyxl.load_workbook(template_path)
 
     # Llenar las hojas necesarias con los datos seleccionados
@@ -260,6 +275,9 @@ def export_selected_pdf():
         sheet["G41"] = consecutivo
         
         sheet["G44"] = profesor.get("nombre", "")
+        # Jefa de Division 
+        sheet["A43"] = "JEFA DE DIVISIÓN DE ING. INDUSTRIAL"
+        sheet["A46"] = "M. EN R.I. VIANCA LISSETH PEREZ CRUZ"
 
         # Total horas grupo
         sheet["D23"] = profesor.get("total_horas_grupo", 0)
@@ -318,14 +336,9 @@ def export_selected_pdf():
         # Total horas generales
         sheet["D39"] = profesor.get("total_horas", 0)
 
-    # Asegurar que al menos una hoja quede visible antes de eliminar
-    if len(workbook.sheetnames) > len(selected_profesores):
-        for i in range(len(selected_profesores), len(workbook.sheetnames)):
-            if len(workbook.sheetnames) > 1:
-                del workbook[workbook.sheetnames[-1]]
-
-    # Asegurar que la última hoja es visible y activa
-    workbook.active = 0
+    # Eliminar las hojas no utilizadas
+    for i in range(len(selected_profesores), len(workbook.sheetnames)):
+        del workbook[workbook.sheetnames[-1]]
 
     # Guardar el archivo Excel temporalmente para la conversión a PDF
     temp_excel_path = "temp_reporte.xlsx"
