@@ -3,21 +3,12 @@ from pymongo import MongoClient
 from bson import ObjectId
 import pandas as pd
 from io import BytesIO
-import xlsxwriter
-import pdfkit
 from io import StringIO
 import openpyxl
+from openpyxl.drawing.image import Image
 import win32com.client
 import os
 import pythoncom
-
-#IMPORTS PDF INICIO
-from reportlab.lib.pagesizes import letter, landscape
-from reportlab.pdfgen import canvas
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
-from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.lib import colors
-from reportlab.lib.units import inch
 from datetime import datetime
 
 app = Flask(__name__)
@@ -105,11 +96,19 @@ def export_selected():
     template_path = "static/src/Plantilla_pie_reducido_2cm.xlsx"  # Cambia esta ruta si es necesario
     workbook = openpyxl.load_workbook(template_path)
 
+    # Cargar imágenes
+    header_image = Image("static/src/Encabezado1.PNG")
+    footer_image = Image("static/src/PieDePagina1.PNG")
+
     # Llenar las hojas necesarias con los datos seleccionados
     for i, profesor in enumerate(selected_profesores):
         if i >= len(workbook.sheetnames):  # Evitar exceder el número de hojas disponibles
             break
         sheet = workbook[workbook.sheetnames[i]]
+
+        # Insertar imágenes en encabezado y pie de página
+        sheet.add_image(header_image, "A1")
+        sheet.add_image(footer_image, "A54")
 
         # Mapear datos en la hoja
         sheet["A7"] = profesor.get("nombre", "")
@@ -253,11 +252,19 @@ def export_selected_pdf():
     template_path = "static/src/Plantilla_pie_reducido_2cm.xlsx"  # Cambia esta ruta si es necesario
     workbook = openpyxl.load_workbook(template_path)
 
+    # Cargar imágenes
+    header_image = Image("static/src/Encabezado1.PNG")
+    footer_image = Image("static/src/PieDePagina1.PNG")
+
     # Llenar las hojas necesarias con los datos seleccionados
     for i, profesor in enumerate(selected_profesores):
         if i >= len(workbook.sheetnames):  # Evitar exceder el número de hojas disponibles
             break
         sheet = workbook[workbook.sheetnames[i]]
+
+        #Insertar imagenes en encabezado y pie de pagina
+        sheet.add_image(header_image, "A1")
+        sheet.add_image(footer_image, "A54")
 
         # Mapear datos en la hoja
         sheet["A7"] = profesor.get("nombre", "")
@@ -642,15 +649,10 @@ def index():
 def principal():
     return render_template('principal.html')
 
-
-#RUTA PDF INICIO
-
-# Ruta para previsualizar exportacion
-@app.route('/reporte.html')
-def reporte():
-    return render_template('reporte.html')
-
-#RUTA PDF FIN
+# Rutas para reporteador
+@app.route('/reporteador')
+def reporteador():
+    return render_template('exportar.html')
 
 if __name__ == '__main__':
     app.run(debug=True)

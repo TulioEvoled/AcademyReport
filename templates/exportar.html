@@ -4,184 +4,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reporte de Profesores</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-
-        .header-container {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .header-container img {
-            height: 60px;
-        }
-
-        .header-container h2 {
-            margin: 0;
-        }
-
-        .header-container p {
-            margin: 5px 0;
-        }
-
-        .profesor-section {
-            margin-bottom: 20px;
-        }
-
-        h3,
-        h4 {
-            margin: 10px 0;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-
-        th,
-        td {
-            border: 1px solid #000;
-            padding: 8px;
-            text-align: center;
-        }
-
-        th {
-            background-color: #f2f2f2;
-        }
-
-        .inner-table {
-            width: 100%;
-            margin: 10px 0;
-        }
-
-        .inner-table th,
-        .inner-table td {
-            text-align: left;
-            padding: 5px;
-        }
-    </style>
+    <title>Gestión de Tecnológico</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
 </head>
 
 <body>
     <div class="header-container">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <img src="logo_izquierdo.png" alt="Logo 1" style="height: 60px;">
-            <h2>Asignación Académica</h2>
-            <img src="logo_derecho.png" alt="Logo 2" style="height: 60px;">
+        <h1 class="titulo">Bienvenido</h1>
+        <!-- Aquí se coloca el contenedor para los botones -->
+        <div class="botones-container">
+            <button data-url="{{ url_for('get_all_profesores') }}">Editar plantilla</button>
+            <button onclick="window.location.href='/';">Volver</button>
         </div>
-        <p>Año del Bicentenario de la Entrada del Ejército Trigarante a México</p>
     </div>
 
-    <div class="profesor-section">
-        <h3>Profesor: {{ profesor['nombre'] }}</h3>
-        <p>Profesión: {{ profesor['profesion'] }}</p>
-        <p>Adscripción: {{ profesor['adscripcion'] }}</p>
-        <p>Fecha de Ingreso: {{ profesor['fecha_ingreso'] }}</p>
-        <p>Periodo Actual: {{ profesor['periodo_actual'] }}</p>
+    <!-- FORMULARIO PARA PROFESORES -->
+    <div>
+        <form id="add-profesor-form" onsubmit="transformarMayusculas()">
+        </form>
+    </div>
+    <!-- FORMULARIO DE ASIGNATURAS -->
+    <div>
+        <form id="add-asignatura-form" onsubmit="transformarMayusculas()">
+        </form>
+    </div>
+    <!-- FORMULARIO DE ASIGNATURAS ESPECIALES -->
+    <div>
+        <form id="add-asignaturaE-form" onsubmit="transformarMayusculas()">
+        </form>
     </div>
 
-    <h4>Asignación de Horas Frente a Grupo</h4>
-    <table>
-        <thead>
-            <tr>
-                <th>Asignatura</th>
-                <th>Grupo</th>
-                <th>Horas</th>
-                <th>Lunes</th>
-                <th>Martes</th>
-                <th>Miércoles</th>
-                <th>Jueves</th>
-                <th>Viernes</th>
-                <th>Sábado</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for i in range(1, 9) %}
-            <tr>
-                <td>{{ profesor['asignatura' ~ i] }}</td>
-                <td>{{ profesor['grupo' ~ i] }}</td>
-                <td>{{ profesor['horas' ~ i] }}</td>
-                <td>{{ profesor['hora_inicio' ~ i ~ '1'] }} - {{ profesor['hora_fin' ~ i ~ '1'] }}</td>
-                <td>{{ profesor['hora_inicio' ~ i ~ '2'] }} - {{ profesor['hora_fin' ~ i ~ '2'] }}</td>
-                <td>{{ profesor['hora_inicio' ~ i ~ '3'] }} - {{ profesor['hora_fin' ~ i ~ '3'] }}</td>
-                <td>{{ profesor['hora_inicio' ~ i ~ '4'] }} - {{ profesor['hora_fin' ~ i ~ '4'] }}</td>
-                <td>{{ profesor['hora_inicio' ~ i ~ '5'] }} - {{ profesor['hora_fin' ~ i ~ '5'] }}</td>
-                <td>{{ profesor['hora_inicio' ~ i ~ '6'] }} - {{ profesor['hora_fin' ~ i ~ '6'] }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
 
-    <h4>Asignación de Horas de Descarga para Otras Actividades</h4>
-    <table>
-        <thead>
-            <tr>
-                <th>Asignatura</th>
-                <th>Grupo</th>
-                <th>Horas</th>
-                <th>Lunes</th>
-                <th>Martes</th>
-                <th>Miércoles</th>
-                <th>Jueves</th>
-                <th>Viernes</th>
-                <th>Sábado</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for i in range(1, 9) %}
-            <tr>
-                <td>{{ profesor['asignaturaE' ~ i] }}</td>
-                <td>{{ profesor['grupoE' ~ i] }}</td>
-                <td>{{ profesor['horasE' ~ i] }}</td>
-                <td>{{ profesor['hora_inicioE' ~ i ~ '1'] }} - {{ profesor['hora_finE' ~ i ~ '1'] }}</td>
-                <td>{{ profesor['hora_inicioE' ~ i ~ '2'] }} - {{ profesor['hora_finE' ~ i ~ '2'] }}</td>
-                <td>{{ profesor['hora_inicioE' ~ i ~ '3'] }} - {{ profesor['hora_finE' ~ i ~ '3'] }}</td>
-                <td>{{ profesor['hora_inicioE' ~ i ~ '4'] }} - {{ profesor['hora_finE' ~ i ~ '4'] }}</td>
-                <td>{{ profesor['hora_inicioE' ~ i ~ '5'] }} - {{ profesor['hora_finE' ~ i ~ '5'] }}</td>
-                <td>{{ profesor['hora_inicioE' ~ i ~ '6'] }} - {{ profesor['hora_finE' ~ i ~ '6'] }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div>
+        <!-- EXPORTACION DE EXCEL -->
 
-    <h4>Cargo</h4>
-    <table>
-        <thead>
-            <tr>
-                <th>Cargo</th>
-                <th>Vigencia</th>
-                <th>Horas</th>
-                <th>Lunes</th>
-                <th>Martes</th>
-                <th>Miércoles</th>
-                <th>Jueves</th>
-                <th>Viernes</th>
-                <th>Sábado</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>{{ profesor['cargo'] }}</td>
-                <td>{{ profesor['vigenciaCargo'] }}</td>
-                <td>{{ profesor['horasC'] }}</td>
-                <td>{{ profesor['hora_inicioC11'] }} - {{ profesor['hora_finC11'] }}</td>
-                <td>{{ profesor['hora_inicioC12'] }} - {{ profesor['hora_finC12'] }}</td>
-                <td>{{ profesor['hora_inicioC13'] }} - {{ profesor['hora_finC13'] }}</td>
-                <td>{{ profesor['hora_inicioC14'] }} - {{ profesor['hora_finC14'] }}</td>
-                <td>{{ profesor['hora_inicioC15'] }} - {{ profesor['hora_finC15'] }}</td>
-                <td>{{ profesor['hora_inicioC16'] }} - {{ profesor['hora_finC16'] }}</td>
-            </tr>
-        </tbody>
-    </table>
+        <h2>Exportar</h2>
+        <form id="export-form" method="POST" action="/export">
+            <label for="collection">Colección:</label>
+            <select id="collection" name="collection" required>
+                <option value=""></option>
+                <option value="profesores">Profesores</option>
+                <option value="asignaturas">Asignaturas</option>
+            </select><br>
 
-    <div style="text-align: right; margin-top: 20px;">
-        <p>Firma del Profesor: _________________________</p>
+            <label for="export-format">Formato:</label>
+            <select id="export-format" name="format" required>
+            <option value="xlsx">Excel (.xlsx)</option>
+            <option value="csv">CSV (.csv)</option>
+        </select><br>
+
+            <div id="columns-container">
+                <!-- Checkboxes will be generated here -->
+            </div>
+
+            <button type="submit">Exportar Datos</button>
+
+        </form>
     </div>
+
+    <div>
+        <h2>Exportar Reporte de Profesores</h2>
+        <!-- Botones para cargar y seleccionar -->
+        <button id="load-professors">Cargar Profesores</button>
+        <button id="select-all">Seleccionar Todos</button>
+
+        <!-- Formulario emergente para solicitar FECHA DE APLICACIÓN y CONSECUTIVO -->
+        <form id="export-selected-form" method="POST" action="/export-selected">
+            <div id="professor-list-container">
+                <!-- Lista dinámica de profesores cargada desde el servidor -->
+            </div>
+            <br><br>
+            <label for="fechaAplicacion">Fecha de Aplicación:</label>
+            <input type="date" id="fechaAplicacion" name="fechaAplicacion" required>
+            <label for="consecutivo">Consecutivo:</label>
+            <input type="text" id="consecutivo" name="consecutivo" required>
+            <button type="submit">Exportar Excel</button>
+        </form>
+
+        <!-- Botón para exportar a PDF -->
+        <form id="export-pdf-form" method="POST" action="/export-selected-pdf">
+            <div id="professor-list-container-pdf">
+                <!-- Lista dinámica de profesores cargada desde el servidor -->
+            </div>
+            <br><br>
+            <label for="fechaAplicacionPdf">Fecha de Aplicación:</label>
+            <input type="date" id="fechaAplicacionPdf" name="fechaAplicacion" required>
+            <label for="consecutivoPdf">Consecutivo:</label>
+            <input type="text" id="consecutivoPdf" name="consecutivo" required>
+            <button type="submit">Exportar PDF</button>
+        </form>
+    </div>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 </body>
 
 </html>
