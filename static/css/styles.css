@@ -52,12 +52,14 @@ select:focus {
 }
 
 .edit-button {
-    display: inline-block; /* Asegura que el enlace se comporte como un botón */
+    display: inline-block;
+    /* Asegura que el enlace se comporte como un botón */
     margin-top: 15px;
     padding: 12px 20px;
     background-color: #383b50;
     color: #fff;
-    text-decoration: none; /* Quita el subrayado */
+    text-decoration: none;
+    /* Quita el subrayado */
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -66,15 +68,18 @@ select:focus {
 }
 
 .edit-button:hover {
-    background-color: #505a68; /* Color más suave para hover */
-    transform: translateY(-2px); /* Efecto sutil de elevación */
+    background-color: #505a68;
+    /* Color más suave para hover */
+    transform: translateY(-2px);
+    /* Efecto sutil de elevación */
 }
 
 .edit-button:active {
-    background-color: #2d323d; /* Color más oscuro cuando se presiona */
-    transform: translateY(0); /* Eliminar el efecto de elevación */
+    background-color: #2d323d;
+    /* Color más oscuro cuando se presiona */
+    transform: translateY(0);
+    /* Eliminar el efecto de elevación */
 }
-
 
 button {
     margin-top: 15px;
@@ -294,4 +299,15 @@ tr:nth-child(even) {
     /* Alinea verticalmente los elementos */
     justify-content: space-between;
     /* Distribuye los elementos, botón a la derecha */
+}
+
+
+/* Estilos para el mensaje emergente */
+
+#mensaje {
+    display: none;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 5px;
+    text-align: center;
 }

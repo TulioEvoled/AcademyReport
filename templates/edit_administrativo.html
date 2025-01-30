@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Administrativo</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+
+<body>
+    <div class="header-container3">
+        <h1>Editar Administrativo</h1>
+        <button onclick="window.location.href='/administrativos';">Volver</button>
+    </div>
+    <form id="edit-administrativo-form" onsubmit="transformarMayusculas()">
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" name="nombre" value="{{ administrativo.nombre }}" required><br>
+
+        <label for="cargo">Cargo:</label>
+        <input type="text" id="cargo" name="cargo" value="{{ administrativo.cargo }}" required><br>
+
+        <button type="submit">Guardar</button>
+    </form>
+
+    <script>
+        document.getElementById('edit-administrativo-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const id = "{{ administrativo._id }}";
+            const data = {
+                nombre: document.getElementById('nombre').value,
+                cargo: document.getElementById('cargo').value
+            };
+
+            fetch(`/administrativos/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                })
+                .then(response => response.json())
+                .then(data => alert(data.msg))
+                .catch(error => console.error('Error:', error));
+        });
+
+        function transformarMayusculas() {
+            var inputs = document.querySelectorAll('input[type="text"]');
+
+            inputs.forEach(function(input) {
+                input.value = input.value.toUpperCase();
+            });
+        }
+    </script>
+</body>
+
+</html>

@@ -18,6 +18,7 @@
             <button data-url="{{ url_for('get_all_profesores') }}">Ver Profesores</button>
             <button data-url="{{ url_for('get_all_asignaturas') }}">Ver Asignaturas</button>
             <button data-url="{{ url_for('get_all_asignaturasE') }}">Ver Asignaturas Especiales</button>
+            <button data-url="{{ url_for('get_all_administrativos') }}">Ver Administrativos</button>
             <button onclick="window.location.href='/';">Volver</button>
         </div>
     </div>
@@ -30,7 +31,7 @@
     <div>
 
         <!-- FORMULARIO PARA PROFESORES -->
-        <form id="add-profesor-form" onsubmit="transformarMayusculas()">
+        <form id="add-profesor-form">
             <label for="nombre">Nombre Completo:</label>
             <input type="text" id="nombre" name="nombre" required><br>
 
@@ -966,7 +967,7 @@
 
     <!-- FORMULARIO DE ASIGNATURAS -->
     <div>
-        <form id="add-asignatura-form" onsubmit="transformarMayusculas()">
+        <form id="add-asignatura-form">
             <label for="nombre_asignatura">Nombre:</label>
             <input type="text" id="nombre_asignatura" name="nombre_asignatura" required><br>
 
@@ -980,7 +981,7 @@
 
     <!-- FORMULARIO DE ASIGNATURAS ESPECIALES -->
     <div>
-        <form id="add-asignaturaE-form" onsubmit="transformarMayusculas()">
+        <form id="add-asignaturaE-form">
             <label for="nombre_asignaturaE">Nombre:</label>
             <input type="text" id="nombre_asignaturaE" name="nombre_asignaturaE" required><br>
 
@@ -990,12 +991,24 @@
             <button type="submit">Añadir Asignatura Especial</button>
         </form>
     </div>
+
+    <!-- FORMULARIO PARA ADMINISTRATIVOS -->
     <div>
+        <h2>Añadir Administrativo</h2>
+        <form id="add-administrativo-form">
+            <label for="nombre_administrativo">Nombre Completo:</label>
+            <input type="text" id="nombre_administrativo" name="nombre_administrativo" required><br>
 
-        <!-- EXPORTACION DE EXCEL -->
+            <label for="cargo_administrativo">Cargo:</label>
+            <input type="text" id="cargo_administrativo" name="cargo_administrativo" required><br>
 
-        <h2>Exportar</h2>
-        <form id="export-form" method="POST" action="/export">
+            <button type="submit">Añadir Administrativo</button>
+        </form>
+    </div>
+
+    <!-- EXPORTACION DE EXCEL -->
+    <div>
+        <form id="export-form" method="POST" action="/export" style="display: none;">
             <label for="collection">Colección:</label>
             <select id="collection" name="collection" required>
                 <option value=""></option>
@@ -1015,39 +1028,6 @@
 
             <button type="submit">Exportar Datos</button>
 
-        </form>
-    </div>
-
-    <div>
-        <h2>Exportar Reporte de Profesores</h2>
-        <!-- Botones para cargar y seleccionar -->
-        <button id="load-professors">Cargar Profesores</button>
-        <button id="select-all">Seleccionar Todos</button>
-
-        <!-- Formulario emergente para solicitar FECHA DE APLICACIÓN y CONSECUTIVO -->
-        <form id="export-selected-form" method="POST" action="/export-selected">
-            <div id="professor-list-container">
-                <!-- Lista dinámica de profesores cargada desde el servidor -->
-            </div>
-            <br><br>
-            <label for="fechaAplicacion">Fecha de Aplicación:</label>
-            <input type="date" id="fechaAplicacion" name="fechaAplicacion" required>
-            <label for="consecutivo">Consecutivo:</label>
-            <input type="text" id="consecutivo" name="consecutivo" required>
-            <button type="submit">Exportar Excel</button>
-        </form>
-
-        <!-- Botón para exportar a PDF -->
-        <form id="export-pdf-form" method="POST" action="/export-selected-pdf">
-            <div id="professor-list-container-pdf">
-                <!-- Lista dinámica de profesores cargada desde el servidor -->
-            </div>
-            <br><br>
-            <label for="fechaAplicacionPdf">Fecha de Aplicación:</label>
-            <input type="date" id="fechaAplicacionPdf" name="fechaAplicacion" required>
-            <label for="consecutivoPdf">Consecutivo:</label>
-            <input type="text" id="consecutivoPdf" name="consecutivo" required>
-            <button type="submit">Exportar PDF</button>
         </form>
     </div>
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>

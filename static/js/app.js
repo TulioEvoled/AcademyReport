@@ -439,6 +439,24 @@ document.getElementById('add-asignaturaE-form').addEventListener('submit', funct
         .then(data => alert(data.msg));
 });
 
+// AGREGAR ADMINISTRATIVOS
+document.getElementById('add-administrativo-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const data = {
+        nombre: document.getElementById('nombre_administrativo').value,
+        cargo: document.getElementById('cargo_administrativo').value
+    };
+
+    fetch('/administrativos', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }).then(response => response.json())
+        .then(data => alert(data.msg));
+});
+
 //EXPORTAR ARCHIVO EXCEL
 document.getElementById('export-form').addEventListener('submit', function(e) {
     e.preventDefault();
@@ -623,6 +641,22 @@ function deleteAsignaturaE(id) {
             }
         }).catch(error => {
             alert('Error al intentar eliminar la asignatura especial');
+        });
+    }
+}
+
+function deleteAdministrativo(id) {
+    if (confirm('¿Estás seguro de que deseas eliminar este administrativo?')) {
+        fetch(`/administrativos/${id}`, {
+            method: 'DELETE'
+        }).then(response => {
+            if (response.ok) {
+                window.location.reload();
+            } else {
+                alert('Error al eliminar el administrativo');
+            }
+        }).catch(error => {
+            alert('Error al intentar eliminar el administrativo');
         });
     }
 }
@@ -1080,4 +1114,54 @@ document.getElementById('load-professors').addEventListener('click', function() 
 document.getElementById('select-all').addEventListener('click', function() {
     const checkboxes = document.querySelectorAll("input[name='profesor_ids']");
     checkboxes.forEach(checkbox => checkbox.checked = true);
+});
+
+// Función para mostrar mensajes emergentes
+function mostrarMensaje(texto, esError = false) {
+    let mensaje = document.getElementById("mensaje");
+    mensaje.textContent = texto;
+    mensaje.style.display = "block";
+    mensaje.style.backgroundColor = esError ? "red" : "lightgreen";
+    mensaje.style.color = "white";
+
+    // Ocultar el mensaje después de 3 segundos
+    setTimeout(() => { mensaje.style.display = "none"; }, 3000);
+}
+
+// Manejo de la actualización de imágenes
+document.getElementById('uploadImagesForm').addEventListener('submit', function(event) {
+    event.preventDefault(); // Evitar recarga
+
+    let formData = new FormData(this);
+
+    fetch('/upload-images', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            mostrarMensaje(data.msg);
+        })
+        .catch(error => {
+            mostrarMensaje("Error en la actualización de imágenes", true);
+        });
+});
+
+// Manejo de la actualización de texto
+document.getElementById('updateTextForm').addEventListener('submit', function(event) {
+    event.preventDefault(); // Evitar recarga
+
+    let formData = new FormData(this);
+
+    fetch('/update-text', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            mostrarMensaje(data.msg, data.msg.includes("Error"));
+        })
+        .catch(error => {
+            mostrarMensaje("Error en la actualización del texto", true);
+        });
 });

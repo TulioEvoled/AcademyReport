@@ -15,7 +15,7 @@
         <h1 class="titulo">Bienvenido</h1>
         <!-- Aquí se coloca el contenedor para los botones -->
         <div class="botones-container">
-            <button data-url="{{ url_for('get_all_profesores') }}">Editar plantilla</button>
+            <button onclick="location.href='pagina1.html'">Editar plantilla</button>
             <button onclick="window.location.href='/';">Volver</button>
         </div>
     </div>
@@ -96,6 +96,36 @@
             <button type="submit">Exportar PDF</button>
         </form>
     </div>
+
+    <div>
+        <h2>Actualizar Formato</h2>
+        <form id="uploadImagesForm" action="/upload-images" method="POST" enctype="multipart/form-data">
+            <label for="header">Subir Encabezado:</label>
+            <input type="file" name="header" accept="image/*">
+            <br>
+            <label for="footer">Subir Pie de Página:</label>
+            <input type="file" name="footer" accept="image/*">
+            <br><br>
+            <button type="submit">Actualizar Imágenes</button>
+        </form>
+    </div>
+
+    <!-- Div para mostrar mensajes -->
+    <div id="mensaje"></div>
+
+    <div>
+        <h2>Actualizar Texto en Celda A4</h2>
+        <form id="updateTextForm" action="/update-text" method="POST">
+            <label for="nuevo_texto">Nuevo Texto:</label>
+            <input type="text" id="nuevo_texto" name="nuevo_texto" required>
+            <br><br>
+            <button type="submit">Actualizar Texto</button>
+        </form>
+    </div>
+
+    <!-- Div para mostrar mensajes -->
+    <div id="mensaje"></div>
+
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 </body>
 
