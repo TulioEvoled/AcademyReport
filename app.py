@@ -6,6 +6,7 @@ from io import BytesIO
 from io import StringIO
 import openpyxl
 from openpyxl.drawing.image import Image
+from openpyxl.styles import Border, Side, PatternFill, Font
 import win32com.client
 import os
 import pythoncom
@@ -30,6 +31,9 @@ grupos = ["NG","1101", "1102", "1151", "1152", "1181", "1201", "1202", "1251", "
 horarios = ["07:00", "08:00", "09:00", "10:00", "11:00", "12:00", "13:00", 
             "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", 
             "21:00"]
+
+carreras = ["INDUSTRIAL", "SISTEMAS COMPUTACIONALES", "ELECTRÓNICA",
+            "MECATRÓNICA", "INFORMÁTICA", "ADMINISTRACIÓN"]
 
 UPLOAD_FOLDER = "static/src/"
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg"}
@@ -484,6 +488,13 @@ def export_selected():
     header_image = Image("static/src/Encabezado1.PNG")
     footer_image = Image("static/src/PieDePagina1.PNG")
 
+    # Establecer borde inferior en la celda A44
+    border_bottom = Border(bottom=Side(style='thin'))
+
+    # Estilo de relleno gris oscuro y texto blanco con fuente Helvetica 7 negrita
+    dark_gray_fill = PatternFill(start_color="757171", end_color="757171", fill_type="solid")
+    white_font = Font(name="Helvetica", size=7, bold=True, color="FFFFFF")
+
     # Leer el texto de la celda A4 desde el archivo
     texto_a4_path = "static/src/texto_a4.txt"
     if os.path.exists(texto_a4_path):
@@ -491,6 +502,30 @@ def export_selected():
             texto_a4 = file.read().strip()
     else:
         texto_a4 = ""
+
+    # Obtener el nombre y cargo del encargado de dirección académica
+    encargado = administrativos.find_one({
+        'cargo': {'$in': ["ENCARGADA DEL DESPACHO DE DIRECCIÓN ACADÉMICA", "ENCARGADO DEL DESPACHO DE DIRECCIÓN ACADÉMICA"]}
+    })
+    nombre_encargado = encargado["nombre"] if encargado else ""
+    cargo_encargado = encargado["cargo"] if encargado else ""
+
+    # Obtener el nombre y cargo del encargado de dirección general
+    direccion = administrativos.find_one({
+        'cargo': {'$in': ["DIRECTORA GENERAL", "DIRECTOR GENERAL"]}
+    })
+    nombre_direccion = direccion["nombre"] if direccion else ""
+    cargo_direccion = direccion["cargo"] if direccion else ""
+
+    # Definir el mapeo de carreras a cargos administrativos
+    cargo_mapping = {
+        "INDUSTRIAL": ["JEFA DE DIVISIÓN DE ING. INDUSTRIAL", "JEFE DE DIVISIÓN DE ING. INDUSTRIAL"],
+        "ELECTRÓNICA": ["JEFA DE DIVISIÓN DE ING. ELECTRÓNICA", "JEFE DE DIVISIÓN DE ING. ELECTRÓNICA"],
+        "MECATRÓNICA": ["JEFA DE DIVISIÓN DE ING. MECATRÓNICA", "JEFE DE DIVISIÓN DE ING. MECATRÓNICA"],
+        "SISTEMAS COMPUTACIONALES": ["JEFA DE DIVISIÓN DE ING. SISTEMAS COMPUTACIONALES", "JEFE DE DIVISIÓN DE ING. SISTEMAS COMPUTACIONALES"],
+        "INFORMÁTICA": ["JEFA DE DIVISIÓN DE ING. INFORMÁTICA", "JEFE DE DIVISIÓN DE ING. INFORMÁTICA"],
+        "ADMINISTRACIÓN": ["JEFA DE DIVISIÓN DE ING. ADMINISTRACIÓN", "JEFE DE DIVISIÓN DE ING. ADMINISTRACIÓN"]
+    }
 
     # Llenar las hojas necesarias con los datos seleccionados
     for i, profesor in enumerate(selected_profesores):
@@ -504,6 +539,14 @@ def export_selected():
 
         # Actualizar el texto en la celda A4
         sheet["A4"] = texto_a4
+
+        # Insertar nombre y cargo del encargado
+        sheet["C45"] = nombre_encargado
+        sheet["C46"] = cargo_encargado
+
+        # Insertar nombre y cargo de direccion
+        sheet["C52"] = nombre_direccion
+        sheet["C53"] = cargo_direccion
 
         # Mapear datos en la hoja
         sheet["A7"] = profesor.get("nombre", "")
@@ -521,9 +564,6 @@ def export_selected():
         sheet["G41"] = consecutivo
         
         sheet["G44"] = profesor.get("nombre", "")
-        # Jefa de Division 
-        sheet["A43"] = "JEFA DE DIVISIÓN DE ING. INDUSTRIAL"
-        sheet["A46"] = "M. EN R.I. VIANCA LISSETH PEREZ CRUZ"
 
         # Total horas grupo
         sheet["D23"] = profesor.get("total_horas_grupo", 0)
@@ -553,6 +593,7 @@ def export_selected():
         # Asignaturas especiales y horarios
         for j in range(1, 9):
             row = 25 + j
+            sheet[f"A{row}"] = profesor.get(f"carreraE{j}", "")
             sheet[f"B{row}"] = profesor.get(f"asignaturaE{j}", "")
             sheet[f"C{row}"] = profesor.get(f"grupoE{j}", "")
             sheet[f"D{row}"] = profesor.get(f"horasE{j}", 0)
@@ -581,6 +622,76 @@ def export_selected():
 
         # Total horas generales
         sheet["D39"] = profesor.get("total_horas", 0)
+
+        # Obtener horas B desde la celda H11
+        horas_b = int(sheet["H11"].value) if sheet["H11"].value else 0
+
+        # Listas de celdas a evaluar para cambiar el fondo
+        horario_seccion_1 = [f"{col}{row}" for row in range(15, 23) for col in "EFGHIJ"]
+        horario_seccion_2 = [f"{col}{row}" for row in range(26, 34) for col in "EFGHIJ"]
+
+        # Contador de horas contabilizadas
+        horas_restantes = horas_b
+
+        # Función para procesar horarios y cambiar el fondo de las celdas
+        def procesar_horarios(seccion):
+            nonlocal horas_restantes
+            for celda in seccion:
+                if horas_restantes <= 0:
+                    break
+                valor = sheet[celda].value
+                if valor and " " in valor:  # Verifica si hay datos y si tiene un horario válido
+                    try:
+                        inicio, fin = valor.split(" ")
+                        horas = int(fin[:2]) - int(inicio[:2])  # Obtener la cantidad de horas
+                        if horas <= horas_restantes:
+                            sheet[celda].fill = dark_gray_fill
+                            sheet[celda].font = white_font
+                            horas_restantes -= horas
+                    except ValueError:
+                        continue  # Evita errores si el formato no es el esperado
+
+        # Aplicar la lógica a ambas secciones
+        procesar_horarios(horario_seccion_1)
+        if horas_restantes > 0:
+            procesar_horarios(horario_seccion_2)
+
+        # Obtener los valores de A15-A22 y A26-A33 sin valores vacíos
+        carreras_detectadas = sorted({sheet[f"A{row}"].value for row in range(15, 23) if sheet[f"A{row}"].value})
+        carreras_detectadas += sorted({sheet[f"A{row}"].value for row in range(26, 34) if sheet[f"A{row}"].value})
+        carreras_detectadas = list(set(carreras_detectadas))  # Eliminar duplicados
+
+        # Si hay un solo valor en carreras_detectadas
+        if len(carreras_detectadas) == 1 and carreras_detectadas[0] in cargo_mapping:
+            carrera = carreras_detectadas[0]
+            encargado = administrativos.find_one({
+                'cargo': {'$in': cargo_mapping[carrera]}
+            })
+            nombre_encargado = encargado["nombre"] if encargado else ""
+            cargo_encargado = encargado["cargo"] if encargado else ""
+            
+            # Asignar valores en las celdas
+            sheet["A43"] = cargo_encargado
+            sheet["A46"] = nombre_encargado
+        
+        # Si hay exactamente dos valores en carreras_detectadas
+        elif len(carreras_detectadas) == 2:
+            carrera1, carrera2 = carreras_detectadas
+            encargado1 = administrativos.find_one({'cargo': {'$in': cargo_mapping.get(carrera1, [])}})
+            encargado2 = administrativos.find_one({'cargo': {'$in': cargo_mapping.get(carrera2, [])}})
+
+            nombre1 = encargado1["nombre"] if encargado1 else ""
+            cargo1 = encargado1["cargo"] if encargado1 else ""
+            nombre2 = encargado2["nombre"] if encargado2 else ""
+            cargo2 = encargado2["cargo"] if encargado2 else ""
+
+            # Asignar valores en las celdas
+            sheet["A43"] = cargo1
+            sheet["A44"] = nombre1
+            sheet["A45"] = cargo2
+            sheet["A46"] = nombre2
+            sheet["A44"].border = border_bottom
+            sheet["B44"].border = border_bottom
 
     # Eliminar las hojas no utilizadas
     for i in range(len(selected_profesores), len(workbook.sheetnames)):
@@ -651,6 +762,13 @@ def export_selected_pdf():
     header_image = Image("static/src/Encabezado1.PNG")
     footer_image = Image("static/src/PieDePagina1.PNG")
 
+    # Establecer borde inferior en la celda A44
+    border_bottom = Border(bottom=Side(style='thin'))
+
+    # Estilo de relleno gris oscuro y texto blanco con fuente Helvetica 7 negrita
+    dark_gray_fill = PatternFill(start_color="757171", end_color="757171", fill_type="solid")
+    white_font = Font(name="Helvetica", size=7, bold=True, color="FFFFFF")
+
     # Leer el texto de la celda A4 desde el archivo
     texto_a4_path = "static/src/texto_a4.txt"
     if os.path.exists(texto_a4_path):
@@ -658,6 +776,30 @@ def export_selected_pdf():
             texto_a4 = file.read().strip()
     else:
         texto_a4 = ""
+
+    # Obtener el nombre y cargo del encargado de dirección académica
+    encargado = administrativos.find_one({
+        'cargo': {'$in': ["ENCARGADA DEL DESPACHO DE DIRECCIÓN ACADÉMICA", "ENCARGADO DEL DESPACHO DE DIRECCIÓN ACADÉMICA"]}
+    })
+    nombre_encargado = encargado["nombre"] if encargado else ""
+    cargo_encargado = encargado["cargo"] if encargado else ""
+
+    # Obtener el nombre y cargo del encargado de dirección general
+    direccion = administrativos.find_one({
+        'cargo': {'$in': ["DIRECTORA GENERAL", "DIRECTOR GENERAL"]}
+    })
+    nombre_direccion = direccion["nombre"] if direccion else ""
+    cargo_direccion = direccion["cargo"] if direccion else ""
+
+    # Definir el mapeo de carreras a cargos administrativos
+    cargo_mapping = {
+        "INDUSTRIAL": ["JEFA DE DIVISIÓN DE ING. INDUSTRIAL", "JEFE DE DIVISIÓN DE ING. INDUSTRIAL"],
+        "ELECTRÓNICA": ["JEFA DE DIVISIÓN DE ING. ELECTRÓNICA", "JEFE DE DIVISIÓN DE ING. ELECTRÓNICA"],
+        "MECATRÓNICA": ["JEFA DE DIVISIÓN DE ING. MECATRÓNICA", "JEFE DE DIVISIÓN DE ING. MECATRÓNICA"],
+        "SISTEMAS COMPUTACIONALES": ["JEFA DE DIVISIÓN DE ING. SISTEMAS COMPUTACIONALES", "JEFE DE DIVISIÓN DE ING. SISTEMAS COMPUTACIONALES"],
+        "INFORMÁTICA": ["JEFA DE DIVISIÓN DE ING. INFORMÁTICA", "JEFE DE DIVISIÓN DE ING. INFORMÁTICA"],
+        "ADMINISTRACIÓN": ["JEFA DE DIVISIÓN DE ING. ADMINISTRACIÓN", "JEFE DE DIVISIÓN DE ING. ADMINISTRACIÓN"]
+    }
 
     # Llenar las hojas necesarias con los datos seleccionados
     for i, profesor in enumerate(selected_profesores):
@@ -671,6 +813,14 @@ def export_selected_pdf():
 
         # Actualizar el texto en la celda A4
         sheet["A4"] = texto_a4
+
+        # Insertar nombre y cargo del encargado
+        sheet["C45"] = nombre_encargado
+        sheet["C46"] = cargo_encargado
+
+        # Insertar nombre y cargo de direccion
+        sheet["C52"] = nombre_direccion
+        sheet["C53"] = cargo_direccion
 
         # Mapear datos en la hoja
         sheet["A7"] = profesor.get("nombre", "")
@@ -688,9 +838,6 @@ def export_selected_pdf():
         sheet["G41"] = consecutivo
         
         sheet["G44"] = profesor.get("nombre", "")
-        # Jefa de Division 
-        sheet["A43"] = "JEFA DE DIVISIÓN DE ING. INDUSTRIAL"
-        sheet["A46"] = "M. EN R.I. VIANCA LISSETH PEREZ CRUZ"
 
         # Total horas grupo
         sheet["D23"] = profesor.get("total_horas_grupo", 0)
@@ -720,6 +867,7 @@ def export_selected_pdf():
         # Asignaturas especiales y horarios
         for j in range(1, 9):
             row = 25 + j
+            sheet[f"A{row}"] = profesor.get(f"carreraE{j}", "")
             sheet[f"B{row}"] = profesor.get(f"asignaturaE{j}", "")
             sheet[f"C{row}"] = profesor.get(f"grupoE{j}", "")
             sheet[f"D{row}"] = profesor.get(f"horasE{j}", 0)
@@ -748,6 +896,76 @@ def export_selected_pdf():
 
         # Total horas generales
         sheet["D39"] = profesor.get("total_horas", 0)
+
+        # Obtener horas B desde la celda H11
+        horas_b = int(sheet["H11"].value) if sheet["H11"].value else 0
+
+        # Listas de celdas a evaluar para cambiar el fondo
+        horario_seccion_1 = [f"{col}{row}" for row in range(15, 23) for col in "EFGHIJ"]
+        horario_seccion_2 = [f"{col}{row}" for row in range(26, 34) for col in "EFGHIJ"]
+
+        # Contador de horas contabilizadas
+        horas_restantes = horas_b
+
+        # Función para procesar horarios y cambiar el fondo de las celdas
+        def procesar_horarios(seccion):
+            nonlocal horas_restantes
+            for celda in seccion:
+                if horas_restantes <= 0:
+                    break
+                valor = sheet[celda].value
+                if valor and " " in valor:  # Verifica si hay datos y si tiene un horario válido
+                    try:
+                        inicio, fin = valor.split(" ")
+                        horas = int(fin[:2]) - int(inicio[:2])  # Obtener la cantidad de horas
+                        if horas <= horas_restantes:
+                            sheet[celda].fill = dark_gray_fill
+                            sheet[celda].font = white_font
+                            horas_restantes -= horas
+                    except ValueError:
+                        continue  # Evita errores si el formato no es el esperado
+
+        # Aplicar la lógica a ambas secciones
+        procesar_horarios(horario_seccion_1)
+        if horas_restantes > 0:
+            procesar_horarios(horario_seccion_2)
+
+         # Obtener los valores de A15-A22 y A26-A33 sin valores vacíos
+        carreras_detectadas = sorted({sheet[f"A{row}"].value for row in range(15, 23) if sheet[f"A{row}"].value})
+        carreras_detectadas += sorted({sheet[f"A{row}"].value for row in range(26, 34) if sheet[f"A{row}"].value})
+        carreras_detectadas = list(set(carreras_detectadas))  # Eliminar duplicados
+
+        # Si hay un solo valor en carreras_detectadas
+        if len(carreras_detectadas) == 1 and carreras_detectadas[0] in cargo_mapping:
+            carrera = carreras_detectadas[0]
+            encargado = administrativos.find_one({
+                'cargo': {'$in': cargo_mapping[carrera]}
+            })
+            nombre_encargado = encargado["nombre"] if encargado else ""
+            cargo_encargado = encargado["cargo"] if encargado else ""
+            
+            # Asignar valores en las celdas
+            sheet["A43"] = cargo_encargado
+            sheet["A46"] = nombre_encargado
+        
+        # Si hay exactamente dos valores en carreras_detectadas
+        elif len(carreras_detectadas) == 2:
+            carrera1, carrera2 = carreras_detectadas
+            encargado1 = administrativos.find_one({'cargo': {'$in': cargo_mapping.get(carrera1, [])}})
+            encargado2 = administrativos.find_one({'cargo': {'$in': cargo_mapping.get(carrera2, [])}})
+
+            nombre1 = encargado1["nombre"] if encargado1 else ""
+            cargo1 = encargado1["cargo"] if encargado1 else ""
+            nombre2 = encargado2["nombre"] if encargado2 else ""
+            cargo2 = encargado2["cargo"] if encargado2 else ""
+
+            # Asignar valores en las celdas
+            sheet["A43"] = cargo1
+            sheet["A44"] = nombre1
+            sheet["A45"] = cargo2
+            sheet["A46"] = nombre2
+            sheet["A44"].border = border_bottom
+            sheet["B44"].border = border_bottom
 
     # Eliminar las hojas no utilizadas
     for i in range(len(selected_profesores), len(workbook.sheetnames)):

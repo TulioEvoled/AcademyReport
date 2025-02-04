@@ -150,6 +150,7 @@ document.getElementById('edit-profesor-form').addEventListener('submit', functio
 
         total_horas_grupo: document.getElementById('total_horas_grupo').value,
 
+        carreraE1: document.getElementById('carreraE1').value,
         asignaturaE1: document.getElementById('asignaturaE1').value,
         grupoE1: document.getElementById('grupoE1').value,
         horasE1: document.getElementById('horasE1').value,
@@ -167,6 +168,7 @@ document.getElementById('edit-profesor-form').addEventListener('submit', functio
         hora_inicioE16: document.getElementById('hora_inicioE16').value,
         hora_finE16: document.getElementById('hora_finE16').value,
 
+        carreraE2: document.getElementById('carreraE2').value,
         asignaturaE2: document.getElementById('asignaturaE2').value,
         grupoE2: document.getElementById('grupoE2').value,
         horasE2: document.getElementById('horasE2').value,
@@ -184,6 +186,7 @@ document.getElementById('edit-profesor-form').addEventListener('submit', functio
         hora_inicioE26: document.getElementById('hora_inicioE26').value,
         hora_finE26: document.getElementById('hora_finE26').value,
 
+        carreraE3: document.getElementById('carreraE3').value,
         asignaturaE3: document.getElementById('asignaturaE3').value,
         grupoE3: document.getElementById('grupoE3').value,
         horasE3: document.getElementById('horasE3').value,
@@ -201,6 +204,7 @@ document.getElementById('edit-profesor-form').addEventListener('submit', functio
         hora_inicioE36: document.getElementById('hora_inicioE36').value,
         hora_finE36: document.getElementById('hora_finE36').value,
 
+        carreraE4: document.getElementById('carreraE4').value,
         asignaturaE4: document.getElementById('asignaturaE4').value,
         grupoE4: document.getElementById('grupoE4').value,
         horasE4: document.getElementById('horasE4').value,
@@ -218,6 +222,7 @@ document.getElementById('edit-profesor-form').addEventListener('submit', functio
         hora_inicioE46: document.getElementById('hora_inicioE46').value,
         hora_finE46: document.getElementById('hora_finE46').value,
 
+        carreraE5: document.getElementById('carreraE5').value,
         asignaturaE5: document.getElementById('asignaturaE5').value,
         grupoE5: document.getElementById('grupoE5').value,
         horasE5: document.getElementById('horasE5').value,
@@ -235,6 +240,7 @@ document.getElementById('edit-profesor-form').addEventListener('submit', functio
         hora_inicioE56: document.getElementById('hora_inicioE56').value,
         hora_finE56: document.getElementById('hora_finE56').value,
 
+        carreraE6: document.getElementById('carreraE6').value,
         asignaturaE6: document.getElementById('asignaturaE6').value,
         grupoE6: document.getElementById('grupoE6').value,
         horasE6: document.getElementById('horasE6').value,
@@ -252,6 +258,7 @@ document.getElementById('edit-profesor-form').addEventListener('submit', functio
         hora_inicioE66: document.getElementById('hora_inicioE66').value,
         hora_finE66: document.getElementById('hora_finE66').value,
 
+        carreraE7: document.getElementById('carreraE7').value,
         asignaturaE7: document.getElementById('asignaturaE7').value,
         grupoE7: document.getElementById('grupoE7').value,
         horasE7: document.getElementById('horasE7').value,
@@ -269,6 +276,7 @@ document.getElementById('edit-profesor-form').addEventListener('submit', functio
         hora_inicioE76: document.getElementById('hora_inicioE76').value,
         hora_finE76: document.getElementById('hora_finE76').value,
 
+        carreraE8: document.getElementById('carreraE8').value,
         asignaturaE8: document.getElementById('asignaturaE8').value,
         grupoE8: document.getElementById('grupoE8').value,
         horasE8: document.getElementById('horasE8').value,
@@ -490,20 +498,20 @@ function checkOverlapAndDisable(day) {
                                             break;
                                         case '3':
                                             alert(`Solapamiento detectado para asignatura ${asignatura} el dia miercoles. Ajusta el horario.`);
-                                            break; 
+                                            break;
                                         case '4':
                                             alert(`Solapamiento detectado para asignatura ${asignatura} el dia jueves. Ajusta el horario.`);
                                             break;
                                         case '5':
                                             alert(`Solapamiento detectado para asignatura ${asignatura} el dia viernes. Ajusta el horario.`);
-                                            break;    
+                                            break;
                                         case '6':
                                             alert(`Solapamiento detectado para asignatura ${asignatura} el dia sabado. Ajusta el horario.`);
                                             break;
                                     }
-                                
+
                                 case 'E':
-                                    switch (day){
+                                    switch (day) {
                                         case '1':
                                             alert(`Solapamiento detectado para asignatura de descarga ${asignatura} en el día lunes. Ajusta el horario.`);
                                             break;
@@ -523,9 +531,9 @@ function checkOverlapAndDisable(day) {
                                             alert(`Solapamiento detectado para asignatura de descarga ${asignatura} en el día sabado. Ajusta el horario.`);
                                             break;
                                     }
-                                    
+
                                 case 'C':
-                                    switch (day){
+                                    switch (day) {
                                         case '1':
                                             alert(`Solapamiento detectado para cargo en el día lunes. Ajusta el horario.`);
                                             break;
@@ -678,6 +686,25 @@ document.addEventListener("DOMContentLoaded", function() {
             .join("");
     }
 });
+
+// LISTA DE CARRERAS
+const carreras = ["", "INDUSTRIAL", "SISTEMAS COMPUTACIONALES", "ELECTRÓNICA", "MECATRÓNICA", "INFORMÁTICA", "ADMINISTRACIÓN"];
+
+// Función para poblar las opciones en el select de carreras
+function populateCareerSelectOptions(selectElement, options) {
+    const currentValue = selectElement.getAttribute("data-current-value"); // Obtener el valor actual si existe
+    selectElement.innerHTML = options.map(carrera => {
+        return `<option value="${carrera}" ${carrera === currentValue ? 'selected' : ''}>${carrera}</option>`;
+    }).join("");
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    const carreraSelects = document.querySelectorAll(".careerE");
+
+    // Poblar cada select con las opciones de carreras y mantener el valor actual si existe
+    carreraSelects.forEach(select => populateCareerSelectOptions(select, carreras));
+});
+
 
 ///VALIDAR HORAS ASIGNADAS
 let interactionCounter = 0; // Contador de interacciones

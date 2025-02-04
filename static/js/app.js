@@ -1,89 +1,3 @@
-// EXPORTACION DE EXCEL
-document.getElementById('collection').addEventListener('change', function() {
-    const collection = this.value;
-    fetch(`/columns/${collection}`)
-        .then(response => response.json())
-        .then(columns => {
-            const container = document.getElementById('columns-container');
-            container.innerHTML = ''; // Clear previous checkboxes
-            columns.forEach(column => {
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.id = column;
-                checkbox.name = 'columns';
-                checkbox.value = column;
-
-                const label = document.createElement('label');
-                label.htmlFor = column;
-                label.textContent = column;
-
-                container.appendChild(checkbox);
-                container.appendChild(label);
-                container.appendChild(document.createElement('br'));
-            });
-
-            // Añadir el checkbox especial para Asignación de Horas Frente a Grupo
-            if (collection == 'profesores') {
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.id = 'asignacion_horas_frente_grupo';
-                checkbox.name = 'columns';
-                checkbox.value = 'asignacion_horas_frente_grupo';
-
-                const label = document.createElement('label');
-                label.htmlFor = 'asignacion_horas_frente_grupo';
-                label.textContent = 'Asignación de Horas Frente a Grupo';
-
-                const checkbox2 = document.createElement('input');
-                checkbox2.type = 'checkbox';
-                checkbox2.id = 'asignacion_horas_descarga_otras_actividades';
-                checkbox2.name = 'columns';
-                checkbox2.value = 'asignacion_horas_descarga_otras_actividades';
-
-                const label2 = document.createElement('label');
-                label2.htmlFor = 'asignacion_horas_descarga_otras_actividades';
-                label2.textContent = 'Asiganción de Horas de Descarga para otras Actividades';
-
-                container.appendChild(checkbox);
-                container.appendChild(label);
-                container.appendChild(document.createElement('br'));
-
-                container.appendChild(checkbox2);
-                container.appendChild(label2);
-                container.appendChild(document.createElement('br'));
-            }
-        });
-});
-
-document.getElementById('export-form').addEventListener('submit', function(event) {
-    event.preventDefault(); // Prevent form from submitting the default way
-
-    const collection = document.getElementById('collection').value;
-    const format = document.getElementById('export-format').value;
-    const columns = Array.from(document.querySelectorAll('input[name="columns"]:checked')).map(cb => cb.value);
-
-    fetch('/export', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ collection, columns: columns.join(',') }), // Join columns as a comma-separated string
-        })
-        .then(response => response.blob())
-        .then(blob => {
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.style.display = 'none';
-            a.href = url;
-            a.download = `${collection}.${format}`;
-            document.body.appendChild(a);
-            a.click();
-            window.URL.revokeObjectURL(url);
-        })
-        .catch(error => console.error('Error:', error));
-});
-
-
 //AGREGAR PROFESORES
 document.getElementById('add-profesor-form').addEventListener('submit', function(e) {
     e.preventDefault();
@@ -236,6 +150,7 @@ document.getElementById('add-profesor-form').addEventListener('submit', function
 
         total_horas_grupo: document.getElementById('total_horas_grupo').value,
 
+        carreraE1: document.getElementById('carreraE1').value,
         asignaturaE1: document.getElementById('asignaturaE1').value,
         grupoE1: document.getElementById('grupoE1').value,
         horasE1: document.getElementById('horasE1').value,
@@ -253,6 +168,7 @@ document.getElementById('add-profesor-form').addEventListener('submit', function
         hora_inicioE16: document.getElementById('hora_inicioE16').value,
         hora_finE16: document.getElementById('hora_finE16').value,
 
+        carreraE2: document.getElementById('carreraE2').value,
         asignaturaE2: document.getElementById('asignaturaE2').value,
         grupoE2: document.getElementById('grupoE2').value,
         horasE2: document.getElementById('horasE2').value,
@@ -270,6 +186,7 @@ document.getElementById('add-profesor-form').addEventListener('submit', function
         hora_inicioE26: document.getElementById('hora_inicioE26').value,
         hora_finE26: document.getElementById('hora_finE26').value,
 
+        carreraE3: document.getElementById('carreraE3').value,
         asignaturaE3: document.getElementById('asignaturaE3').value,
         grupoE3: document.getElementById('grupoE3').value,
         horasE3: document.getElementById('horasE3').value,
@@ -287,6 +204,7 @@ document.getElementById('add-profesor-form').addEventListener('submit', function
         hora_inicioE36: document.getElementById('hora_inicioE36').value,
         hora_finE36: document.getElementById('hora_finE36').value,
 
+        carreraE4: document.getElementById('carreraE4').value,
         asignaturaE4: document.getElementById('asignaturaE4').value,
         grupoE4: document.getElementById('grupoE4').value,
         horasE4: document.getElementById('horasE4').value,
@@ -304,6 +222,7 @@ document.getElementById('add-profesor-form').addEventListener('submit', function
         hora_inicioE46: document.getElementById('hora_inicioE46').value,
         hora_finE46: document.getElementById('hora_finE46').value,
 
+        carreraE5: document.getElementById('carreraE5').value,
         asignaturaE5: document.getElementById('asignaturaE5').value,
         grupoE5: document.getElementById('grupoE5').value,
         horasE5: document.getElementById('horasE5').value,
@@ -321,6 +240,7 @@ document.getElementById('add-profesor-form').addEventListener('submit', function
         hora_inicioE56: document.getElementById('hora_inicioE56').value,
         hora_finE56: document.getElementById('hora_finE56').value,
 
+        carreraE6: document.getElementById('carreraE6').value,
         asignaturaE6: document.getElementById('asignaturaE6').value,
         grupoE6: document.getElementById('grupoE6').value,
         horasE6: document.getElementById('horasE6').value,
@@ -338,6 +258,7 @@ document.getElementById('add-profesor-form').addEventListener('submit', function
         hora_inicioE66: document.getElementById('hora_inicioE66').value,
         hora_finE66: document.getElementById('hora_finE66').value,
 
+        carreraE7: document.getElementById('carreraE7').value,
         asignaturaE7: document.getElementById('asignaturaE7').value,
         grupoE7: document.getElementById('grupoE7').value,
         horasE7: document.getElementById('horasE7').value,
@@ -355,6 +276,7 @@ document.getElementById('add-profesor-form').addEventListener('submit', function
         hora_inicioE76: document.getElementById('hora_inicioE76').value,
         hora_finE76: document.getElementById('hora_finE76').value,
 
+        carreraE8: document.getElementById('carreraE8').value,
         asignaturaE8: document.getElementById('asignaturaE8').value,
         grupoE8: document.getElementById('grupoE8').value,
         horasE8: document.getElementById('horasE8').value,
@@ -457,37 +379,6 @@ document.getElementById('add-administrativo-form').addEventListener('submit', fu
         .then(data => alert(data.msg));
 });
 
-//EXPORTAR ARCHIVO EXCEL
-document.getElementById('export-form').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const collection = document.getElementById('collection').value;
-    const columns = Array.from(document.querySelectorAll('input[name="columns"]:checked'))
-        .map(checkbox => checkbox.value)
-        .join(',');
-
-    const data = {
-        collection: collection,
-        columns: columns
-    };
-
-    fetch('/export', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        }).then(response => response.blob())
-        .then(blob => {
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.style.display = 'none';
-            a.href = url;
-            a.download = `${collection}.xlsx`;
-            document.body.appendChild(a);
-            a.click();
-            window.URL.revokeObjectURL(url);
-        });
-});
 
 //AUTOCOMPLETADO
 document.addEventListener('DOMContentLoaded', function() {
@@ -991,6 +882,21 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 
+// LISTA DE CARRERAS
+const carreras = ["", "INDUSTRIAL", "SISTEMAS COMPUTACIONALES", "ELECTRÓNICA", "MECATRÓNICA", "INFORMÁTICA", "ADMINISTRACIÓN"];
+
+// Función para poblar las opciones en el select de carreras
+function populateCareerSelectOptions(selectElement, options) {
+    selectElement.innerHTML = options.map(carrera => `<option value="${carrera}">${carrera}</option>`).join("");
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    const carreraSelects = document.querySelectorAll(".careerE");
+
+    // Poblar cada select con las opciones de carreras
+    carreraSelects.forEach(select => populateCareerSelectOptions(select, carreras));
+});
+
 ///VALIDAR HORAS ASIGNADAS
 let interactionCounter = 0; // Contador de interacciones
 
@@ -1075,93 +981,4 @@ document.addEventListener("DOMContentLoaded", function() {
             validateWeeklyHours();
         });
     });
-});
-
-//EXPORTACION EXCEL - PDF
-// Cargar la lista de profesores en ambos formularios
-document.getElementById('load-professors').addEventListener('click', function() {
-    fetch('/profesores/json')
-        .then(response => response.json())
-        .then(profesores => {
-            const containers = [
-                document.getElementById('professor-list-container'),
-                document.getElementById('professor-list-container-pdf')
-            ];
-
-            containers.forEach(container => {
-                container.innerHTML = ''; // Limpiar la lista existente
-
-                profesores.forEach(profesor => {
-                    // Crear cada elemento de la lista
-                    const div = document.createElement('div');
-                    const checkbox = document.createElement('input');
-                    checkbox.type = 'checkbox';
-                    checkbox.name = 'profesor_ids';
-                    checkbox.value = profesor._id;
-
-                    const label = document.createElement('label');
-                    label.textContent = profesor.nombre;
-
-                    div.appendChild(checkbox);
-                    div.appendChild(label);
-                    container.appendChild(div);
-                });
-            });
-        });
-});
-
-// Seleccionar todos los profesores en ambos formularios
-document.getElementById('select-all').addEventListener('click', function() {
-    const checkboxes = document.querySelectorAll("input[name='profesor_ids']");
-    checkboxes.forEach(checkbox => checkbox.checked = true);
-});
-
-// Función para mostrar mensajes emergentes
-function mostrarMensaje(texto, esError = false) {
-    let mensaje = document.getElementById("mensaje");
-    mensaje.textContent = texto;
-    mensaje.style.display = "block";
-    mensaje.style.backgroundColor = esError ? "red" : "lightgreen";
-    mensaje.style.color = "white";
-
-    // Ocultar el mensaje después de 3 segundos
-    setTimeout(() => { mensaje.style.display = "none"; }, 3000);
-}
-
-// Manejo de la actualización de imágenes
-document.getElementById('uploadImagesForm').addEventListener('submit', function(event) {
-    event.preventDefault(); // Evitar recarga
-
-    let formData = new FormData(this);
-
-    fetch('/upload-images', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            mostrarMensaje(data.msg);
-        })
-        .catch(error => {
-            mostrarMensaje("Error en la actualización de imágenes", true);
-        });
-});
-
-// Manejo de la actualización de texto
-document.getElementById('updateTextForm').addEventListener('submit', function(event) {
-    event.preventDefault(); // Evitar recarga
-
-    let formData = new FormData(this);
-
-    fetch('/update-text', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            mostrarMensaje(data.msg, data.msg.includes("Error"));
-        })
-        .catch(error => {
-            mostrarMensaje("Error en la actualización del texto", true);
-        });
 });
