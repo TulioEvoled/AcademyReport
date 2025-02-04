@@ -74,7 +74,21 @@
                         {% for grupo in grupos %}
                         <option value="{{ grupo }}" {% if profesor.grupo1 == grupo %}selected{% endif %}>{{ grupo }}</option>
                         {% endfor %}
-                </select>
+                    </select>
+
+                    <!-- Campo oculto para almacenar el distintivo -->
+                    <input type="hidden" id="distintivo1" name="distintivo1" value="{{ profesor.distintivo1 }}">
+
+                    <!-- Selector de día, visible solo si el grupo termina en "81" -->
+                    <select id="daySelector1" name="daySelector1" style="display: none;">
+                        <option value="">Selecciona día</option>
+                        <option value="1" {% if profesor.distintivo1 == "1" %}selected{% endif %}>Lunes</option>
+                        <option value="2" {% if profesor.distintivo1 == "2" %}selected{% endif %}>Martes</option>
+                        <option value="3" {% if profesor.distintivo1 == "3" %}selected{% endif %}>Miércoles</option>
+                        <option value="4" {% if profesor.distintivo1 == "4" %}selected{% endif %}>Jueves</option>
+                        <option value="5" {% if profesor.distintivo1 == "5" %}selected{% endif %}>Viernes</option>
+                        <option value="6" {% if profesor.distintivo1 == "6" %}selected{% endif %}>Sábado</option>
+                    </select>
                 </td>
                 <!-- HORAS ASIGNATURAS -->
                 <td>
@@ -192,6 +206,19 @@
                             {% for grupo in grupos %}
                             <option value="{{ grupo }}" {% if profesor.grupo2 == grupo %}selected{% endif %}>{{ grupo }}</option>
                             {% endfor %}
+                    </select>
+                    <!-- Campo oculto para almacenar el distintivo -->
+                    <input type="hidden" id="distintivo2" name="distintivo2" value="{{ profesor.distintivo2 }}">
+
+                    <!-- Selector de día, visible solo si el grupo termina en "81" -->
+                    <select id="daySelector2" name="daySelector2" style="display: none;">
+                        <option value="">Selecciona día</option>
+                        <option value="1" {% if profesor.distintivo2 == "1" %}selected{% endif %}>Lunes</option>
+                        <option value="2" {% if profesor.distintivo2 == "2" %}selected{% endif %}>Martes</option>
+                        <option value="3" {% if profesor.distintivo2 == "3" %}selected{% endif %}>Miércoles</option>
+                        <option value="4" {% if profesor.distintivo2 == "4" %}selected{% endif %}>Jueves</option>
+                        <option value="5" {% if profesor.distintivo2 == "5" %}selected{% endif %}>Viernes</option>
+                        <option value="6" {% if profesor.distintivo2 == "6" %}selected{% endif %}>Sábado</option>
                     </select>
                 </td>
 
@@ -311,6 +338,19 @@
                             <option value="{{ grupo }}" {% if profesor.grupo3 == grupo %}selected{% endif %}>{{ grupo }}</option>
                             {% endfor %}
                     </select>
+                    <!-- Campo oculto para almacenar el distintivo -->
+                    <input type="hidden" id="distintivo3" name="distintivo3" value="{{ profesor.distintivo3 }}">
+
+                    <!-- Selector de día, visible solo si el grupo termina en "81" -->
+                    <select id="daySelector3" name="daySelector3" style="display: none;">
+                        <option value="">Selecciona día</option>
+                        <option value="1" {% if profesor.distintivo3 == "1" %}selected{% endif %}>Lunes</option>
+                        <option value="2" {% if profesor.distintivo3 == "2" %}selected{% endif %}>Martes</option>
+                        <option value="3" {% if profesor.distintivo3 == "3" %}selected{% endif %}>Miércoles</option>
+                        <option value="4" {% if profesor.distintivo3 == "4" %}selected{% endif %}>Jueves</option>
+                        <option value="5" {% if profesor.distintivo3 == "5" %}selected{% endif %}>Viernes</option>
+                        <option value="6" {% if profesor.distintivo3 == "6" %}selected{% endif %}>Sábado</option>
+                    </select>
                 </td>
 
                 <td>
@@ -428,6 +468,19 @@
                         <option value="{{ grupo }}" {% if profesor.grupo4 == grupo %}selected{% endif %}>{{ grupo }}</option>
                         {% endfor %}
                     </select>
+                        <!-- Campo oculto para almacenar el distintivo -->
+                        <input type="hidden" id="distintivo4" name="distintivo4" value="{{ profesor.distintivo4 }}">
+
+                        <!-- Selector de día, visible solo si el grupo termina en "81" -->
+                        <select id="daySelector4" name="daySelector4" style="display: none;">
+                        <option value="">Selecciona día</option>
+                        <option value="1" {% if profesor.distintivo4 == "1" %}selected{% endif %}>Lunes</option>
+                        <option value="2" {% if profesor.distintivo4 == "2" %}selected{% endif %}>Martes</option>
+                        <option value="3" {% if profesor.distintivo4 == "3" %}selected{% endif %}>Miércoles</option>
+                        <option value="4" {% if profesor.distintivo4 == "4" %}selected{% endif %}>Jueves</option>
+                        <option value="5" {% if profesor.distintivo4 == "5" %}selected{% endif %}>Viernes</option>
+                        <option value="6" {% if profesor.distintivo4 == "6" %}selected{% endif %}>Sábado</option>
+                    </select>
                     </td>
 
                     <td>
@@ -544,6 +597,19 @@
                             {% for grupo in grupos %}
                             <option value="{{ grupo }}" {% if profesor.grupo5 == grupo %}selected{% endif %}>{{ grupo }}</option>
                             {% endfor %}
+                        </select>
+                        <!-- Campo oculto para almacenar el distintivo -->
+                        <input type="hidden" id="distintivo5" name="distintivo5" value="{{ profesor.distintivo5 }}">
+
+                        <!-- Selector de día, visible solo si el grupo termina en "81" -->
+                        <select id="daySelector5" name="daySelector5" style="display: none;">
+                        <option value="">Selecciona día</option>
+                        <option value="1" {% if profesor.distintivo5 == "1" %}selected{% endif %}>Lunes</option>
+                        <option value="2" {% if profesor.distintivo5 == "2" %}selected{% endif %}>Martes</option>
+                        <option value="3" {% if profesor.distintivo5 == "3" %}selected{% endif %}>Miércoles</option>
+                        <option value="4" {% if profesor.distintivo5 == "4" %}selected{% endif %}>Jueves</option>
+                        <option value="5" {% if profesor.distintivo5 == "5" %}selected{% endif %}>Viernes</option>
+                        <option value="6" {% if profesor.distintivo5 == "6" %}selected{% endif %}>Sábado</option>
                     </select>
                     </td>
 
@@ -663,6 +729,19 @@
                             <option value="{{ grupo }}" {% if profesor.grupo6
                                  == grupo %}selected{% endif %}>{{ grupo }}</option>
                             {% endfor %}
+                        </select>
+                        <!-- Campo oculto para almacenar el distintivo -->
+                        <input type="hidden" id="distintivo6" name="distintivo6" value="{{ profesor.distintivo6 }}">
+
+                        <!-- Selector de día, visible solo si el grupo termina en "81" -->
+                        <select id="daySelector6" name="daySelector6" style="display: none;">
+                        <option value="">Selecciona día</option>
+                        <option value="1" {% if profesor.distintivo6 == "1" %}selected{% endif %}>Lunes</option>
+                        <option value="2" {% if profesor.distintivo6 == "2" %}selected{% endif %}>Martes</option>
+                        <option value="3" {% if profesor.distintivo6 == "3" %}selected{% endif %}>Miércoles</option>
+                        <option value="4" {% if profesor.distintivo6 == "4" %}selected{% endif %}>Jueves</option>
+                        <option value="5" {% if profesor.distintivo6 == "5" %}selected{% endif %}>Viernes</option>
+                        <option value="6" {% if profesor.distintivo6 == "6" %}selected{% endif %}>Sábado</option>
                     </select>
                     </td>
 
@@ -781,6 +860,19 @@
                             {% for grupo in grupos %}
                             <option value="{{ grupo }}" {% if profesor.grupo7 == grupo %}selected{% endif %}>{{ grupo }}</option>
                             {% endfor %}
+                        </select>
+                        <!-- Campo oculto para almacenar el distintivo -->
+                        <input type="hidden" id="distintivo7" name="distintivo7" value="{{ profesor.distintivo7 }}">
+
+                        <!-- Selector de día, visible solo si el grupo termina en "81" -->
+                        <select id="daySelector7" name="daySelector7" style="display: none;">
+                        <option value="">Selecciona día</option>
+                        <option value="1" {% if profesor.distintivo7 == "1" %}selected{% endif %}>Lunes</option>
+                        <option value="2" {% if profesor.distintivo7 == "2" %}selected{% endif %}>Martes</option>
+                        <option value="3" {% if profesor.distintivo7 == "3" %}selected{% endif %}>Miércoles</option>
+                        <option value="4" {% if profesor.distintivo7 == "4" %}selected{% endif %}>Jueves</option>
+                        <option value="5" {% if profesor.distintivo7 == "5" %}selected{% endif %}>Viernes</option>
+                        <option value="6" {% if profesor.distintivo7 == "6" %}selected{% endif %}>Sábado</option>
                     </select>
                     </td>
 
@@ -900,6 +992,19 @@
                             {% for grupo in grupos %}
                             <option value="{{ grupo }}" {% if profesor.grupo8 == grupo %}selected{% endif %}>{{ grupo }}</option>
                             {% endfor %}
+                        </select>
+                        <!-- Campo oculto para almacenar el distintivo -->
+                        <input type="hidden" id="distintivo8" name="distintivo8" value="{{ profesor.distintivo8 }}">
+
+                        <!-- Selector de día, visible solo si el grupo termina en "81" -->
+                        <select id="daySelector8" name="daySelector8" style="display: none;">
+                        <option value="">Selecciona día</option>
+                        <option value="1" {% if profesor.distintivo8 == "1" %}selected{% endif %}>Lunes</option>
+                        <option value="2" {% if profesor.distintivo8 == "2" %}selected{% endif %}>Martes</option>
+                        <option value="3" {% if profesor.distintivo8 == "3" %}selected{% endif %}>Miércoles</option>
+                        <option value="4" {% if profesor.distintivo8 == "4" %}selected{% endif %}>Jueves</option>
+                        <option value="5" {% if profesor.distintivo8 == "5" %}selected{% endif %}>Viernes</option>
+                        <option value="6" {% if profesor.distintivo8 == "6" %}selected{% endif %}>Sábado</option>
                     </select>
                     </td>
 

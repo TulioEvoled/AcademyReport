@@ -61,7 +61,7 @@
                         {% for i in range(1, 9) %}
                         <tr>
                             <td class="form-group">{{ profesor['asignatura' ~ i] }}</td>
-                            <td>{{ profesor['grupo' ~ i] }}</td>
+                            <td>{{ profesor['grupo' ~ i] }} {{ profesor['distintivo' ~ i] }}</td>
                             <td class="form-group">{{ profesor['horas' ~ i] }}</td>
                             <td>{{ profesor['hora_inicio' ~ i ~ '1'] }} {{ profesor['hora_fin' ~ i ~ '1'] }}</td>
                             <td>{{ profesor['hora_inicio' ~ i ~ '2'] }} {{ profesor['hora_fin' ~ i ~ '2'] }}</td>

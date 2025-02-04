@@ -15,6 +15,7 @@ document.getElementById('edit-profesor-form').addEventListener('submit', functio
         asignatura1: document.getElementById('asignatura1').value,
         grupo1: document.getElementById('grupo1').value,
         horas1: document.getElementById('horas1').value,
+        distintivo1: document.getElementById('distintivo1') ? document.getElementById('distintivo1').value : "",
 
         hora_inicio11: document.getElementById('hora_inicio11').value,
         hora_fin11: document.getElementById('hora_fin11').value,
@@ -32,6 +33,7 @@ document.getElementById('edit-profesor-form').addEventListener('submit', functio
         asignatura2: document.getElementById('asignatura2').value,
         grupo2: document.getElementById('grupo2').value,
         horas2: document.getElementById('horas2').value,
+        distintivo2: document.getElementById('distintivo2') ? document.getElementById('distintivo2').value : "",
 
         hora_inicio21: document.getElementById('hora_inicio21').value,
         hora_fin21: document.getElementById('hora_fin21').value,
@@ -49,6 +51,7 @@ document.getElementById('edit-profesor-form').addEventListener('submit', functio
         asignatura3: document.getElementById('asignatura3').value,
         grupo3: document.getElementById('grupo3').value,
         horas3: document.getElementById('horas3').value,
+        distintivo3: document.getElementById('distintivo3') ? document.getElementById('distintivo3').value : "",
 
         hora_inicio31: document.getElementById('hora_inicio31').value,
         hora_fin31: document.getElementById('hora_fin31').value,
@@ -66,6 +69,7 @@ document.getElementById('edit-profesor-form').addEventListener('submit', functio
         asignatura4: document.getElementById('asignatura4').value,
         grupo4: document.getElementById('grupo4').value,
         horas4: document.getElementById('horas4').value,
+        distintivo4: document.getElementById('distintivo4') ? document.getElementById('distintivo4').value : "",
 
         hora_inicio41: document.getElementById('hora_inicio41').value,
         hora_fin41: document.getElementById('hora_fin41').value,
@@ -83,6 +87,7 @@ document.getElementById('edit-profesor-form').addEventListener('submit', functio
         asignatura5: document.getElementById('asignatura5').value,
         grupo5: document.getElementById('grupo5').value,
         horas5: document.getElementById('horas5').value,
+        distintivo5: document.getElementById('distintivo5') ? document.getElementById('distintivo5').value : "",
 
         hora_inicio51: document.getElementById('hora_inicio51').value,
         hora_fin51: document.getElementById('hora_fin51').value,
@@ -100,6 +105,7 @@ document.getElementById('edit-profesor-form').addEventListener('submit', functio
         asignatura6: document.getElementById('asignatura6').value,
         grupo6: document.getElementById('grupo6').value,
         horas6: document.getElementById('horas6').value,
+        distintivo6: document.getElementById('distintivo6') ? document.getElementById('distintivo6').value : "",
 
         hora_inicio61: document.getElementById('hora_inicio61').value,
         hora_fin61: document.getElementById('hora_fin61').value,
@@ -117,6 +123,7 @@ document.getElementById('edit-profesor-form').addEventListener('submit', functio
         asignatura7: document.getElementById('asignatura7').value,
         grupo7: document.getElementById('grupo7').value,
         horas7: document.getElementById('horas7').value,
+        distintivo7: document.getElementById('distintivo7') ? document.getElementById('distintivo7').value : "",
 
         hora_inicio71: document.getElementById('hora_inicio71').value,
         hora_fin71: document.getElementById('hora_fin71').value,
@@ -134,6 +141,7 @@ document.getElementById('edit-profesor-form').addEventListener('submit', functio
         asignatura8: document.getElementById('asignatura8').value,
         grupo8: document.getElementById('grupo8').value,
         horas8: document.getElementById('horas8').value,
+        distintivo8: document.getElementById('distintivo8') ? document.getElementById('distintivo8').value : "",
 
         hora_inicio81: document.getElementById('hora_inicio81').value,
         hora_fin81: document.getElementById('hora_fin81').value,
@@ -788,6 +796,55 @@ document.addEventListener("DOMContentLoaded", function() {
         selector.addEventListener("change", () => {
             interactionCounter++; // Incrementar contador en cada interacción
             validateWeeklyHours();
+        });
+    });
+});
+
+document.addEventListener("DOMContentLoaded", function() {
+    // Obtener todos los selects de grupo
+    const grupoSelects = document.querySelectorAll(".group");
+
+    grupoSelects.forEach((select, index) => {
+        const fieldIndex = index + 1;
+        const distintivoFieldId = `distintivo${fieldIndex}`;
+        const daySelectorId = `daySelector${fieldIndex}`;
+
+        // Obtener elementos desde el DOM
+        const distintivoField = document.getElementById(distintivoFieldId);
+        const daySelector = document.getElementById(daySelectorId);
+
+        // Verificar si ya hay un valor en el distintivo
+        const existingDistintivo = distintivoField ? distintivoField.value : "";
+
+        // Mostrar el select de días si el grupo termina en "81"
+        function actualizarSelector() {
+            const grupoValue = select.value;
+
+            if (grupoValue.endsWith("81")) {
+                daySelector.style.display = "inline"; // Mostrar select
+
+                // Si hay un distintivo guardado, seleccionarlo
+                if (existingDistintivo) {
+                    daySelector.value = existingDistintivo;
+                }
+            } else {
+                daySelector.style.display = "none"; // Ocultar si cambia de grupo
+                daySelector.value = ""; // Reiniciar la selección de día
+                distintivoField.value = ""; // Limpiar distintivo
+            }
+        }
+
+        // Aplicar lógica en carga inicial
+        actualizarSelector();
+
+        // Detectar cambios en el grupo seleccionado
+        select.addEventListener("change", function() {
+            actualizarSelector();
+        });
+
+        // Guardar el valor seleccionado del distintivo cuando cambia el día
+        daySelector.addEventListener("change", function() {
+            distintivoField.value = daySelector.value;
         });
     });
 });
