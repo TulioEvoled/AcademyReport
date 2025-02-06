@@ -642,12 +642,19 @@ def export_selected():
                 valor = sheet[celda].value
                 if valor and " " in valor:  # Verifica si hay datos y si tiene un horario válido
                     try:
-                        inicio, fin = valor.split(" ")
-                        horas = int(fin[:2]) - int(inicio[:2])  # Obtener la cantidad de horas
-                        if horas <= horas_restantes:
-                            sheet[celda].fill = dark_gray_fill
-                            sheet[celda].font = white_font
-                            horas_restantes -= horas
+                        # Extraer solo las partes de la hora ignorando cualquier "H.T."
+                        partes = valor.split(" ")
+                        if len(partes) >= 2:  # Asegurar que tenemos al menos dos partes (inicio y fin)
+                            inicio = partes[0]  # Ejemplo: "07:00"
+                            fin = partes[1]  # Ejemplo: "09:00"
+                            
+                            # Extraer la hora en formato numérico
+                            horas = int(fin[:2]) - int(inicio[:2])  # Obtener la cantidad de horas
+
+                            if horas <= horas_restantes:
+                                sheet[celda].fill = dark_gray_fill  # Aplicar sombreado gris oscuro
+                                sheet[celda].font = white_font  # Cambiar color de fuente a blanco
+                                horas_restantes -= horas  # Restar horas utilizadas
                     except ValueError:
                         continue  # Evita errores si el formato no es el esperado
 
@@ -655,6 +662,28 @@ def export_selected():
         procesar_horarios(horario_seccion_1)
         if horas_restantes > 0:
             procesar_horarios(horario_seccion_2)
+
+
+        # Llenar las celdas con "H.T." basado en los distintivos de grupo 81
+        for j in range(1, 9):  # Iteramos sobre las asignaturas 1 a 8
+            distintivo_key = f"distintivo{j}"  # Nombre del campo en la base de datos
+            distintivo_valor = profesor.get(distintivo_key, "")
+
+            if distintivo_valor:  # Si hay un valor en el distintivo
+                fila = 14 + j  # Mapea asignatura1 a fila 15, asignatura2 a fila 16, etc.
+                columnas = { "1": "E", "2": "F", "3": "G", "4": "H", "5": "I", "6": "J" }
+
+                # Verificamos que el valor del distintivo esté en el rango esperado (1-6)
+                columna = columnas.get(str(distintivo_valor))
+                if columna:
+                    celda_destino = f"{columna}{fila}"  # Ejemplo: H15
+
+                    # Obtener el valor actual de la celda (si existe)
+                    valor_existente = sheet[celda_destino].value
+
+                    #Concatenar " H.T." al final
+                    sheet[celda_destino].value = f"{valor_existente} H.T. "
+
 
         # Obtener los valores de A15-A22 y A26-A33 sin valores vacíos
         carreras_detectadas = sorted({sheet[f"A{row}"].value for row in range(15, 23) if sheet[f"A{row}"].value})
@@ -916,12 +945,19 @@ def export_selected_pdf():
                 valor = sheet[celda].value
                 if valor and " " in valor:  # Verifica si hay datos y si tiene un horario válido
                     try:
-                        inicio, fin = valor.split(" ")
-                        horas = int(fin[:2]) - int(inicio[:2])  # Obtener la cantidad de horas
-                        if horas <= horas_restantes:
-                            sheet[celda].fill = dark_gray_fill
-                            sheet[celda].font = white_font
-                            horas_restantes -= horas
+                        # Extraer solo las partes de la hora ignorando cualquier "H.T."
+                        partes = valor.split(" ")
+                        if len(partes) >= 2:  # Asegurar que tenemos al menos dos partes (inicio y fin)
+                            inicio = partes[0]  # Ejemplo: "07:00"
+                            fin = partes[1]  # Ejemplo: "09:00"
+                            
+                            # Extraer la hora en formato numérico
+                            horas = int(fin[:2]) - int(inicio[:2])  # Obtener la cantidad de horas
+
+                            if horas <= horas_restantes:
+                                sheet[celda].fill = dark_gray_fill  # Aplicar sombreado gris oscuro
+                                sheet[celda].font = white_font  # Cambiar color de fuente a blanco
+                                horas_restantes -= horas  # Restar horas utilizadas
                     except ValueError:
                         continue  # Evita errores si el formato no es el esperado
 
@@ -929,6 +965,27 @@ def export_selected_pdf():
         procesar_horarios(horario_seccion_1)
         if horas_restantes > 0:
             procesar_horarios(horario_seccion_2)
+
+
+        # Llenar las celdas con "H.T." basado en los distintivos de grupo 81
+        for j in range(1, 9):  # Iteramos sobre las asignaturas 1 a 8
+            distintivo_key = f"distintivo{j}"  # Nombre del campo en la base de datos
+            distintivo_valor = profesor.get(distintivo_key, "")
+
+            if distintivo_valor:  # Si hay un valor en el distintivo
+                fila = 14 + j  # Mapea asignatura1 a fila 15, asignatura2 a fila 16, etc.
+                columnas = { "1": "E", "2": "F", "3": "G", "4": "H", "5": "I", "6": "J" }
+
+                # Verificamos que el valor del distintivo esté en el rango esperado (1-6)
+                columna = columnas.get(str(distintivo_valor))
+                if columna:
+                    celda_destino = f"{columna}{fila}"  # Ejemplo: H15
+
+                    # Obtener el valor actual de la celda (si existe)
+                    valor_existente = sheet[celda_destino].value
+
+                    #Concatenar " H.T." al final
+                    sheet[celda_destino].value = f"{valor_existente} H.T. "
 
          # Obtener los valores de A15-A22 y A26-A33 sin valores vacíos
         carreras_detectadas = sorted({sheet[f"A{row}"].value for row in range(15, 23) if sheet[f"A{row}"].value})
