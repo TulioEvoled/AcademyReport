@@ -35,7 +35,7 @@ horarios = ["07:00", "08:00", "09:00", "10:00", "11:00", "12:00", "13:00",
 carreras = ["INDUSTRIAL", "SISTEMAS COMPUTACIONALES", "ELECTRÓNICA",
             "MECATRÓNICA", "INFORMÁTICA", "ADMINISTRACIÓN"]
 
-UPLOAD_FOLDER = "static/src/"
+UPLOAD_FOLDER = "industrial/static/src/"
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg"}
 
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
@@ -67,7 +67,7 @@ def update_profesor(id):
 def edit_profesor(id):
     profesor = profesores.find_one({'_id': ObjectId(id)})
     profesor['_id'] = str(profesor['_id'])
-    return render_template('edit_profesor.html', profesor=profesor, grupos=grupos, horarios=horarios)
+    return render_template('industrial/edit_profesor.html', profesor=profesor, grupos=grupos, horarios=horarios)
 
 @app.route('/profesores/<id>', methods=['DELETE'])
 def delete_profesor(id):
@@ -79,7 +79,7 @@ def get_all_profesores():
     all_profesores = list(profesores.find({}).sort("nombre", 1))
     for profesor in all_profesores:
         profesor['_id'] = str(profesor['_id'])
-    return render_template('profesores.html', profesores=all_profesores)
+    return render_template('industrial/profesores.html', profesores=all_profesores)
 
 # Ruta para obtener la lista de profesores en formato JSON
 @app.route('/profesores/json', methods=['GET'])
@@ -125,7 +125,7 @@ def update_asignatura(id):
 def edit_asignatura(id):
     asignatura = asignaturas.find_one({'_id': ObjectId(id)})
     asignatura['_id'] = str(asignatura['_id'])
-    return render_template('edit_asignatura.html', asignatura=asignatura)
+    return render_template('industrial/edit_asignatura.html', asignatura=asignatura)
 
 @app.route('/asignaturas/<id>', methods=['DELETE'])
 def delete_asignatura(id):
@@ -145,7 +145,7 @@ def get_all_asignaturas():
     all_asignaturas = list(asignaturas.find({}).sort("nombre", 1))
     for asignatura in all_asignaturas:
         asignatura['_id'] = str(asignatura['_id'])
-    return render_template('asignaturas.html', asignaturas=all_asignaturas)
+    return render_template('industrial/asignaturas.html', asignaturas=all_asignaturas)
 
 # Rutas CRUD para asignaturas especiales
 @app.route('/asignaturasE', methods=['POST'])
@@ -183,7 +183,7 @@ def update_asignaturaE(id):
 def edit_asignaturaE(id):
     asignaturaE = asignaturasE.find_one({'_id': ObjectId(id)})
     asignaturaE['_id'] = str(asignaturaE['_id'])
-    return render_template('edit_asignaturaE.html', asignaturaE=asignaturaE)
+    return render_template('industrial/edit_asignaturaE.html', asignaturaE=asignaturaE)
 
 @app.route('/asignaturasE/<id>', methods=['DELETE'])
 def delete_asignaturaE(id):
@@ -203,7 +203,7 @@ def get_all_asignaturasE():
     all_asignaturasE = list(asignaturasE.find({}).sort("nombre", 1))
     for asignaturaE in all_asignaturasE:
         asignaturaE['_id'] = str(asignaturaE['_id'])
-    return render_template('asignaturasE.html', asignaturasE=all_asignaturasE)
+    return render_template('industrial/asignaturasE.html', asignaturasE=all_asignaturasE)
 
 # Rutas CRUD para administrativos
 @app.route('/administrativos', methods=['POST'])
@@ -241,7 +241,7 @@ def update_administrativo(id):
 def edit_administrativo(id):
     administrativo = administrativos.find_one({'_id': ObjectId(id)})
     administrativo['_id'] = str(administrativo['_id'])
-    return render_template('edit_administrativo.html', administrativo=administrativo)
+    return render_template('industrial/edit_administrativo.html', administrativo=administrativo)
 
 @app.route('/administrativos/<id>', methods=['DELETE'])
 def delete_administrativo(id):
@@ -261,7 +261,7 @@ def get_all_administrativos():
     all_administrativos = list(administrativos.find({}).sort("nombre", 1))
     for administrativo in all_administrativos:
         administrativo['_id'] = str(administrativo['_id'])
-    return render_template('administrativos.html', administrativos=all_administrativos)
+    return render_template('industrial/administrativos.html', administrativos=all_administrativos)
 
 # Generar Excel
 @app.route('/export', methods=['POST'])
@@ -425,17 +425,17 @@ def get_columns(collection_name):
 
 @app.route('/index')
 def index():
-    return render_template('index.html')
+    return render_template('industrial/index.html')
 
 # Ruta para la página principal
 @app.route('/')
 def principal():
-    return render_template('principal.html')
+    return render_template('industrial/principal.html')
 
 # Rutas para reporteador
 @app.route('/reporteador')
 def reporteador():
-    return render_template('exportacion/exportar.html')
+    return render_template('industrial/exportacion/exportar.html')
 
 def allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -462,7 +462,7 @@ def update_text():
         return jsonify({'msg': 'Error: No se proporcionó un texto válido'}), 400
     
     # Guardar el nuevo texto en un archivo de configuración
-    with open("static/src/texto_a4.txt", "w", encoding="utf-8") as file:
+    with open("static/industrial/src/texto_a4.txt", "w", encoding="utf-8") as file:
         file.write(nuevo_texto)
     
     return jsonify({'msg': 'Texto actualizado correctamente'}), 200
@@ -481,12 +481,12 @@ def export_selected():
     selected_profesores = [profesores.find_one({'_id': ObjectId(profesor_id)}) for profesor_id in profesor_ids]
 
     # Ruta de la plantilla con 32 hojas
-    template_path = "static/src/Plantilla_pie_reducido_2cm.xlsx"  # Cambia esta ruta si es necesario
+    template_path = "static/industrial/src/Plantilla_pie_reducido_2cm.xlsx"  # Cambia esta ruta si es necesario
     workbook = openpyxl.load_workbook(template_path)
 
     # Cargar imágenes
-    header_image = Image("static/src/Encabezado1.PNG")
-    footer_image = Image("static/src/PieDePagina1.PNG")
+    header_image = Image("static/industrial/src/Encabezado1.PNG")
+    footer_image = Image("static/industrial/src/PieDePagina1.PNG")
 
     # Establecer borde inferior en la celda A44
     border_bottom = Border(bottom=Side(style='thin'))
@@ -496,7 +496,7 @@ def export_selected():
     white_font = Font(name="Helvetica", size=7, bold=True, color="FFFFFF")
 
     # Leer el texto de la celda A4 desde el archivo
-    texto_a4_path = "static/src/texto_a4.txt"
+    texto_a4_path = "static/industrial/src/texto_a4.txt"
     if os.path.exists(texto_a4_path):
         with open(texto_a4_path, "r", encoding="utf-8") as file:
             texto_a4 = file.read().strip()
@@ -784,12 +784,12 @@ def export_selected_pdf():
     selected_profesores = [profesores.find_one({'_id': ObjectId(profesor_id)}) for profesor_id in profesor_ids]
 
     # Ruta de la plantilla con 32 hojas
-    template_path = "static/src/Plantilla_pie_reducido_2cm.xlsx"  # Cambia esta ruta si es necesario
+    template_path = "static/industrial/src/Plantilla_pie_reducido_2cm.xlsx"  # Cambia esta ruta si es necesario
     workbook = openpyxl.load_workbook(template_path)
 
     # Cargar imágenes
-    header_image = Image("static/src/Encabezado1.PNG")
-    footer_image = Image("static/src/PieDePagina1.PNG")
+    header_image = Image("static/industrial/src/Encabezado1.PNG")
+    footer_image = Image("static/industrial/src/PieDePagina1.PNG")
 
     # Establecer borde inferior en la celda A44
     border_bottom = Border(bottom=Side(style='thin'))
@@ -799,7 +799,7 @@ def export_selected_pdf():
     white_font = Font(name="Helvetica", size=7, bold=True, color="FFFFFF")
 
     # Leer el texto de la celda A4 desde el archivo
-    texto_a4_path = "static/src/texto_a4.txt"
+    texto_a4_path = "static/industrial/src/texto_a4.txt"
     if os.path.exists(texto_a4_path):
         with open(texto_a4_path, "r", encoding="utf-8") as file:
             texto_a4 = file.read().strip()

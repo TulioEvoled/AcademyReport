@@ -5,12 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Asignaturas</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='industrial/css/styles.css') }}">
 </head>
 
 <body>
     <div class="header-container3">
-        <h1>Lista de Asignaturas</h1>
+        <h1>Lista de Asignaturas Especiales</h1>
         <button onclick="window.location.href='/index';">Volver</button>
     </div>
     <table>
@@ -23,21 +23,21 @@
             </tr>
         </thead>
         <tbody>
-            {% for asignatura in asignaturas %}
+            {% for asignaturaE in asignaturasE %}
             <tr>
-                <!-- <td>{{ asignatura['_id'] }}</td> -->
-                <td>{{ asignatura['nombre'] }}</td>
-                <td>{{ asignatura['horas'] }}</td>
+                <!-- <td>{{ asignaturaE['_id'] }}</td> -->
+                <td>{{ asignaturaE['nombre'] }}</td>
+                <td>{{ asignaturaE['horas'] }}</td>
                 <td>
-                    <button onclick="deleteAsignatura(`{{ asignatura['_id'] }}`)">Eliminar</button>
-                    <a class="edit-button" href="{{ url_for('edit_asignatura', id=asignatura['_id']) }}">Editar</a>
+                    <button onclick="deleteAsignaturaE(`{{ asignaturaE['_id'] }}`)">Eliminar</button>
+                    <a class="edit-button" href="{{ url_for('edit_asignaturaE', id=asignaturaE['_id']) }}">Editar</a>
                 </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 
-    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    <script src="{{ url_for('static', filename='industrial/js/app.js') }}"></script>
 </body>
 
 </html>
