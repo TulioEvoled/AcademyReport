@@ -28,7 +28,7 @@
                 <td>{{ administrativo['cargo'] }}</td>
                 <td>
                     <button onclick="deleteAdministrativo(`{{ administrativo['_id'] }}`)">Eliminar</button>
-                    <a class="edit-button" href="{{ url_for('edit_administrativo', id=administrativo['_id']) }}">Editar</a>
+                    <a class="edit-button" href="{{ url_for('industrial.edit_administrativo', id=administrativo['_id']) }}">Editar</a>
                 </td>
             </tr>
             {% endfor %}

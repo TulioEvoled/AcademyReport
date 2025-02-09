@@ -30,7 +30,7 @@
                 <td>{{ asignatura['horas'] }}</td>
                 <td>
                     <button onclick="deleteAsignatura(`{{ asignatura['_id'] }}`)">Eliminar</button>
-                    <a class="edit-button" href="{{ url_for('edit_asignatura', id=asignatura['_id']) }}">Editar</a>
+                    <a class="edit-button" href="{{ url_for('industrial.edit_asignatura', id=asignatura['_id']) }}">Editar</a>
                 </td>
             </tr>
             {% endfor %}

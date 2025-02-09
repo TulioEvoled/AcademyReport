@@ -15,10 +15,10 @@
         <h1 class="titulo">Bienvenido</h1>
         <!-- Aquí se coloca el contenedor para los botones -->
         <div class="botones-container">
-            <button data-url="{{ url_for('get_all_profesores') }}">Ver Profesores</button>
-            <button data-url="{{ url_for('get_all_asignaturas') }}">Ver Asignaturas</button>
-            <button data-url="{{ url_for('get_all_asignaturasE') }}">Ver Asignaturas Especiales</button>
-            <button data-url="{{ url_for('get_all_administrativos') }}">Ver Administrativos</button>
+            <button data-url="{{ url_for('industrial.get_all_profesores') }}">Ver Profesores</button>
+            <button data-url="{{ url_for('industrial.get_all_asignaturas') }}">Ver Asignaturas</button>
+            <button data-url="{{ url_for('industrial.get_all_asignaturasE') }}">Ver Asignaturas Especiales</button>
+            <button data-url="{{ url_for('industrial.get_all_administrativos') }}">Ver Administrativos</button>
             <button onclick="window.location.href='/';">Volver</button>
         </div>
     </div>
