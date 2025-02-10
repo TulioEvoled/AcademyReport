@@ -48,6 +48,7 @@
                 <td>
                     <table class="inner-table">
                         <thead>
+                            <th>Carrera</th>
                             <th>Asignatura</th>
                             <th>Grupo</th>
                             <th>Horas</th>
@@ -60,6 +61,7 @@
                         </thead>
                         {% for i in range(1, 9) %}
                         <tr>
+                            <td>{{ profesor['carrera' ~ i] }}</td>
                             <td class="form-group">{{ profesor['asignatura' ~ i] }}</td>
                             <td>{{ profesor['grupo' ~ i] }} {{ profesor['distintivo' ~ i] }}</td>
                             <td class="form-group">{{ profesor['horas' ~ i] }}</td>

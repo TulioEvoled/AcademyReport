@@ -12,6 +12,7 @@ document.getElementById('edit-profesor-form').addEventListener('submit', functio
         horas_b: parseInt(document.getElementById('horas_b').value) || 0,
         total_horas: parseInt(document.getElementById('total_horas').value) || 0,
 
+        carrera1: document.getElementById('carrera1').value,
         asignatura1: document.getElementById('asignatura1').value,
         grupo1: document.getElementById('grupo1').value,
         horas1: document.getElementById('horas1').value,
@@ -30,6 +31,7 @@ document.getElementById('edit-profesor-form').addEventListener('submit', functio
         hora_inicio16: document.getElementById('hora_inicio16').value,
         hora_fin16: document.getElementById('hora_fin16').value,
 
+        carrera2: document.getElementById('carrera2').value,
         asignatura2: document.getElementById('asignatura2').value,
         grupo2: document.getElementById('grupo2').value,
         horas2: document.getElementById('horas2').value,
@@ -48,6 +50,7 @@ document.getElementById('edit-profesor-form').addEventListener('submit', functio
         hora_inicio26: document.getElementById('hora_inicio26').value,
         hora_fin26: document.getElementById('hora_fin26').value,
 
+        carrera3: document.getElementById('carrera3').value,
         asignatura3: document.getElementById('asignatura3').value,
         grupo3: document.getElementById('grupo3').value,
         horas3: document.getElementById('horas3').value,
@@ -66,6 +69,7 @@ document.getElementById('edit-profesor-form').addEventListener('submit', functio
         hora_inicio36: document.getElementById('hora_inicio36').value,
         hora_fin36: document.getElementById('hora_fin36').value,
 
+        carrera4: document.getElementById('carrera4').value,
         asignatura4: document.getElementById('asignatura4').value,
         grupo4: document.getElementById('grupo4').value,
         horas4: document.getElementById('horas4').value,
@@ -84,6 +88,7 @@ document.getElementById('edit-profesor-form').addEventListener('submit', functio
         hora_inicio46: document.getElementById('hora_inicio46').value,
         hora_fin46: document.getElementById('hora_fin46').value,
 
+        carrera5: document.getElementById('carrera5').value,
         asignatura5: document.getElementById('asignatura5').value,
         grupo5: document.getElementById('grupo5').value,
         horas5: document.getElementById('horas5').value,
@@ -102,6 +107,7 @@ document.getElementById('edit-profesor-form').addEventListener('submit', functio
         hora_inicio56: document.getElementById('hora_inicio56').value,
         hora_fin56: document.getElementById('hora_fin56').value,
 
+        carrera6: document.getElementById('carrera6').value,
         asignatura6: document.getElementById('asignatura6').value,
         grupo6: document.getElementById('grupo6').value,
         horas6: document.getElementById('horas6').value,
@@ -120,6 +126,7 @@ document.getElementById('edit-profesor-form').addEventListener('submit', functio
         hora_inicio66: document.getElementById('hora_inicio66').value,
         hora_fin66: document.getElementById('hora_fin66').value,
 
+        carrera7: document.getElementById('carrera7').value,
         asignatura7: document.getElementById('asignatura7').value,
         grupo7: document.getElementById('grupo7').value,
         horas7: document.getElementById('horas7').value,
@@ -138,6 +145,7 @@ document.getElementById('edit-profesor-form').addEventListener('submit', functio
         hora_inicio76: document.getElementById('hora_inicio76').value,
         hora_fin76: document.getElementById('hora_fin76').value,
 
+        carrera8: document.getElementById('carrera8').value,
         asignatura8: document.getElementById('asignatura8').value,
         grupo8: document.getElementById('grupo8').value,
         horas8: document.getElementById('horas8').value,
@@ -707,7 +715,7 @@ function populateCareerSelectOptions(selectElement, options) {
 }
 
 document.addEventListener("DOMContentLoaded", function() {
-    const carreraSelects = document.querySelectorAll(".careerE");
+    const carreraSelects = document.querySelectorAll(".career, .careerE"); // Selecciona todos los selects de carrera normales y especiales
 
     // Poblar cada select con las opciones de carreras y mantener el valor actual si existe
     carreraSelects.forEach(select => populateCareerSelectOptions(select, carreras));

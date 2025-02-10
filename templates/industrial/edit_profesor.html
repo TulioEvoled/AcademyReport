@@ -49,6 +49,7 @@
             <thead>
                 <tr>
                     <th></th>
+                    <th>Carrera</th>
                     <th>Asignaturas</th>
                     <th>Grupo</th>
                     <th>Horas</th>
@@ -62,6 +63,15 @@
             </thead>
             <tr>
                 <td><label for="asignatura1">1.</label></td>
+                <!-- CARRERA -->
+                <td>
+                    <select id="carrera1" name="carrera1" class="career" data-current-value="{{ profesor.carrera1 }}">
+                        <option value=" " {% if profesor.carrera1 == " " %}selected{% endif %}> </option>
+                        {% for carrera in carreras %}
+                        <option value="{{ carrera }}" {% if profesor.carrera1 == carrera %}selected{% endif %}>{{ carrera }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
                 <!-- ASIGNATURA -->
                 <td>
                     <input type="text" id="asignatura1" name="asignatura1" value="{{ profesor.asignatura1 }}" list="asignatura-list1">
@@ -196,6 +206,14 @@
             <tr>
                 <td><label for="asignatura2">2.</label></td>
                 <td>
+                    <select id="carrera2" name="carrera2" class="career" data-current-value="{{ profesor.carrera2 }}">
+                        <option value=" " {% if profesor.carrera2 == " " %}selected{% endif %}> </option>
+                        {% for carrera in carreras %}
+                        <option value="{{ carrera }}" {% if profesor.carrera2 == carrera %}selected{% endif %}>{{ carrera }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <td>
                     <input type="text" id="asignatura2" name="asignatura2" value="{{ profesor.asignatura2 }}" list="asignatura-list2">
                     <datalist id="asignatura-list2"></datalist>
                 </td>
@@ -322,10 +340,16 @@
                     </select>
                 </td>
             </tr>
-
-
             <tr>
                 <td><label for="asignatura3">3.</label></td>
+                <td>
+                    <select id="carrera3" name="carrera3" class="career" data-current-value="{{ profesor.carrera3 }}">
+                        <option value=" " {% if profesor.carrera3 == " " %}selected{% endif %}> </option>
+                        {% for carrera in carreras %}
+                        <option value="{{ carrera }}" {% if profesor.carrera3 == carrera %}selected{% endif %}>{{ carrera }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
                 <td>
                     <input type="text" id="asignatura3" name="asignatura3" value="{{ profesor.asignatura3 }}" list="asignatura-list3">
                     <datalist id="asignatura-list3"></datalist>
@@ -453,9 +477,16 @@
                     </select>
                 </td>
             </tr>
-
             <tr>
-                <td><label for="asignatura1">4.</label>
+                <td><label for="asignatura1">4.</label></td>
+                <td>
+                    <select id="carrera4" name="carrera4" class="career" data-current-value="{{ profesor.carrera4 }}">
+                        <option value=" " {% if profesor.carrera4 == " " %}selected{% endif %}> </option>
+                        {% for carrera in carreras %}
+                        <option value="{{ carrera }}" {% if profesor.carrera4 == carrera %}selected{% endif %}>{{ carrera }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
                     <td>
                         <input type="text" id="asignatura4" name="asignatura4" value="{{ profesor.asignatura4 }}" list="asignatura-list4">
                         <datalist id="asignatura-list4"></datalist>
@@ -583,9 +614,16 @@
                         </select>
                     </td>
             </tr>
-
             <tr>
-                <td><label for="asignatura1">5.</label>
+                <td><label for="asignatura1">5.</label></td>
+                <td>
+                    <select id="carrera5" name="carrera5" class="career" data-current-value="{{ profesor.carrera5 }}">
+                        <option value=" " {% if profesor.carrera5 == " " %}selected{% endif %}> </option>
+                        {% for carrera in carreras %}
+                        <option value="{{ carrera }}" {% if profesor.carrera5 == carrera %}selected{% endif %}>{{ carrera }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
                     <td>
                         <input type="text" id="asignatura5" name="asignatura5" value="{{ profesor.asignatura5 }}" list="asignatura-list5">
                         <datalist id="asignatura-list5"></datalist>
@@ -713,10 +751,16 @@
                         </select>
                     </td>
             </tr>
-            </tr>
-
             <tr>
-                <td><label for="asignatura1">6.</label>
+                <td><label for="asignatura1">6.</label></td>
+                <td>
+                    <select id="carrera6" name="carrera6" class="career" data-current-value="{{ profesor.carrera6 }}">
+                        <option value=" " {% if profesor.carrera6 == " " %}selected{% endif %}> </option>
+                        {% for carrera in carreras %}
+                        <option value="{{ carrera }}" {% if profesor.carrera6 == carrera %}selected{% endif %}>{{ carrera }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
                     <td>
                         <input type="text" id="asignatura6" name="asignatura6" value="{{ profesor.asignatura6 }}" list="asignatura-list6">
                         <datalist id="asignatura-list6"></datalist>
@@ -845,10 +889,16 @@
                         </select>
                     </td>
             </tr>
-            </tr>
-
             <tr>
-                <td><label for="asignatura1">7.</label>
+                <td><label for="asignatura1">7.</label></td>
+                <td>
+                    <select id="carrera7" name="carrera7" class="career" data-current-value="{{ profesor.carrera7 }}">
+                        <option value=" " {% if profesor.carrera7 == " " %}selected{% endif %}> </option>
+                        {% for carrera in carreras %}
+                        <option value="{{ carrera }}" {% if profesor.carrera7 == carrera %}selected{% endif %}>{{ carrera }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
                     <td>
                         <input type="text" id="asignatura7" name="asignatura7" value="{{ profesor.asignatura7 }}" list="asignatura-list7">
                         <datalist id="asignatura-list7"></datalist>
@@ -976,11 +1026,16 @@
                         </select>
                     </td>
             </tr>
-            </tr>
-
-
             <tr>
-                <td><label for="asignatura1">8.</label>
+                <td><label for="asignatura1">8.</label></td>
+                <td>
+                    <select id="carrera8" name="carrera8" class="career" data-current-value="{{ profesor.carrera8 }}">
+                        <option value=" " {% if profesor.carrera8 == " " %}selected{% endif %}> </option>
+                        {% for carrera in carreras %}
+                        <option value="{{ carrera }}" {% if profesor.carrera8 == carrera %}selected{% endif %}>{{ carrera }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
                     <td>
                         <input type="text" id="asignatura8" name="asignatura8" value="{{ profesor.asignatura8 }}" list="asignatura-list8">
                         <datalist id="asignatura-list8"></datalist>
@@ -1108,8 +1163,6 @@
                         </select>
                     </td>
             </tr>
-            </tr>
-
         </table>
 
         <label for="total_horas_grupo">Total de Horas:</label>
