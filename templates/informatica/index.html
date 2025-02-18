@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Tecnológico - Informática</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='informatica/css/styles.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+</head>
+
+<body>
+    <div class="header-container">
+        <h1 class="titulo">Bienvenido a la Gestión de Informática</h1>
+        <!-- Contenedor de botones -->
+        <div class="botones-container">
+            <button data-url="{{ url_for('informatica.get_all_profesores') }}">Profesores</button>
+            <button data-url="{{ url_for('informatica.get_all_asignaturas') }}">Asignaturas</button>
+            <button data-url="{{ url_for('informatica.get_all_asignaturasE') }}">Asignaturas Especiales</button>
+            <button onclick="window.location.href='/informatica/informatica';">Volver</button>
+        </div>
+    </div>
+
+    <div class="header-container2">
+        <h2 id="toggle-profesor-form">Añadir Profesor</h2>
+        <h2 id="toggle-asignatura-form">Añadir Asignatura</h2>
+        <h2 id="toggle-asignaturaE-form">Añadir Asignatura Especial</h2>
+    </div>
+    <div>
+        <!-- FORMULARIO PARA PROFESORES EN INFORMÁTICA -->
+        <form id="add-profesor-form">
+            <label for="nombre">Nombre Completo:</label>
+            <input type="text" id="nombre" name="nombre" required><br>
+    
+            <label for="profesion">Profesión:</label>
+            <input type="text" id="profesion" name="profesion" required><br>
+    
+            <label for="adscripcion">Adscripción:</label>
+            <input type="text" id="adscripcion" name="adscripcion" required><br>
+    
+            <label for="fecha_ingreso">Fecha de Ingreso al Tecnológico:</label>
+            <input type="text" id="fecha_ingreso" name="fecha_ingreso" placeholder="01 de MARZO de 2011" required><br>
+    
+            <label for="tiempo_indeterminado">Tiempo Indeterminado:</label>
+            <select id="tiempo_indeterminado" name="tiempo_indeterminado" required>
+                <option value="SI">SI</option>
+                <option value="NO">NO</option>
+            </select><br>
+    
+            <label for="periodo_actual">Periodo Actual (2024-1):</label>
+            <input type="text" id="periodo_actual" name="periodo_actual" required><br>
+    
+            <label for="horas_a">Cantidad de Horas A:</label>
+            <input type="number" id="horas_a" name="horas_a" oninput="calcularTotalHoras()"><br>
+    
+            <label for="horas_b">Cantidad de Horas B:</label>
+            <input type="number" id="horas_b" name="horas_b" oninput="calcularTotalHoras()"><br>
+    
+            <label for="total_horas">Total de Horas:</label>
+            <input type="number" id="total_horas" name="total_horas" readonly required><br>
+    
+            <!-- Tabla de asignaturas -->
+            <table class="form-group">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Carrera</th>
+                        <th>Asignatura</th>
+                        <th>Grupo</th>
+                        <th>Horas</th>
+                        <th>Lunes</th>
+                        <th>Martes</th>
+                        <th>Miércoles</th>
+                        <th>Jueves</th>
+                        <th>Viernes</th>
+                        <th>Sábado</th>
+                    </tr>
+                </thead>
+                {% for i in range(1, 9) %}
+                <tr>
+                    <td><label for="asignatura{{ i }}">{{ i }}.</label></td>
+                    <td>
+                        <select id="carrera{{ i }}" name="carrera{{ i }}" class="career"></select>
+                    </td>
+                    <td>
+                        <input type="text" id="asignatura{{ i }}" name="asignatura{{ i }}" list="asignatura-list{{ i }}">
+                        <datalist id="asignatura-list{{ i }}"></datalist>
+                    </td>
+                    <td>
+                        <select id="grupo{{ i }}" name="grupo{{ i }}" class="group"></select>
+                    </td>
+                    <td>
+                        <input type="number" id="horas{{ i }}" name="horas{{ i }}" class="groupHoras">
+                    </td>
+                    {% for j in range(1, 7) %}
+                    <td>
+                        <select id="hora_inicio{{ i }}{{ j }}" name="hora_inicio{{ i }}{{ j }}" class="hora-inicio"></select>
+                        <select id="hora_fin{{ i }}{{ j }}" name="hora_fin{{ i }}{{ j }}" class="hora-fin"></select>
+                    </td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </table>
+    
+            <label for="total_horas_grupo">Total de Horas:</label>
+            <input type="number" id="total_horas_grupo" name="total_horas_grupo" readonly><br>
+    
+            <!-- Tabla de asignaturas especiales -->
+            <table class="form-groupE">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Carrera</th>
+                        <th>Asignatura</th>
+                        <th>Grupo</th>
+                        <th>Horas</th>
+                        <th>Lunes</th>
+                        <th>Martes</th>
+                        <th>Miércoles</th>
+                        <th>Jueves</th>
+                        <th>Viernes</th>
+                        <th>Sábado</th>
+                    </tr>
+                </thead>
+                {% for i in range(1, 9) %}
+                <tr>
+                    <td><label for="asignaturaE{{ i }}">{{ i }}.</label></td>
+
+                    <!-- CARRERA -->
+                    <td>
+                        <select id="carreraE{{ i }}" name="carreraE{{ i }}" class="careerE"></select>
+                    </td>
+
+                    <!-- ASIGNATURA -->
+                    <td>
+                        <input type="text" id="asignaturaE{{ i }}" name="asignaturaE{{ i }}" list="asignaturaE-list{{ i }}">
+                        <datalist id="asignaturaE-list{{ i }}"></datalist>
+                    </td>
+
+                    <!-- GRUPO (Incluye input y select como en Industrial) -->
+                    <td>
+                        <div class="input-group">
+                            <input id="grupoE{{ i }}" type="text" placeholder="Escribe o selecciona un grupo" class="custom-input">
+                            <select id="grupoSelectE{{ i }}" name="grupoE{{ i }}" class="group"></select>
+                        </div>
+                    </td>
+
+                    <!-- HORAS -->
+                    <td>
+                        <input type="number" id="horasE{{ i }}" name="horasE{{ i }}" class="groupHoras">
+                    </td>
+
+                    <!-- HORARIOS -->
+                    {% for j in range(1, 7) %}
+                    <td>
+                        <select id="hora_inicioE{{ i }}{{ j }}" name="hora_inicioE{{ i }}{{ j }}" class="hora-inicio"></select>
+                        <select id="hora_finE{{ i }}{{ j }}" name="hora_finE{{ i }}{{ j }}" class="hora-fin"></select>
+                    </td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </table>
+
+            <!-- Total de Horas -->
+            <label for="total_horasE_grupo">Total de Horas:</label>
+            <input type="number" id="total_horasE_grupo" name="total_horasE_grupo" readonly><br>
+    
+            <!-- Cargo -->
+            <table class="form-groupC">
+                <thead>
+                    <tr>
+                        <th>Cargo</th>
+                        <th>Vigencia</th>
+                        <th>Horas</th>
+                        <th>Lunes</th>
+                        <th>Martes</th>
+                        <th>Miércoles</th>
+                        <th>Jueves</th>
+                        <th>Viernes</th>
+                        <th>Sábado</th>
+                    </tr>
+                </thead>
+                <tr>
+                    <td>
+                        <select id="cargo" name="cargo" required>
+                            <option value=" ">NO APLICA</option>
+                            <option value="PRESIDENTE DE ACADEMIA">PRESIDENTE DE ACADEMIA</option>
+                            <option value="SECRETARIO DE ACADEMIA">SECRETARIO DE ACADEMIA</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type="text" id="vigenciaCargo" name="vigenciaCargo">
+                    </td>
+                    <td>
+                        <input type="number" id="horasC" name="horasC" class="groupHoras">
+                    </td>
+                    {% for j in range(1, 7) %}
+                    <td>
+                        <select id="hora_inicioC1{{ j }}" name="hora_inicioC1{{ j }}" class="hora-inicio"></select>
+                        <select id="hora_finC1{{ j }}" name="hora_finC1{{ j }}" class="hora-fin"></select>
+                    </td>
+                    {% endfor %}
+                </tr>
+            </table>
+    
+            <br>
+            <button type="submit">Añadir Profesor</button>
+        </form>
+    </div>
+
+    <!-- FORMULARIO DE ASIGNATURAS - INFORMÁTICA -->
+    <div>
+        <form id="add-asignatura-form">
+            <label for="nombre_asignatura">Nombre:</label>
+            <input type="text" id="nombre_asignatura" name="nombre_asignatura" required><br>
+
+            <label for="horas_asignatura">Cantidad de Horas:</label>
+            <input type="number" id="horas_asignatura" name="horas_asignatura" required><br>
+
+            <button type="submit">Añadir Asignatura</button>
+        </form>
+    </div>
+
+    <!-- FORMULARIO DE ASIGNATURAS ESPECIALES - INFORMÁTICA -->
+    <div>
+        <form id="add-asignaturaE-form">
+            <label for="nombre_asignaturaE">Nombre:</label>
+            <input type="text" id="nombre_asignaturaE" name="nombre_asignaturaE" required><br>
+
+            <label for="horas_asignaturaE">Cantidad de Horas:</label>
+            <input type="number" id="horas_asignaturaE" name="horas_asignaturaE" required><br>
+
+            <button type="submit">Añadir Asignatura Especial</button>
+        </form>
+    </div>
+    
+    <!-- FORMULARIO PARA ADMINISTRATIVOS -->
+    <!-- <div>
+        <h2>Añadir Administrativo</h2>
+        <form id="add-administrativo-form">
+            <label for="nombre_administrativo">Nombre Completo:</label>
+            <input type="text" id="nombre_administrativo" name="nombre_administrativo" required><br>
+
+            <label for="cargo_administrativo">Cargo:</label>
+            <input type="text" id="cargo_administrativo" name="cargo_administrativo" required><br>
+
+            <button type="submit">Añadir Administrativo</button>
+        </form>
+    </div> -->
+
+    <!-- EXPORTACIÓN DE EXCEL - INFORMÁTICA -->
+<div>
+    <form id="export-form" method="POST" action="/informatica/export" style="display: none;">
+        <label for="collection">Colección:</label>
+        <select id="collection" name="collection" required>
+            <option value=""></option>
+            <option value="informatica_profesores">Profesores</option>
+            <option value="informatica_asignaturas">Asignaturas</option>
+        </select><br>
+
+        <label for="export-format">Formato:</label>
+        <select id="export-format" name="format" required>
+            <option value="xlsx">Excel (.xlsx)</option>
+            <option value="csv">CSV (.csv)</option>
+        </select><br>
+
+        <div id="columns-container">
+            <!-- Checkboxes will be generated here -->
+        </div>
+
+        <button type="submit">Exportar Datos</button>
+    </form>
+</div>
+
+<script src="{{ url_for('static', filename='informatica/js/app.js') }}"></script>
+</body>
+
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asignaturas - Informática</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='informatica/css/styles.css') }}">
+</head>
+
+<body>
+    <div class="header-container3">
+        <h1>Lista de Asignaturas</h1>
+        <button onclick="window.location.href='/informatica/informatica_index';">Volver</button>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Horas</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for asignatura in asignaturas %}
+            <tr>
+                <td>{{ asignatura['nombre'] }}</td>
+                <td>{{ asignatura['horas'] }}</td>
+                <td>
+                    <button onclick="deleteAsignatura(`{{ asignatura['_id'] }}`)">Eliminar</button>
+                    <a class="edit-button" href="{{ url_for('informatica.edit_asignatura', id=asignatura['_id']) }}">Editar</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <script>
+        function deleteAsignatura(id) {
+            if (confirm("¿Estás seguro de que quieres eliminar esta asignatura?")) {
+                fetch(`/informatica/informatica_asignaturas/${id}`, {
+                    method: 'DELETE'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.msg);
+                    location.reload();
+                })
+                .catch(error => console.error('Error:', error));
+            }
+        }
+    </script>
+
+    <script src="{{ url_for('static', filename='informatica/js/app.js') }}"></script>
+</body>
+
+</html>

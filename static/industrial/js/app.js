@@ -899,7 +899,7 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 // LISTA DE CARRERAS
-const carreras = ["", "INDUSTRIAL", "SISTEMAS COMPUTACIONALES", "ELECTRÓNICA", "MECATRÓNICA", "INFORMÁTICA", "ADMINISTRACIÓN"];
+const carreras = ["", "INDUSTRIAL", "SISTEMAS COMPUTACIONALES", "ELECTRÓNICA", "ELECTROMECÁNICA", "INFORMÁTICA", "ADMINISTRACIÓN"];
 
 document.addEventListener("DOMContentLoaded", function() {
     const carreraESelects = document.querySelectorAll(".careerE");

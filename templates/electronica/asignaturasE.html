@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asignaturas Especiales - Electrónica</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='electronica/css/styles.css') }}">
+</head>
+
+<body>
+    <div class="header-container3">
+        <h1>Lista de Asignaturas Especiales - Electrónica</h1>
+        <button onclick="window.location.href='/electronica/electronica_index';">Volver</button>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Horas</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for asignaturaE in asignaturasE %}
+            <tr>
+                <td>{{ asignaturaE['nombre'] }}</td>
+                <td>{{ asignaturaE['horas'] }}</td>
+                <td>
+                    <button onclick="deleteAsignaturaE(`{{ asignaturaE['_id'] }}`)">Eliminar</button>
+                    <a class="edit-button" href="{{ url_for('electronica.edit_asignaturaE', id=asignaturaE['_id']) }}">Editar</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <script>
+        function deleteAsignaturaE(id) {
+            if (confirm("¿Estás seguro de que quieres eliminar esta asignatura especial?")) {
+                fetch(`/electronica/electronica_asignaturasE/${id}`, { // Ruta actualizada a Electrónica
+                    method: 'DELETE'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.msg);
+                    location.reload();
+                })
+                .catch(error => console.error('Error:', error));
+            }
+        }
+    </script>
+
+    <script src="{{ url_for('static', filename='electronica/js/app.js') }}"></script>
+
+</body>
+
+</html>

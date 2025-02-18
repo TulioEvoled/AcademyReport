@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='administracion/css/styles.css') }}">
+    <title>Página Principal - Administración</title>
+</head>
+
+<body>
+    <div class="header-container">
+        <h1 class="titulo">ACADEMYREPORT - ADMINISTRACIÓN</h1>
+    </div>
+
+    <div class="botones-container-principal">
+        <button onclick="location.href='/administracion/administracion_index'">ASIGNACIÓN ACADÉMICA</button>
+        <button onclick="location.href='/administracion/administracion_reporteador'">REPORTEADOR</button>
+    </div>
+</body>
+
+</html>

@@ -39,7 +39,7 @@
     <div>
         <!-- EXPORTACION DE EXCEL -->
 
-        <h2>Exportar</h2>
+        <h2>Exportar Datos</h2>
         <form id="export-form" method="POST" action="/export">
             <label for="collection">Colección:</label>
             <select id="collection" name="collection" required>
@@ -113,17 +113,27 @@
     <div id="mensaje"></div>
 
     <div>
-        <h2>Actualizar Texto en Celda A4</h2>
+        <h2>Actualizar Leyenda Anual</h2>
         <form id="updateTextForm" action="/update-text" method="POST">
-            <label for="nuevo_texto">Nuevo Texto:</label>
-            <input type="text" id="nuevo_texto" name="nuevo_texto" required>
+            <label for="nuevo_texto">Nueva Leyenda:</label>
+            <input type="text" id="nuevo_texto" name="nuevo_texto">
             <br><br>
-            <button type="submit">Actualizar Texto</button>
+            <button type="submit">Actualizar</button>
         </form>
     </div>
 
     <!-- Div para mostrar mensajes -->
     <div id="mensaje"></div>
+
+    <div>
+        <h2>Actualizar URL Temario</h2>
+        <form id="updateTextFormDos" action="/update-text-a54" method="POST">
+            <label for="nuevo_texto_dos">Nueva Leyenda:</label>
+            <input type="text" id="nuevo_texto_dos" name="nuevo_texto_dos">
+            <br><br>
+            <button type="submit">Actualizar</button>
+        </form>
+    </div>
 
     <script src="{{ url_for('static', filename='industrial/js/export.js') }}"></script>
 </body>

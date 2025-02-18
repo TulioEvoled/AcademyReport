@@ -15,10 +15,10 @@
         <h1 class="titulo">Bienvenido</h1>
         <!-- Aquí se coloca el contenedor para los botones -->
         <div class="botones-container">
-            <button data-url="{{ url_for('industrial.get_all_profesores') }}">Ver Profesores</button>
-            <button data-url="{{ url_for('industrial.get_all_asignaturas') }}">Ver Asignaturas</button>
-            <button data-url="{{ url_for('industrial.get_all_asignaturasE') }}">Ver Asignaturas Especiales</button>
-            <button data-url="{{ url_for('industrial.get_all_administrativos') }}">Ver Administrativos</button>
+            <button data-url="{{ url_for('industrial.get_all_profesores') }}">Profesores</button>
+            <button data-url="{{ url_for('industrial.get_all_asignaturas') }}">Asignaturas</button>
+            <button data-url="{{ url_for('industrial.get_all_asignaturasE') }}">Asignaturas Especiales</button>
+            <button data-url="{{ url_for('industrial.get_all_administrativos') }}">Administrativos</button>
             <button onclick="window.location.href='/';">Volver</button>
         </div>
     </div>
@@ -50,7 +50,7 @@
                 <option value="NO">NO</option>
             </select><br>
 
-            <label for="periodo_actual">Periodo Actual (2024-1):</label>
+            <label for="periodo_actual">Periodo Actual (2025-1):</label>
             <input type="text" id="periodo_actual" name="periodo_actual" required><br>
 
             <label for="horas_a">Cantidad de Horas A:</label>

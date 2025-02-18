@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profesores - Informática</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='informatica/css/styles.css') }}">
+</head>
+
+<body>
+    <div class="header-container3">
+        <h1>Lista de Profesores - Informática</h1>
+        <button onclick="window.location.href='/informatica/informatica_index';">Volver</button>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Profesion</th>
+                <th>Adscripción</th>
+                <th>Fecha de ingreso</th>
+                <th>Tiempo determinado</th>
+                <th>Periodo actual</th>
+                <th>Horas A</th>
+                <th>Horas B</th>
+                <th>Total de Horas</th>
+                <th>Asignación de Horas Frente a Grupo</th>
+                <th>Asignación de Horas de Descarga para otras Actividades</th>
+                <th>Cargo</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for profesor in profesores %}
+            <tr>
+                <td>{{ profesor['nombre'] }}</td>
+                <td>{{ profesor['profesion'] }}</td>
+                <td>{{ profesor['adscripcion'] }}</td>
+                <td>{{ profesor['fecha_ingreso'] }}</td>
+                <td>{{ profesor['tiempo_indeterminado'] }}</td>
+                <td>{{ profesor['periodo_actual'] }}</td>
+                <td>{{ profesor['horas_a'] }}</td>
+                <td>{{ profesor['horas_b'] }}</td>
+                <td>{{ profesor['total_horas'] }}</td>
+                <td>
+                    <table class="inner-table">
+                        <thead>
+                            <th>Carrera</th>
+                            <th>Asignatura</th>
+                            <th>Grupo</th>
+                            <th>Horas</th>
+                            <th>Lunes</th>
+                            <th>Martes</th>
+                            <th>Miércoles</th>
+                            <th>Jueves</th>
+                            <th>Viernes</th>
+                            <th>Sábado</th>
+                        </thead>
+                        {% for i in range(1, 9) %}
+                        <tr>
+                            <td>{{ profesor['carrera' ~ i] }}</td>
+                            <td class="form-group">{{ profesor['asignatura' ~ i] }}</td>
+                            <td>{{ profesor['grupo' ~ i] }} {{ profesor['distintivo' ~ i] }}</td>
+                            <td class="form-group">{{ profesor['horas' ~ i] }}</td>
+                            <td>{{ profesor['hora_inicio' ~ i ~ '1'] }} {{ profesor['hora_fin' ~ i ~ '1'] }}</td>
+                            <td>{{ profesor['hora_inicio' ~ i ~ '2'] }} {{ profesor['hora_fin' ~ i ~ '2'] }}</td>
+                            <td>{{ profesor['hora_inicio' ~ i ~ '3'] }} {{ profesor['hora_fin' ~ i ~ '3'] }}</td>
+                            <td>{{ profesor['hora_inicio' ~ i ~ '4'] }} {{ profesor['hora_fin' ~ i ~ '4'] }}</td>
+                            <td>{{ profesor['hora_inicio' ~ i ~ '5'] }} {{ profesor['hora_fin' ~ i ~ '5'] }}</td>
+                            <td>{{ profesor['hora_inicio' ~ i ~ '6'] }} {{ profesor['hora_fin' ~ i ~ '6'] }}</td>
+                        </tr>
+                        {% endfor %}
+                        <tr>
+                            <td></td>
+                            <td>Total: </td>
+                            <td>{{ profesor['total_horas_grupo'] }}</td>
+                        </tr>
+                    </table>
+                </td>
+                <td>
+                    <table class="inner-table">
+                        <thead>
+                            <th>Carrera</th>
+                            <th>Asignatura</th>
+                            <th>Grupo</th>
+                            <th>Horas</th>
+                            <th>Lunes</th>
+                            <th>Martes</th>
+                            <th>Miércoles</th>
+                            <th>Jueves</th>
+                            <th>Viernes</th>
+                            <th>Sábado</th>
+                        </thead>
+                        {% for i in range(1, 9) %}
+                        <tr>
+                            <td>{{ profesor['carreraE' ~ i] }}</td>
+                            <td class="form-groupE">{{ profesor['asignaturaE' ~ i] }}</td>
+                            <td>{{ profesor['grupoE' ~ i] }}</td>
+                            <td class="form-groupE">{{ profesor['horasE' ~ i] }}</td>
+                            <td>{{ profesor['hora_inicioE' ~ i ~ '1'] }} {{ profesor['hora_finE' ~ i ~ '1'] }}</td>
+                            <td>{{ profesor['hora_inicioE' ~ i ~ '2'] }} {{ profesor['hora_finE' ~ i ~ '2'] }}</td>
+                            <td>{{ profesor['hora_inicioE' ~ i ~ '3'] }} {{ profesor['hora_finE' ~ i ~ '3'] }}</td>
+                            <td>{{ profesor['hora_inicioE' ~ i ~ '4'] }} {{ profesor['hora_finE' ~ i ~ '4'] }}</td>
+                            <td>{{ profesor['hora_inicioE' ~ i ~ '5'] }} {{ profesor['hora_finE' ~ i ~ '5'] }}</td>
+                            <td>{{ profesor['hora_inicioE' ~ i ~ '6'] }} {{ profesor['hora_finE' ~ i ~ '6'] }}</td>
+                        </tr>
+                        {% endfor %}
+                        <tr>
+                            <td></td>
+                            <td>Total: </td>
+                            <td>{{ profesor['total_horasE_grupo'] }}</td>
+                        </tr>
+                    </table>
+                </td>
+                <td>
+                    <table class="inner-table">
+                        <thead>
+                            <th>Cargo</th>
+                            <th>Vigencia</th>
+                            <th>Horas</th>
+                            <th>Lunes</th>
+                            <th>Martes</th>
+                            <th>Miercoles</th>
+                            <th>Jueves</th>
+                            <th>Viernes</th>
+                            <th>Sabado</th>
+                        </thead>
+                        <tr>
+                            <td>{{ profesor['cargo'] }}</td>
+                            <td>{{ profesor['vigenciaCargo'] }}</td>
+                            <td>{{ profesor['horasC'] }}</td>
+                            <td>{{ profesor['hora_inicioC11'] }} {{ profesor['hora_finC11'] }}</td>
+                            <td>{{ profesor['hora_inicioC12'] }} {{ profesor['hora_finC12'] }}</td>
+                            <td>{{ profesor['hora_inicioC13'] }} {{ profesor['hora_finC13'] }}</td>
+                            <td>{{ profesor['hora_inicioC14'] }} {{ profesor['hora_finC14'] }}</td>
+                            <td>{{ profesor['hora_inicioC15'] }} {{ profesor['hora_finC15'] }}</td>
+                            <td>{{ profesor['hora_inicioC16'] }} {{ profesor['hora_finC16'] }}</td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>Total: </td>
+                            <td>{{ profesor['horasC'] }}</td>
+                        </tr>
+                    </table>
+                </td>
+                <td>
+                    <button onclick="deleteProfesor(`{{ profesor['_id'] }}`)">Eliminar</button>
+                    <button data-url="/informatica/informatica_profesores/edit/{{ profesor._id }}">Editar</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('button[data-url]').forEach(function(button) {
+                button.addEventListener('click', function() {
+                    var url = this.getAttribute('data-url');
+                    window.location.href = url;
+                });
+            });
+    
+            document.querySelectorAll('.delete-button').forEach(button => {
+                button.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    const type = this.getAttribute('data-type');
+    
+                    // Verificar si se está eliminando un profesor de Informática
+                    let endpoint = "";
+                    if (type === "profesores") {
+                        endpoint = "/informatica/informatica_profesores/" + id;
+                    }
+    
+                    fetch(endpoint, {
+                        method: 'DELETE'
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        alert(data.msg);
+                        location.reload();
+                    });
+                });
+            });
+        });
+    </script>
+    
+    <script src="{{ url_for('static', filename='informatica/js/app.js') }}"></script>
+    </body>
+    </html>

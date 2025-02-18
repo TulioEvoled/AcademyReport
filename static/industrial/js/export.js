@@ -87,6 +87,25 @@ document.getElementById('updateTextForm').addEventListener('submit', function(ev
         });
 });
 
+// Manejo de la actualización de texto
+document.getElementById('updateTextFormDos').addEventListener('submit', function(event) {
+    event.preventDefault(); // Evitar recarga
+
+    let formData = new FormData(this);
+
+    fetch('/update-text-a54', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            mostrarMensaje(data.msg, data.msg.includes("Error"));
+        })
+        .catch(error => {
+            mostrarMensaje("Error en la actualización del texto", true);
+        });
+});
+
 //EXPORTAR ARCHIVO EXCEL
 document.getElementById('export-form').addEventListener('submit', function(e) {
     e.preventDefault();

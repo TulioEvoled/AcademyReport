@@ -1,9 +1,8 @@
-from flask import Flask, request, jsonify, send_file, render_template, redirect, url_for
+from flask import Blueprint, request, jsonify, send_file, render_template, redirect, url_for
 from pymongo import MongoClient
 from bson import ObjectId
 import pandas as pd
-from io import BytesIO
-from io import StringIO
+from io import BytesIO, StringIO
 import openpyxl
 from openpyxl.drawing.image import Image
 from openpyxl.styles import Border, Side, PatternFill, Font
@@ -12,104 +11,113 @@ import os
 import pythoncom
 from datetime import datetime
 
-app = Flask(__name__)
+# Definir el Blueprint para Ingeniería en Sistemas Computacionales
+sistemas_bp = Blueprint('sistemas', __name__, url_prefix='/sistemas')
 
+# Conexión a MongoDB
 client = MongoClient('mongodb+srv://ivan:tuliogaymer077@cluster0.bkahq7u.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
 db = client.tecnologico
 
-profesores = db['profesores']
-asignaturas = db['asignaturas']
-asignaturasE = db['asignaturasE']
-administrativos = db['administrativos']
+# Colecciones específicas de Ingeniería en Sistemas Computacionales
+sistemas_profesores = db['sistemas_profesores']
+sistemas_asignaturas = db['sistemas_asignaturas']
+sistemas_asignaturasE = db['sistemas_asignaturasE']
+administrativos = db['sistemas_administrativos']
 
-grupos = ["NG","1101", "1102", "1151", "1152", "1181", "1201", "1202", "1251", "1252", 
-          "1281", "1301", "1302", "1351", "1352", "1381", "1401", "1402", "1451", 
-          "1452", "1481", "1501", "1502", "1551", "1552", "1581", "1601", "1602", 
-          "1651", "1652", "1681", "1751", "1752", "1781", "1851", "1852", "1881", 
-          "1951", "1952", "1981"]
+# Listas de grupos, horarios y carreras
+sistemas_grupos = [
+    "NG", "4101", "4102", "4151", "4152", "4171", "4201", "4202", "4251", "4252",
+    "4271", "4301", "4302", "4351", "4352", "4371", "4401", "4402", "4451",
+    "4452", "4471", "4501", "4502", "4551", "4552", "4571", "4601", "4602",
+    "4651", "4652", "4671", "4751", "4752", "4771", "4851", "4852", "4871",
+    "4951", "4952", "4971"
+]
 
-horarios = ["07:00", "08:00", "09:00", "10:00", "11:00", "12:00", "13:00", 
-            "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", 
-            "21:00"]
+horarios = [
+    "07:00", "08:00", "09:00", "10:00", "11:00", "12:00", "13:00",
+    "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00",
+    "21:00"
+]
 
-carreras = ["INDUSTRIAL", "SISTEMAS COMPUTACIONALES", "ELECTRÓNICA",
-            "MECATRÓNICA", "INFORMÁTICA", "ADMINISTRACIÓN"]
+carreras = [
+    "SISTEMAS COMPUTACIONALES", "INDUSTRIAL", "ELECTRÓNICA",
+    "ELECTROMECÁNICA", "INFORMÁTICA", "ADMINISTRACIÓN"
+]
 
-UPLOAD_FOLDER = "industrial/static/src/"
-ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg"}
+# Configuración de carga de archivos para la carrera de Ingeniería en Sistemas Computacionales
+SISTEMAS_UPLOAD_FOLDER = "sistemas/static/src/"
+SISTEMAS_ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg"}
 
-app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
-
-# Rutas CRUD para profesores
-@app.route('/profesores', methods=['POST'])
+# Rutas CRUD para profesores en Sistemas Computacionales
+@sistemas_bp.route('/sistemas_profesores', methods=['POST'])
 def add_profesor():
     data = request.json
-    profesores.insert_one(data)
+    sistemas_profesores.insert_one(data)
     return jsonify({'msg': 'Profesor añadido'}), 201
 
-@app.route('/Add_Profesor')
+@sistemas_bp.route('/sistemas_profesores/Add_Profesor')
 def add_profesor2():
-    return render_template('Add_Profesor.html')
+    return render_template('sistemas/Add_Profesor.html')
 
-@app.route('/profesores/<id>', methods=['GET'])
+@sistemas_bp.route('/sistemas_profesores/<id>', methods=['GET'])
 def get_profesor(id):
-    profesor = profesores.find_one({'_id': ObjectId(id)})
+    profesor = sistemas_profesores.find_one({'_id': ObjectId(id)})
     profesor['_id'] = str(profesor['_id'])
     return jsonify(profesor)
 
-@app.route('/profesores/<id>', methods=['PUT'])
+@sistemas_bp.route('/sistemas_profesores/<id>', methods=['PUT'])
 def update_profesor(id):
     data = request.json
-    profesores.update_one({'_id': ObjectId(id)}, {'$set': data})
+    sistemas_profesores.update_one({'_id': ObjectId(id)}, {'$set': data})
     return jsonify({'msg': 'Profesor actualizado'})
 
-@app.route('/edit-profesor/<id>', methods=['GET'])
+@sistemas_bp.route('/sistemas_profesores/edit/<id>', methods=['GET'])
 def edit_profesor(id):
-    profesor = profesores.find_one({'_id': ObjectId(id)})
+    profesor = sistemas_profesores.find_one({'_id': ObjectId(id)})
     profesor['_id'] = str(profesor['_id'])
-    return render_template('industrial/edit_profesor.html', profesor=profesor, grupos=grupos, horarios=horarios)
+    return render_template('sistemas/edit_profesor.html', profesor=profesor, grupos=sistemas_grupos, horarios=horarios)
 
-@app.route('/profesores/<id>', methods=['DELETE'])
+@sistemas_bp.route('/sistemas_profesores/<id>', methods=['DELETE'])
 def delete_profesor(id):
-    profesores.delete_one({'_id': ObjectId(id)})
+    sistemas_profesores.delete_one({'_id': ObjectId(id)})
     return jsonify({'msg': 'Profesor eliminado'})
 
-@app.route('/profesores', methods=['GET'])
+@sistemas_bp.route('/sistemas_profesores', methods=['GET'])
 def get_all_profesores():
-    all_profesores = list(profesores.find({}).sort("nombre", 1))
+    all_profesores = list(sistemas_profesores.find({}).sort("nombre", 1))
     for profesor in all_profesores:
         profesor['_id'] = str(profesor['_id'])
-    return render_template('industrial/profesores.html', profesores=all_profesores)
+    return render_template('sistemas/profesores.html', profesores=all_profesores)
 
-# Ruta para obtener la lista de profesores en formato JSON
-@app.route('/profesores/json', methods=['GET'])
+# Ruta para obtener la lista de profesores en formato JSON en Sistemas Computacionales
+@sistemas_bp.route('/sistemas_profesores/json', methods=['GET'])
 def get_profesores_json():
-    all_profesores = list(profesores.find({}, {'_id': 1, 'nombre': 1}).sort("nombre", 1))
+    all_profesores = list(sistemas_profesores.find({}, {'_id': 1, 'nombre': 1}).sort("nombre", 1))
     for profesor in all_profesores:
         profesor['_id'] = str(profesor['_id'])
     return jsonify(all_profesores)
 
-# Rutas CRUD para asignaturas
-@app.route('/asignaturas', methods=['POST'])
+# Rutas CRUD para asignaturas en Sistemas Computacionales
+@sistemas_bp.route('/sistemas_asignaturas', methods=['POST'])
 def add_asignatura():
     data = request.json
-    asignaturas.insert_one(data)
+    sistemas_asignaturas.insert_one(data)
     return jsonify({'msg': 'Asignatura añadida'}), 201
 
-@app.route('/asignaturas/<id>', methods=['GET'])
+@sistemas_bp.route('/sistemas_asignaturas/<id>', methods=['GET'])
 def get_asignatura(id):
-    asignatura = asignaturas.find_one({'_id': ObjectId(id)})
+    asignatura = sistemas_asignaturas.find_one({'_id': ObjectId(id)})
     asignatura['_id'] = str(asignatura['_id'])
     return jsonify(asignatura)
 
-@app.route('/asignaturas/<id>', methods=['PUT'])
+@sistemas_bp.route('/sistemas_asignaturas/<id>', methods=['PUT'])
 def update_asignatura(id):
     data = request.json
     nombre = data.get('nombre')
     horas = data.get('horas')
 
     if nombre and isinstance(horas, int):
-        result = asignaturas.update_one(
+        result = sistemas_asignaturas.update_one(
             {'_id': ObjectId(id)},
             {'$set': {'nombre': nombre, 'horas': horas}}
         )
@@ -121,53 +129,52 @@ def update_asignatura(id):
     else:
         return jsonify({"msg": "Datos inválidos"}), 400
 
-@app.route('/edit-asignatura/<id>', methods=['GET'])
+@sistemas_bp.route('/sistemas_edit-asignatura/<id>', methods=['GET'])
 def edit_asignatura(id):
-    asignatura = asignaturas.find_one({'_id': ObjectId(id)})
+    asignatura = sistemas_asignaturas.find_one({'_id': ObjectId(id)})
     asignatura['_id'] = str(asignatura['_id'])
-    return render_template('industrial/edit_asignatura.html', asignatura=asignatura)
+    return render_template('sistemas/edit_asignatura.html', asignatura=asignatura)
 
-@app.route('/asignaturas/<id>', methods=['DELETE'])
+@sistemas_bp.route('/sistemas_asignaturas/<id>', methods=['DELETE'])
 def delete_asignatura(id):
-    asignaturas.delete_one({'_id': ObjectId(id)})
+    sistemas_asignaturas.delete_one({'_id': ObjectId(id)})
     return jsonify({'msg': 'Asignatura eliminada'})
 
-@app.route('/asignaturas/json', methods=['GET'])
+@sistemas_bp.route('/sistemas_asignaturas/json', methods=['GET'])
 def get_all_asignaturas_json():
-    all_asignaturas = list(asignaturas.find({}))
+    all_asignaturas = list(sistemas_asignaturas.find({}))
     for asignatura in all_asignaturas:
         asignatura['_id'] = str(asignatura['_id'])
     return jsonify(all_asignaturas)
 
-# Ruta para obtener todas las asignaturas y renderizar el template
-@app.route('/asignaturas', methods=['GET'])
+@sistemas_bp.route('/sistemas_asignaturas', methods=['GET'])
 def get_all_asignaturas():
-    all_asignaturas = list(asignaturas.find({}).sort("nombre", 1))
+    all_asignaturas = list(sistemas_asignaturas.find({}).sort("nombre", 1))
     for asignatura in all_asignaturas:
         asignatura['_id'] = str(asignatura['_id'])
-    return render_template('industrial/asignaturas.html', asignaturas=all_asignaturas)
+    return render_template('sistemas/asignaturas.html', asignaturas=all_asignaturas)
 
-# Rutas CRUD para asignaturas especiales
-@app.route('/asignaturasE', methods=['POST'])
+# Rutas CRUD para asignaturas especiales en Sistemas Computacionales
+@sistemas_bp.route('/sistemas_asignaturasE', methods=['POST'])
 def add_asignaturaE():
     data = request.json
-    asignaturasE.insert_one(data)
+    sistemas_asignaturasE.insert_one(data)
     return jsonify({'msg': 'Asignatura Especial añadida'}), 201
 
-@app.route('/asignaturasE/<id>', methods=['GET'])
+@sistemas_bp.route('/sistemas_asignaturasE/<id>', methods=['GET'])
 def get_asignaturaE(id):
-    asignaturaE = asignaturasE.find_one({'_id': ObjectId(id)})
+    asignaturaE = sistemas_asignaturasE.find_one({'_id': ObjectId(id)})
     asignaturaE['_id'] = str(asignaturaE['_id'])
     return jsonify(asignaturaE)
 
-@app.route('/asignaturasE/<id>', methods=['PUT'])
+@sistemas_bp.route('/sistemas_asignaturasE/<id>', methods=['PUT'])
 def update_asignaturaE(id):
     data = request.json
     nombre = data.get('nombre')
     horas = data.get('horas')
 
     if nombre and isinstance(horas, int):
-        result = asignaturasE.update_one(
+        result = sistemas_asignaturasE.update_one(
             {'_id': ObjectId(id)},
             {'$set': {'nombre': nombre, 'horas': horas}}
         )
@@ -179,98 +186,50 @@ def update_asignaturaE(id):
     else:
         return jsonify({"msg": "Datos inválidos"}), 400
 
-@app.route('/edit-asignaturaE/<id>', methods=['GET'])
+@sistemas_bp.route('/sistemas_edit-asignaturaE/<id>', methods=['GET'])
 def edit_asignaturaE(id):
-    asignaturaE = asignaturasE.find_one({'_id': ObjectId(id)})
+    asignaturaE = sistemas_asignaturasE.find_one({'_id': ObjectId(id)})
     asignaturaE['_id'] = str(asignaturaE['_id'])
-    return render_template('industrial/edit_asignaturaE.html', asignaturaE=asignaturaE)
+    return render_template('sistemas/edit_asignaturaE.html', asignaturaE=asignaturaE)
 
-@app.route('/asignaturasE/<id>', methods=['DELETE'])
+@sistemas_bp.route('/sistemas_asignaturasE/<id>', methods=['DELETE'])
 def delete_asignaturaE(id):
-    asignaturasE.delete_one({'_id': ObjectId(id)})
+    sistemas_asignaturasE.delete_one({'_id': ObjectId(id)})
     return jsonify({'msg': 'Asignatura Especial eliminada'})
 
-@app.route('/asignaturasE/json', methods=['GET'])
+@sistemas_bp.route('/sistemas_asignaturasE/json', methods=['GET'])
 def get_all_asignaturasE_json():
-    all_asignaturasE = list(asignaturasE.find({}))
+    all_asignaturasE = list(sistemas_asignaturasE.find({}))
     for asignaturaE in all_asignaturasE:
         asignaturaE['_id'] = str(asignaturaE['_id'])
     return jsonify(all_asignaturasE)
 
-# Ruta para obtener todas las asignaturas y renderizar el template
-@app.route('/asignaturasE', methods=['GET'])
+@sistemas_bp.route('/sistemas_asignaturasE', methods=['GET'])
 def get_all_asignaturasE():
-    all_asignaturasE = list(asignaturasE.find({}).sort("nombre", 1))
+    all_asignaturasE = list(sistemas_asignaturasE.find({}).sort("nombre", 1))
     for asignaturaE in all_asignaturasE:
         asignaturaE['_id'] = str(asignaturaE['_id'])
-    return render_template('industrial/asignaturasE.html', asignaturasE=all_asignaturasE)
+    return render_template('sistemas/asignaturasE.html', asignaturasE=all_asignaturasE)
 
-# Rutas CRUD para administrativos
-@app.route('/administrativos', methods=['POST'])
-def add_administrativo():
-    data = request.json
-    administrativos.insert_one(data)
-    return jsonify({'msg': 'Administrativo añadido'}), 201
-
-@app.route('/administrativos/<id>', methods=['GET'])
-def get_administrativo(id):
-    administrativo = administrativos.find_one({'_id': ObjectId(id)})
-    administrativo['_id'] = str(administrativo['_id'])
-    return jsonify(administrativo)
-
-@app.route('/administrativos/<id>', methods=['PUT'])
-def update_administrativo(id):
-    data = request.json
-    nombre = data.get('nombre')
-    cargo = data.get('cargo')
-
-    if nombre and cargo:
-        result = administrativos.update_one(
-            {'_id': ObjectId(id)},
-            {'$set': {'nombre': nombre, 'cargo': cargo}}
-        )
-
-        if result.modified_count > 0:
-            return jsonify({"msg": "Administrativo actualizado"}), 200
-        else:
-            return jsonify({"msg": "No se pudo actualizar el Administrativo"}), 400
-    else:
-        return jsonify({"msg": "Datos inválidos"}), 400
-
-@app.route('/edit-administrativo/<id>', methods=['GET'])
-def edit_administrativo(id):
-    administrativo = administrativos.find_one({'_id': ObjectId(id)})
-    administrativo['_id'] = str(administrativo['_id'])
-    return render_template('industrial/edit_administrativo.html', administrativo=administrativo)
-
-@app.route('/administrativos/<id>', methods=['DELETE'])
-def delete_administrativo(id):
-    administrativos.delete_one({'_id': ObjectId(id)})
-    return jsonify({'msg': 'Administrativo eliminado'})
-
-@app.route('/administrativos/json', methods=['GET'])
-def get_all_administrativos_json():
-    all_administrativos = list(administrativos.find({}))
-    for administrativo in all_administrativos:
-        administrativo['_id'] = str(administrativo['_id'])
-    return jsonify(all_administrativos)
-
-# Ruta para obtener todos los administrativos y renderizar el template
-@app.route('/administrativos', methods=['GET'])
-def get_all_administrativos():
-    all_administrativos = list(administrativos.find({}).sort("nombre", 1))
-    for administrativo in all_administrativos:
-        administrativo['_id'] = str(administrativo['_id'])
-    return render_template('industrial/administrativos.html', administrativos=all_administrativos)
-
-# Generar Excel
-@app.route('/export', methods=['POST'])
+# Función para exportar datos en Sistemas Computacionales
+@sistemas_bp.route('/sistemas_export', methods=['POST'])
 def export_data():
     data = request.json
     selected_columns = data['columns'].split(',')
     collection_name = data['collection']
     export_format = data.get('format', 'xlsx')
-    collection = db[collection_name]
+
+    # Verificar si la colección pertenece a Sistemas Computacionales
+    collection_mapping = {
+        "profesores": sistemas_profesores,
+        "asignaturas": sistemas_asignaturas,
+        "asignaturasE": sistemas_asignaturasE
+    }
+
+    collection = collection_mapping.get(collection_name)
+    
+    if not collection:
+        return jsonify({"message": "Colección no encontrada"}), 400
 
     cursor = collection.find({})
     df = pd.DataFrame(list(cursor))
@@ -280,7 +239,7 @@ def export_data():
 
     # Verificar si hay datos en el DataFrame
     if df.empty:
-        return {"message": "No hay datos para exportar"}, 400
+        return jsonify({"message": "No hay datos para exportar"}), 400
 
     # Mapeos de nombres de columnas
     profesores_column_mapping = {
@@ -310,7 +269,8 @@ def export_data():
 
     if export_format == 'xlsx':
         # Exportar a formato XLSX
-        with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+        with pd.ExcelWriter(output, engine='openpyxl') as writer:
+            df[selected_columns].to_excel(writer, sheet_name='Sheet1', index=False)
             workbook = writer.book
             worksheet = workbook.add_worksheet('Sheet1')
             format_header = workbook.add_format({'bold': True, 'align': 'center', 'bg_color': '#f4cccc'})
@@ -391,11 +351,8 @@ def export_data():
 
     return {"message": "Formato no soportado"}, 400
 
-
-
-
-# COLUMNAS DE LAS TABLAS
-@app.route('/columns/<collection_name>', methods=['GET'])
+# Rutas para obtener las columnas de cada colección en Sistemas Computacionales
+@sistemas_bp.route('/sistemas_columns/<collection_name>', methods=['GET'])
 def get_columns(collection_name):
     if collection_name == 'profesores':
         columns = [
@@ -412,63 +369,80 @@ def get_columns(collection_name):
         ]
     elif collection_name == 'asignaturas':
         columns = [
-            # Añade las columnas de la colección 'asignaturas' aquí
-            "Nombre",  # Ejemplo
-            "Horas",  # Ejemplo
-            # Agrega más columnas según corresponda
+            "Nombre",
+            "Horas",
         ]
     else:
         return jsonify({"error": "Colección no encontrada"}), 404
 
     return jsonify(columns)
 
-
-@app.route('/index')
+# Rutas de la interfaz de usuario para Sistemas Computacionales
+@sistemas_bp.route('/sistemas_index')
 def index():
-    return render_template('industrial/index.html')
+    return render_template('sistemas/index.html')
 
-# Ruta para la página principal
-@app.route('/')
+@sistemas_bp.route('/sistemas')
 def principal():
-    return render_template('industrial/principal.html')
+    return render_template('sistemas/principal.html')
 
-# Rutas para reporteador
-@app.route('/reporteador')
+@sistemas_bp.route('/sistemas_reporteador')
 def reporteador():
-    return render_template('industrial/exportacion/exportar.html')
+    return render_template('sistemas/exportacion/exportar.html')
+
+# Validar archivos permitidos para imágenes
+ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg"}
 
 def allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
-@app.route("/upload-images", methods=["POST"])
+# Ruta para subir imágenes de encabezado y pie de página
+@sistemas_bp.route("/sistemas_upload-images", methods=["POST"])
 def upload_images():
+    upload_folder = "static/sistemas/src/"
+
     if "header" in request.files:
         header = request.files["header"]
         if header and allowed_file(header.filename):
-            header.save(os.path.join(app.config["UPLOAD_FOLDER"], "Encabezado1.PNG"))
+            header.save(os.path.join(upload_folder, "Encabezado1.PNG"))
 
     if "footer" in request.files:
         footer = request.files["footer"]
         if footer and allowed_file(footer.filename):
-            footer.save(os.path.join(app.config["UPLOAD_FOLDER"], "PieDePagina1.PNG"))
+            footer.save(os.path.join(upload_folder, "PieDePagina1.PNG"))
 
     return jsonify({'msg': 'Imágenes actualizadas correctamente'}), 200
 
 # Ruta para actualizar el texto en la celda A4
-@app.route('/update-text', methods=['POST'])
+@sistemas_bp.route('/sistemas_update-text', methods=['POST'])
 def update_text():
     nuevo_texto = request.form.get('nuevo_texto', '')
     if not nuevo_texto:
         return jsonify({'msg': 'Error: No se proporcionó un texto válido'}), 400
     
     # Guardar el nuevo texto en un archivo de configuración
-    with open("static/industrial/src/texto_a4.txt", "w", encoding="utf-8") as file:
+    texto_a4_path = "static/sistemas/src/texto_a4.txt"
+    with open(texto_a4_path, "w", encoding="utf-8") as file:
         file.write(nuevo_texto)
     
-    return jsonify({'msg': 'Texto actualizado correctamente'}), 200
+    return jsonify({'msg': 'Texto A4 actualizado correctamente'}), 200
+
+# Ruta para actualizar el texto en la celda A54
+@sistemas_bp.route('/sistemas_update-text-a54', methods=['POST'])
+def update_text_a54():
+    nuevo_texto_dos = request.form.get('nuevo_texto_dos', '')
+    if not nuevo_texto_dos:
+        return jsonify({'msg': 'Error: No se proporcionó un texto válido'}), 400
+    
+    # Guardar el nuevo texto en un archivo de configuración
+    texto_a54_path = "static/sistemas/src/texto_a54.txt"
+    with open(texto_a54_path, "w", encoding="utf-8") as file:
+        file.write(nuevo_texto_dos)
+    
+    return jsonify({'msg': 'Texto A54 actualizado correctamente'}), 200
 
 # Ruta para exportar los profesores seleccionados usando la plantilla con 32 hojas EXCEL
-@app.route('/export-selected', methods=['POST'])
+@sistemas_bp.route('/sistemas_export-selected', methods=['POST'])
 def export_selected():
     profesor_ids = request.form.getlist('profesor_ids')
     fecha_aplicacion = request.form.get('fechaAplicacion', '')
@@ -478,30 +452,40 @@ def export_selected():
     if fecha_aplicacion:
         fecha_aplicacion = datetime.strptime(fecha_aplicacion, "%Y-%m-%d").strftime("%d/%m/%Y")
 
-    selected_profesores = [profesores.find_one({'_id': ObjectId(profesor_id)}) for profesor_id in profesor_ids]
+    selected_profesores = [sistemas_profesores.find_one({'_id': ObjectId(profesor_id)}) for profesor_id in profesor_ids]
 
     # Ruta de la plantilla con 32 hojas
-    template_path = "static/industrial/src/Plantilla_pie_reducido_2cm.xlsx"  # Cambia esta ruta si es necesario
+    template_path = "static/sistemas/src/Plantilla_pie_reducido_2cm.xlsx"  # Ruta actualizada para sistemas
     workbook = openpyxl.load_workbook(template_path)
 
     # Cargar imágenes
-    header_image = Image("static/industrial/src/Encabezado1.PNG")
-    footer_image = Image("static/industrial/src/PieDePagina1.PNG")
+    header_image = Image("static/sistemas/src/Encabezado1.PNG")
+    footer_image = Image("static/sistemas/src/PieDePagina1.PNG")
 
-    # Establecer borde inferior en la celda A44
-    border_bottom = Border(bottom=Side(style='thin'))
+    # Establecer bordes
+    thin_side = Side(style='thin')
+    border_A44 = Border(bottom=thin_side, left=thin_side)
+    border_B44 = Border(bottom=thin_side)
 
     # Estilo de relleno gris oscuro y texto blanco con fuente Helvetica 7 negrita
     dark_gray_fill = PatternFill(start_color="757171", end_color="757171", fill_type="solid")
     white_font = Font(name="Helvetica", size=7, bold=True, color="FFFFFF")
 
     # Leer el texto de la celda A4 desde el archivo
-    texto_a4_path = "static/industrial/src/texto_a4.txt"
+    texto_a4_path = "static/sistemas/src/texto_a4.txt"
     if os.path.exists(texto_a4_path):
         with open(texto_a4_path, "r", encoding="utf-8") as file:
             texto_a4 = file.read().strip()
     else:
         texto_a4 = ""
+
+    # Leer el texto de la celda A54 desde el archivo
+    texto_a54_path = "static/sistemas/src/texto_a54.txt"
+    if os.path.exists(texto_a54_path):
+        with open(texto_a54_path, "r", encoding="utf-8") as file:
+            texto_a54 = file.read().strip()
+    else:
+        texto_a54 = ""
 
     # Obtener el nombre y cargo del encargado de dirección académica
     encargado = administrativos.find_one({
@@ -519,10 +503,10 @@ def export_selected():
 
     # Definir el mapeo de carreras a cargos administrativos
     cargo_mapping = {
+        "SISTEMAS COMPUTACIONALES": ["JEFA DE DIVISIÓN DE ING. SISTEMAS COMPUTACIONALES", "JEFE DE DIVISIÓN DE ING. SISTEMAS COMPUTACIONALES"],
         "INDUSTRIAL": ["JEFA DE DIVISIÓN DE ING. INDUSTRIAL", "JEFE DE DIVISIÓN DE ING. INDUSTRIAL"],
         "ELECTRÓNICA": ["JEFA DE DIVISIÓN DE ING. ELECTRÓNICA", "JEFE DE DIVISIÓN DE ING. ELECTRÓNICA"],
         "MECATRÓNICA": ["JEFA DE DIVISIÓN DE ING. MECATRÓNICA", "JEFE DE DIVISIÓN DE ING. MECATRÓNICA"],
-        "SISTEMAS COMPUTACIONALES": ["JEFA DE DIVISIÓN DE ING. SISTEMAS COMPUTACIONALES", "JEFE DE DIVISIÓN DE ING. SISTEMAS COMPUTACIONALES"],
         "INFORMÁTICA": ["JEFA DE DIVISIÓN DE ING. INFORMÁTICA", "JEFE DE DIVISIÓN DE ING. INFORMÁTICA"],
         "ADMINISTRACIÓN": ["JEFA DE DIVISIÓN DE ING. ADMINISTRACIÓN", "JEFE DE DIVISIÓN DE ING. ADMINISTRACIÓN"]
     }
@@ -535,16 +519,17 @@ def export_selected():
 
         # Insertar imágenes en encabezado y pie de página
         sheet.add_image(header_image, "A1")
-        sheet.add_image(footer_image, "A54")
+        sheet.add_image(footer_image, "A56")
 
-        # Actualizar el texto en la celda A4
+        # Actualizar el texto en la celda A4 y A54
         sheet["A4"] = texto_a4
+        sheet["A54"] = texto_a54
 
         # Insertar nombre y cargo del encargado
         sheet["C45"] = nombre_encargado
         sheet["C46"] = cargo_encargado
 
-        # Insertar nombre y cargo de direccion
+        # Insertar nombre y cargo de dirección
         sheet["C52"] = nombre_direccion
         sheet["C53"] = cargo_direccion
 
@@ -562,7 +547,6 @@ def export_selected():
         # Llenar las celdas de fecha de aplicación y consecutivo
         sheet["G40"] = fecha_aplicacion
         sheet["G41"] = consecutivo
-        
         sheet["G44"] = profesor.get("nombre", "")
 
         # Total horas grupo
@@ -683,7 +667,6 @@ def export_selected():
 
                     #Concatenar " H.T." al final
                     sheet[celda_destino].value = f"{valor_existente} H.T. "
-
 
         # Obtener los valores de A15-A22 y A26-A33 sin valores vacíos
         carreras_detectadas = sorted({sheet[f"A{row}"].value for row in range(15, 23) if sheet[f"A{row}"].value})
@@ -719,8 +702,8 @@ def export_selected():
             sheet["A44"] = nombre1
             sheet["A45"] = cargo2
             sheet["A46"] = nombre2
-            sheet["A44"].border = border_bottom
-            sheet["B44"].border = border_bottom
+            sheet["A44"].border = border_A44
+            sheet["B44"].border = border_B44
 
     # Eliminar las hojas no utilizadas
     for i in range(len(selected_profesores), len(workbook.sheetnames)):
@@ -740,10 +723,9 @@ def export_selected():
     )
 
 # Función para convertir Excel a PDF usando win32com
-def excel_to_pdf(input_excel_path, output_pdf_path):
+def excel_to_pdf_sistemas(input_excel_path, output_pdf_path):
     pythoncom.CoInitialize()  # Inicializa el entorno COM
     try:
-        
         excel = win32com.client.Dispatch("Excel.Application")
         excel.Visible = False  # Ejecutar Excel en segundo plano
 
@@ -766,8 +748,8 @@ def excel_to_pdf(input_excel_path, output_pdf_path):
         pythoncom.CoUninitialize()  # Liberar el entorno COM
 
 # Ruta para exportar los profesores seleccionados en PDF
-@app.route('/export-selected-pdf', methods=['POST'])
-def export_selected_pdf():
+@sistemas_bp.route('/sistemas_export-selected-pdf', methods=['POST'])
+def export_selected_pdf_sistemas():
     profesor_ids = request.form.getlist('profesor_ids')
     print("Profesores seleccionados:", profesor_ids)  # Verificar si se reciben los IDs correctamente
 
@@ -781,30 +763,40 @@ def export_selected_pdf():
     if fecha_aplicacion:
         fecha_aplicacion = datetime.strptime(fecha_aplicacion, "%Y-%m-%d").strftime("%d/%m/%Y")
 
-    selected_profesores = [profesores.find_one({'_id': ObjectId(profesor_id)}) for profesor_id in profesor_ids]
+    selected_profesores = [sistemas_profesores.find_one({'_id': ObjectId(profesor_id)}) for profesor_id in profesor_ids]
 
     # Ruta de la plantilla con 32 hojas
-    template_path = "static/industrial/src/Plantilla_pie_reducido_2cm.xlsx"  # Cambia esta ruta si es necesario
+    template_path = "static/sistemas/src/Plantilla_pie_reducido_2cm.xlsx"  # Ruta actualizada para sistemas
     workbook = openpyxl.load_workbook(template_path)
 
     # Cargar imágenes
-    header_image = Image("static/industrial/src/Encabezado1.PNG")
-    footer_image = Image("static/industrial/src/PieDePagina1.PNG")
+    header_image = Image("static/sistemas/src/Encabezado1.PNG")
+    footer_image = Image("static/sistemas/src/PieDePagina1.PNG")
 
-    # Establecer borde inferior en la celda A44
-    border_bottom = Border(bottom=Side(style='thin'))
+    # Establecer bordes
+    thin_side = Side(style='thin')
+    border_A44 = Border(bottom=thin_side, left=thin_side)
+    border_B44 = Border(bottom=thin_side)
 
     # Estilo de relleno gris oscuro y texto blanco con fuente Helvetica 7 negrita
     dark_gray_fill = PatternFill(start_color="757171", end_color="757171", fill_type="solid")
     white_font = Font(name="Helvetica", size=7, bold=True, color="FFFFFF")
 
     # Leer el texto de la celda A4 desde el archivo
-    texto_a4_path = "static/industrial/src/texto_a4.txt"
+    texto_a4_path = "static/sistemas/src/texto_a4.txt"
     if os.path.exists(texto_a4_path):
         with open(texto_a4_path, "r", encoding="utf-8") as file:
             texto_a4 = file.read().strip()
     else:
         texto_a4 = ""
+
+    # Leer el texto de la celda A54 desde el archivo
+    texto_a54_path = "static/sistemas/src/texto_a54.txt"
+    if os.path.exists(texto_a54_path):
+        with open(texto_a54_path, "r", encoding="utf-8") as file:
+            texto_a54 = file.read().strip()
+    else:
+        texto_a54 = ""
 
     # Obtener el nombre y cargo del encargado de dirección académica
     encargado = administrativos.find_one({
@@ -822,10 +814,10 @@ def export_selected_pdf():
 
     # Definir el mapeo de carreras a cargos administrativos
     cargo_mapping = {
+        "SISTEMAS COMPUTACIONALES": ["JEFA DE DIVISIÓN DE ING. SISTEMAS COMPUTACIONALES", "JEFE DE DIVISIÓN DE ING. SISTEMAS COMPUTACIONALES"],
         "INDUSTRIAL": ["JEFA DE DIVISIÓN DE ING. INDUSTRIAL", "JEFE DE DIVISIÓN DE ING. INDUSTRIAL"],
         "ELECTRÓNICA": ["JEFA DE DIVISIÓN DE ING. ELECTRÓNICA", "JEFE DE DIVISIÓN DE ING. ELECTRÓNICA"],
         "MECATRÓNICA": ["JEFA DE DIVISIÓN DE ING. MECATRÓNICA", "JEFE DE DIVISIÓN DE ING. MECATRÓNICA"],
-        "SISTEMAS COMPUTACIONALES": ["JEFA DE DIVISIÓN DE ING. SISTEMAS COMPUTACIONALES", "JEFE DE DIVISIÓN DE ING. SISTEMAS COMPUTACIONALES"],
         "INFORMÁTICA": ["JEFA DE DIVISIÓN DE ING. INFORMÁTICA", "JEFE DE DIVISIÓN DE ING. INFORMÁTICA"],
         "ADMINISTRACIÓN": ["JEFA DE DIVISIÓN DE ING. ADMINISTRACIÓN", "JEFE DE DIVISIÓN DE ING. ADMINISTRACIÓN"]
     }
@@ -836,18 +828,19 @@ def export_selected_pdf():
             break
         sheet = workbook[workbook.sheetnames[i]]
 
-        #Insertar imagenes en encabezado y pie de pagina
+        # Insertar imágenes en encabezado y pie de página
         sheet.add_image(header_image, "A1")
-        sheet.add_image(footer_image, "A54")
+        sheet.add_image(footer_image, "A56")
 
-        # Actualizar el texto en la celda A4
+        # Actualizar el texto en la celda A4 y A54
         sheet["A4"] = texto_a4
+        sheet["A54"] = texto_a54
 
         # Insertar nombre y cargo del encargado
         sheet["C45"] = nombre_encargado
         sheet["C46"] = cargo_encargado
 
-        # Insertar nombre y cargo de direccion
+        # Insertar nombre y cargo de dirección
         sheet["C52"] = nombre_direccion
         sheet["C53"] = cargo_direccion
 
@@ -865,7 +858,6 @@ def export_selected_pdf():
         # Llenar las celdas de fecha de aplicación y consecutivo
         sheet["G40"] = fecha_aplicacion
         sheet["G41"] = consecutivo
-        
         sheet["G44"] = profesor.get("nombre", "")
 
         # Total horas grupo
@@ -987,7 +979,7 @@ def export_selected_pdf():
                     #Concatenar " H.T." al final
                     sheet[celda_destino].value = f"{valor_existente} H.T. "
 
-         # Obtener los valores de A15-A22 y A26-A33 sin valores vacíos
+        # Obtener los valores de A15-A22 y A26-A33 sin valores vacíos
         carreras_detectadas = sorted({sheet[f"A{row}"].value for row in range(15, 23) if sheet[f"A{row}"].value})
         carreras_detectadas += sorted({sheet[f"A{row}"].value for row in range(26, 34) if sheet[f"A{row}"].value})
         carreras_detectadas = list(set(carreras_detectadas))  # Eliminar duplicados
@@ -1021,29 +1013,26 @@ def export_selected_pdf():
             sheet["A44"] = nombre1
             sheet["A45"] = cargo2
             sheet["A46"] = nombre2
-            sheet["A44"].border = border_bottom
-            sheet["B44"].border = border_bottom
+            sheet["A44"].border = border_A44
+            sheet["B44"].border = border_B44
 
     # Eliminar las hojas no utilizadas
     for i in range(len(selected_profesores), len(workbook.sheetnames)):
         del workbook[workbook.sheetnames[-1]]
 
     # Guardar el archivo Excel temporalmente para la conversión a PDF
-    temp_excel_path = "temp_reporte.xlsx"
+    temp_excel_path = "temp_reporte_sistemas.xlsx"
     workbook.save(temp_excel_path)
     workbook.close()
 
     # Convertir el archivo Excel a PDF
-    pdf_path = "Reporte_Profesores.pdf"
-    excel_to_pdf(temp_excel_path, pdf_path)
+    pdf_path = "Reporte_Profesores_Sistemas.pdf"
+    excel_to_pdf_sistemas(temp_excel_path, pdf_path)
 
     # Enviar el archivo PDF como respuesta
     return send_file(
         pdf_path,
         as_attachment=True,
-        download_name="Reporte_Profesores.pdf",
+        download_name="Reporte_Profesores_Sistemas.pdf",
         mimetype="application/pdf"
     )
-
-if __name__ == '__main__':
-    app.run(debug=True)

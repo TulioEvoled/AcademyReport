@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Profesor - Informática</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='informatica/css/styles.css') }}">
+</head>
+
+<body>
+    <div class="header-container3">
+        <h1>Editar Profesor - Informática</h1>
+        <button onclick="window.location.href='/informatica/informatica_profesores';">Volver</button>
+    </div>
+
+    <form id="edit-profesor-form" data-id="{{ profesor['_id'] }}">
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" name="nombre" value="{{ profesor.nombre }}" required><br>
+
+        <label for="profesion">Profesión:</label>
+        <input type="text" id="profesion" name="profesion" value="{{ profesor.profesion }}" required><br>
+
+        <label for="adscripcion">Adscripción:</label>
+        <input type="text" id="adscripcion" name="adscripcion" value="{{ profesor.adscripcion }}" required><br>
+
+        <label for="fecha_ingreso">Fecha de Ingreso:</label>
+        <input type="text" id="fecha_ingreso" name="fecha_ingreso" placeholder="01 de MARZO de 2011" value="{{ profesor.fecha_ingreso }}" required><br>
+
+        <label for="tiempo_indeterminado">Tiempo Indeterminado:</label>
+        <select id="tiempo_indeterminado" name="tiempo_indeterminado" required>
+            <option value="SI" {% if profesor.tiempo_indeterminado == "SI" %}selected{% endif %}>SI</option>
+            <option value="NO" {% if profesor.tiempo_indeterminado == "NO" %}selected{% endif %}>NO</option>
+        </select><br>
+
+        <label for="periodo_actual">Periodo Actual:</label>
+        <input type="text" id="periodo_actual" name="periodo_actual" value="{{ profesor.periodo_actual }}" required><br>
+
+        <label for="horas_a">Horas A:</label>
+        <input type="number" id="horas_a" name="horas_a" value="{{ profesor.horas_a }}" oninput="calcularTotalHoras()"><br>
+
+        <label for="horas_b">Horas B:</label>
+        <input type="number" id="horas_b" name="horas_b" value="{{ profesor.horas_b }}" oninput="calcularTotalHoras()"><br>
+
+        <label for="total_horas">Total Horas:</label>
+        <input type="number" id="total_horas" name="total_horas" value="{{ profesor.total_horas }}" required><br>
+
+        <!-- Tabla de asignaturas -->
+        <table class="form-group">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Carrera</th>
+                    <th>Asignaturas</th>
+                    <th>Grupo</th>
+                    <th>Horas</th>
+                    <th>Lunes</th>
+                    <th>Martes</th>
+                    <th>Miércoles</th>
+                    <th>Jueves</th>
+                    <th>Viernes</th>
+                    <th>Sábado</th>
+                </tr>
+            </thead>
+            {% for i in range(1, 9) %}
+            <tr>
+                <td><label for="asignatura{{ i }}">{{ i }}.</label></td>
+
+                <!-- CARRERA -->
+                <td>
+                    <select id="carrera{{ i }}" name="carrera{{ i }}" class="career" data-current-value="{{ profesor['carrera' ~ i] }}">
+                        <option value=" " {% if profesor['carrera' ~ i] == " " %}selected{% endif %}></option>
+                        {% for carrera in carreras %}
+                        <option value="{{ carrera }}" {% if profesor['carrera' ~ i] == carrera %}selected{% endif %}>{{ carrera }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+
+                <!-- ASIGNATURA -->
+                <td>
+                    <input type="text" id="asignatura{{ i }}" name="asignatura{{ i }}" value="{{ profesor['asignatura' ~ i] }}" list="asignatura-list{{ i }}">
+                    <datalist id="asignatura-list{{ i }}"></datalist>
+                </td>
+
+                <!-- GRUPO -->
+                <td>
+                    <select id="grupo{{ i }}" name="grupo{{ i }}" class="group">
+                        <option value=" " {% if profesor['grupo' ~ i] == " " %}selected{% endif %}></option>
+                        {% for grupo in grupos %}
+                        <option value="{{ grupo }}" {% if profesor['grupo' ~ i] == grupo %}selected{% endif %}>{{ grupo }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <!-- Campo oculto para almacenar el distintivo -->
+                    <input type="hidden" id="distintivo{{ i }}" name="distintivo{{ i }}" value="{{ profesor['distintivo' ~ i] }}">
+
+                    <!-- Selector de día, visible solo si el grupo termina en "61" -->
+                    <select id="daySelector{{ i }}" name="daySelector{{ i }}" style="display: none;">
+                        <option value="">Selecciona día</option>
+                        <option value="1" {% if profesor['distintivo' ~ i] == "1" %}selected{% endif %}>Lunes</option>
+                        <option value="2" {% if profesor['distintivo' ~ i] == "2" %}selected{% endif %}>Martes</option>
+                        <option value="3" {% if profesor['distintivo' ~ i] == "3" %}selected{% endif %}>Miércoles</option>
+                        <option value="4" {% if profesor['distintivo' ~ i] == "4" %}selected{% endif %}>Jueves</option>
+                        <option value="5" {% if profesor['distintivo' ~ i] == "5" %}selected{% endif %}>Viernes</option>
+                        <option value="6" {% if profesor['distintivo' ~ i] == "6" %}selected{% endif %}>Sábado</option>
+                    </select>
+                </td>
+
+                <!-- HORAS -->
+                <td>
+                    <input type="number" id="horas{{ i }}" name="horas{{ i }}" class="groupHoras" value="{{ profesor['horas' ~ i] }}">
+                </td>
+
+                <!-- HORARIOS -->
+                {% for dia in range(1, 7) %}
+                <td>
+                    <select id="hora_inicio{{ i }}{{ dia }}" name="hora_inicio{{ i }}{{ dia }}" class="hora-inicio">
+                        <option value="" {% if profesor['hora_inicio' ~ i ~ dia] == "" %}selected{% endif %}></option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor['hora_inicio' ~ i ~ dia] == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                    <select id="hora_fin{{ i }}{{ dia }}" name="hora_fin{{ i }}{{ dia }}" class="hora-fin">
+                        <option value="" {% if profesor['hora_fin' ~ i ~ dia] == "" %}selected{% endif %}></option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor['hora_fin' ~ i ~ dia] == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </table>
+
+        <!-- Total de Horas -->
+        <label for="total_horas_grupo">Total de Horas:</label>
+        <input type="number" id="total_horas_grupo" name="total_horas_grupo" value="{{ profesor.total_horas_grupo }}" readonly><br>
+
+        <!-- Tabla de asignaturas especiales -->
+        <table class="form-groupE">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Carrera</th>
+                    <th>Asignatura</th>
+                    <th>Grupo</th>
+                    <th>Horas</th>
+                    <th>Lunes</th>
+                    <th>Martes</th>
+                    <th>Miércoles</th>
+                    <th>Jueves</th>
+                    <th>Viernes</th>
+                    <th>Sábado</th>
+                </tr>
+            </thead>
+            {% for i in range(1, 9) %}
+            <tr>
+                <td><label for="asignaturaE{{ i }}">{{ i }}.</label></td>
+
+                <!-- CARRERA -->
+                <td>
+                    <select id="carreraE{{ i }}" name="carreraE{{ i }}" class="careerE" data-current-value="{{ profesor['carreraE' ~ i] }}">
+                        <option value=" " {% if profesor['carreraE' ~ i] == " " %}selected{% endif %}> </option>
+                        {% for carrera in carreras %}
+                        <option value="{{ carrera }}" {% if profesor['carreraE' ~ i] == carrera %}selected{% endif %}>{{ carrera }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+
+                <!-- ASIGNATURA -->
+                <td>
+                    <input type="text" id="asignaturaE{{ i }}" name="asignaturaE{{ i }}" value="{{ profesor['asignaturaE' ~ i] }}" list="asignaturaE-list{{ i }}">
+                    <datalist id="asignaturaE-list{{ i }}"></datalist>
+                </td>
+
+                <!-- GRUPO ASIGNATURAS -->
+                <td>
+                    <div class="input-group">
+                        <input id="grupoE{{ i }}" type="text" class="custom-input" value="{{ profesor['grupoE' ~ i] }}" placeholder="Escribe o selecciona un grupo">
+                        <select id="grupoE{{ i }}" name="grupoE{{ i }}" class="group"></select>
+                    </div>
+                </td>
+
+                <!-- HORAS ASIGNATURAS -->
+                <td>
+                    <input type="number" id="horasE{{ i }}" name="horasE{{ i }}" class="groupHoras" value="{{ profesor['horasE' ~ i] }}">
+                </td>
+
+                <!-- HORARIOS -->
+                {% for dia in range(1, 7) %}
+                <td>
+                    <select id="hora_inicioE{{ i }}{{ dia }}" name="hora_inicioE{{ i }}{{ dia }}" class="hora-inicio">
+                        <option value="" {% if profesor['hora_inicioE' ~ i ~ dia] == "" %}selected{% endif %}></option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor['hora_inicioE' ~ i ~ dia] == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                    <select id="hora_finE{{ i }}{{ dia }}" name="hora_finE{{ i }}{{ dia }}" class="hora-fin">
+                        <option value="" {% if profesor['hora_finE' ~ i ~ dia] == "" %}selected{% endif %}></option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor['hora_finE' ~ i ~ dia] == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </table>
+
+        <!-- Total de Horas -->
+        <label for="total_horasE_grupo">Total de Horas:</label>
+        <input type="number" id="total_horasE_grupo" name="total_horasE_grupo" value="{{ profesor.total_horasE_grupo }}" readonly><br>
+
+        <!-- Tabla de Cargo -->
+<table class="form-groupC">
+    <thead>
+        <tr>
+            <th></th>
+            <th>Cargo</th>
+            <th>Vigencia</th>
+            <th>Horas</th>
+            <th>Lunes</th>
+            <th>Martes</th>
+            <th>Miércoles</th>
+            <th>Jueves</th>
+            <th>Viernes</th>
+            <th>Sábado</th>
+        </tr>
+    </thead>
+    <tr>
+        <td><label for="cargo">1.</label></td>
+        <!-- CARGO -->
+        <td>
+            <select id="cargo" name="cargo" required>
+                <option value=" " {% if profesor.cargo == " " %}selected{% endif %}>NO APLICA</option>
+                <option value="PRESIDENTE DE ACADEMIA" {% if profesor.cargo == "PRESIDENTE DE ACADEMIA" %}selected{% endif %}>PRESIDENTE DE ACADEMIA</option>
+                <option value="SECRETARIO DE ACADEMIA" {% if profesor.cargo == "SECRETARIO DE ACADEMIA" %}selected{% endif %}>SECRETARIO DE ACADEMIA</option>
+            </select>
+        </td>
+        <!-- VIGENCIA CARGO -->
+        <td>
+            <input type="text" id="vigenciaCargo" name="vigenciaCargo" value="{{ profesor.vigenciaCargo }}">
+        </td>
+        <!-- HORAS CARGO -->
+        <td>
+            <input type="number" id="horasC" name="horasC" class="groupHoras" value="{{ profesor.horasC }}">
+        </td>
+        <!-- HORARIOS -->
+        {% for dia in range(1, 7) %}
+        <td>
+            <select id="hora_inicioC1{{ dia }}" name="hora_inicioC1{{ dia }}" class="hora-inicio">
+                <option value="" {% if profesor['hora_inicioC1' ~ dia] == "" %}selected{% endif %}></option>
+                {% for horario in horarios %}
+                <option value="{{ horario }}" {% if profesor['hora_inicioC1' ~ dia] == horario %}selected{% endif %}>{{ horario }}</option>
+                {% endfor %}
+            </select>
+            <select id="hora_finC1{{ dia }}" name="hora_finC1{{ dia }}" class="hora-fin">
+                <option value="" {% if profesor['hora_finC1' ~ dia] == "" %}selected{% endif %}></option>
+                {% for horario in horarios %}
+                <option value="{{ horario }}" {% if profesor['hora_finC1' ~ dia] == horario %}selected{% endif %}>{{ horario }}</option>
+                {% endfor %}
+            </select>
+        </td>
+        {% endfor %}
+    </tr>
+</table>
+
+<!-- Botón de Guardado -->
+<br><button type="submit">Guardar</button>
+</form>
+
+<!-- Script para obtener el ID del profesor -->
+<script>
+    const id = "{{ profesor['_id'] }}";
+</script>
+
+<!-- Enlace al script específico para la edición de profesores en Informática -->
+<script src="{{ url_for('static', filename = 'informatica/js/editProfesor.js') }}"></script>
+
+</body>
+</html>

@@ -48,11 +48,11 @@ horarios = [
 
 carreras = [
     "INDUSTRIAL", "SISTEMAS COMPUTACIONALES", "ELECTRÓNICA",
-    "MECATRÓNICA", "INFORMÁTICA", "ADMINISTRACIÓN"
+    "ELECTROMECÁNICA", "INFORMÁTICA", "ADMINISTRACIÓN"
 ]
 
 # Configuración de carga de archivos para la carrera de Ingeniería Industrial
-UPLOAD_FOLDER = "industrial/static/src/"
+UPLOAD_FOLDER = "static/industrial/src/"
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg"}
 
 # Rutas CRUD para profesores
@@ -451,7 +451,7 @@ def allowed_file(filename):
 # Ruta para subir imágenes de encabezado y pie de página
 @industrial_bp.route("/upload-images", methods=["POST"])
 def upload_images():
-    upload_folder = "industrial/static/src/"
+    upload_folder = "static/industrial/src/"
 
     if "header" in request.files:
         header = request.files["header"]
@@ -473,11 +473,24 @@ def update_text():
         return jsonify({'msg': 'Error: No se proporcionó un texto válido'}), 400
     
     # Guardar el nuevo texto en un archivo de configuración
-    texto_a4_path = "industrial/static/src/texto_a4.txt"
+    texto_a4_path = "static/industrial/src/texto_a4.txt"
     with open(texto_a4_path, "w", encoding="utf-8") as file:
         file.write(nuevo_texto)
     
     return jsonify({'msg': 'Texto actualizado correctamente'}), 200
+
+# Ruta para actualizar el texto en la celda A54
+@industrial_bp.route('/update-text-a54', methods=['POST'])
+def update_text_a54():
+    nuevo_texto_dos = request.form.get('nuevo_texto_dos', '')
+    if not nuevo_texto_dos:
+        return jsonify({'msg': 'Error: No se proporcionó un texto válido'}), 400
+    
+    # Guardar el nuevo texto en un archivo de configuración
+    with open("static/industrial/src/texto_a54.txt", "w", encoding="utf-8") as file:
+        file.write(nuevo_texto_dos)
+    
+    return jsonify({'msg': 'Texto A54 actualizado correctamente'}), 200
 
 # Ruta para exportar los profesores seleccionados usando la plantilla con 32 hojas EXCEL
 @industrial_bp.route('/export-selected', methods=['POST'])
@@ -519,6 +532,14 @@ def export_selected():
     else:
         texto_a4 = ""
 
+    # Leer el texto de la celda A54 desde el archivo
+    texto_a54_path = "static/industrial/src/texto_a54.txt"
+    if os.path.exists(texto_a54_path):
+        with open(texto_a54_path, "r", encoding="utf-8") as file:
+            texto_a54 = file.read().strip()
+    else:
+        texto_a54 = ""
+
     # Obtener el nombre y cargo del encargado de dirección académica
     encargado = administrativos.find_one({
         'cargo': {'$in': ["ENCARGADA DEL DESPACHO DE DIRECCIÓN ACADÉMICA", "ENCARGADO DEL DESPACHO DE DIRECCIÓN ACADÉMICA"]}
@@ -551,10 +572,13 @@ def export_selected():
 
         # Insertar imágenes en encabezado y pie de página
         sheet.add_image(header_image, "A1")
-        sheet.add_image(footer_image, "A54")
+        sheet.add_image(footer_image, "A56")
 
         # Actualizar el texto en la celda A4
         sheet["A4"] = texto_a4
+
+        # Insertar el texto en la celda A54
+        sheet["A54"] = texto_a54
 
         # Insertar nombre y cargo del encargado
         sheet["C45"] = nombre_encargado
@@ -826,6 +850,14 @@ def export_selected_pdf():
     else:
         texto_a4 = ""
 
+    # Leer el texto de la celda A54 desde el archivo
+    texto_a54_path = "static/industrial/src/texto_a54.txt"
+    if os.path.exists(texto_a54_path):
+        with open(texto_a54_path, "r", encoding="utf-8") as file:
+            texto_a54 = file.read().strip()
+    else:
+        texto_a54 = ""
+
     # Obtener el nombre y cargo del encargado de dirección académica
     encargado = administrativos.find_one({
         'cargo': {'$in': ["ENCARGADA DEL DESPACHO DE DIRECCIÓN ACADÉMICA", "ENCARGADO DEL DESPACHO DE DIRECCIÓN ACADÉMICA"]}
@@ -844,8 +876,8 @@ def export_selected_pdf():
     cargo_mapping = {
         "INDUSTRIAL": ["JEFA DE DIVISIÓN DE ING. INDUSTRIAL", "JEFE DE DIVISIÓN DE ING. INDUSTRIAL"],
         "ELECTRÓNICA": ["JEFA DE DIVISIÓN DE ING. ELECTRÓNICA", "JEFE DE DIVISIÓN DE ING. ELECTRÓNICA"],
-        "MECATRÓNICA": ["JEFA DE DIVISIÓN DE ING. MECATRÓNICA", "JEFE DE DIVISIÓN DE ING. MECATRÓNICA"],
-        "SISTEMAS COMPUTACIONALES": ["JEFA DE DIVISIÓN DE ING. SISTEMAS COMPUTACIONALES", "JEFE DE DIVISIÓN DE ING. SISTEMAS COMPUTACIONALES"],
+        "ELECTROMECÁNICA": ["JEFA DE DIVISIÓN DE ING. ELECTROMECÁNICA", "JEFE DE DIVISIÓN DE ING. ELECTROMECÁNICA"],
+        "SISTEMAS COMPUTACIONALES": ["JEFA DE DIVISIÓN DE ING. EN SISTEMAS COMPUTACIONALES", "JEFE DE DIVISIÓN DE ING. EN SISTEMAS COMPUTACIONALES"],
         "INFORMÁTICA": ["JEFA DE DIVISIÓN DE ING. INFORMÁTICA", "JEFE DE DIVISIÓN DE ING. INFORMÁTICA"],
         "ADMINISTRACIÓN": ["JEFA DE DIVISIÓN DE ING. ADMINISTRACIÓN", "JEFE DE DIVISIÓN DE ING. ADMINISTRACIÓN"]
     }
@@ -858,10 +890,13 @@ def export_selected_pdf():
 
         #Insertar imagenes en encabezado y pie de pagina
         sheet.add_image(header_image, "A1")
-        sheet.add_image(footer_image, "A54")
+        sheet.add_image(footer_image, "A56")
 
         # Actualizar el texto en la celda A4
         sheet["A4"] = texto_a4
+
+        # Insertar el texto en la celda A54
+        sheet["A54"] = texto_a54
 
         # Insertar nombre y cargo del encargado
         sheet["C45"] = nombre_encargado

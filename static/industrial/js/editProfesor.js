@@ -704,7 +704,7 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 // LISTA DE CARRERAS
-const carreras = ["", "INDUSTRIAL", "SISTEMAS COMPUTACIONALES", "ELECTRÓNICA", "MECATRÓNICA", "INFORMÁTICA", "ADMINISTRACIÓN"];
+const carreras = ["", "INDUSTRIAL", "SISTEMAS COMPUTACIONALES", "ELECTRÓNICA", "ELECTROMECÁNICA", "INFORMÁTICA", "ADMINISTRACIÓN"];
 
 // Función para poblar las opciones en el select de carreras
 function populateCareerSelectOptions(selectElement, options) {

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Asignatura</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='sistemas/css/styles.css') }}">
+</head>
+
+<body>
+    <div class="header-container3">
+        <h1>Editar Asignatura</h1>
+        <button onclick="window.location.href='/sistemas/sistemas_asignaturas';">Volver</button>
+    </div>
+
+    <form id="edit-asignatura-form" onsubmit="transformarMayusculas()">
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" name="nombre" value="{{ asignatura.nombre }}" required><br>
+
+        <label for="horas">Horas:</label>
+        <input type="number" id="horas" name="horas" value="{{ asignatura.horas }}" required><br>
+
+        <button type="submit">Guardar</button>
+    </form>
+
+    <script>
+        document.getElementById('edit-asignatura-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const id = "{{ asignatura._id }}";
+            const data = {
+                nombre: document.getElementById('nombre').value,
+                horas: parseInt(document.getElementById('horas').value)
+            };
+
+            fetch(`/sistemas/sistemas_asignaturas/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => alert(data.msg))
+            .catch(error => console.error('Error:', error));
+        });
+
+        function transformarMayusculas() {
+            var inputs = document.querySelectorAll('input[type="text"]');
+            inputs.forEach(function(input) {
+                input.value = input.value.toUpperCase();
+            });
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Tecnológico - Electromecánica</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='electromecanica/css/styles.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+</head>
+
+<body>
+    <div class="header-container">
+        <h1 class="titulo">Bienvenido</h1>
+        <div class="botones-container">
+            <button onclick="window.location.href='/electromecanica/electromecanica';">Volver</button>
+        </div>
+    </div>
+
+    <!-- EXPORTACIÓN DE EXCEL -->
+    <div>
+        <h2>Exportar Datos</h2>
+        <form id="export-form" method="POST" action="/electromecanica/electromecanica_export">
+            <label for="collection">Colección:</label>
+            <select id="collection" name="collection" required>
+                <option value=""></option>
+                <option value="profesores">Profesores</option>
+                <option value="asignaturas">Asignaturas</option>
+            </select><br>
+
+            <label for="export-format">Formato:</label>
+            <select id="export-format" name="format" required>
+                <option value="xlsx">Excel (.xlsx)</option>
+                <option value="csv">CSV (.csv)</option>
+            </select><br>
+
+            <div id="columns-container">
+                <!-- Checkboxes generados dinámicamente -->
+            </div>
+
+            <button type="submit">Exportar Datos</button>
+        </form>
+    </div>
+
+    <div>
+        <h2>Exportar Reporte de Profesores</h2>
+        <button id="load-professors">Cargar Profesores</button>
+        <button id="select-all">Seleccionar Todos</button>
+
+        <form id="export-selected-form" method="POST" action="/electromecanica/electromecanica_export-selected">
+            <div id="professor-list-container">
+                <!-- Lista de profesores generada dinámicamente -->
+            </div>
+            <br><br>
+            <label for="fechaAplicacion">Fecha de Aplicación:</label>
+            <input type="date" id="fechaAplicacion" name="fechaAplicacion" required>
+            <label for="consecutivo">Consecutivo:</label>
+            <input type="text" id="consecutivo" name="consecutivo" required>
+            <button type="submit">Exportar Excel</button>
+        </form>
+
+        <!-- Exportación a PDF -->
+        <form id="export-pdf-form" method="POST" action="/electromecanica/electromecanica_export-selected-pdf">
+            <div id="professor-list-container-pdf">
+                <!-- Lista de profesores generada dinámicamente -->
+            </div>
+            <br><br>
+            <label for="fechaAplicacionPdf">Fecha de Aplicación:</label>
+            <input type="date" id="fechaAplicacionPdf" name="fechaAplicacion" required>
+            <label for="consecutivoPdf">Consecutivo:</label>
+            <input type="text" id="consecutivoPdf" name="consecutivo" required>
+            <button type="submit">Exportar PDF</button>
+        </form>
+    </div>
+
+    <div>
+        <h2>Actualizar Formato</h2>
+        <form id="uploadImagesForm" action="/electromecanica/electromecanica_upload-images" method="POST" enctype="multipart/form-data">
+            <label for="header">Subir Encabezado:</label>
+            <input type="file" name="header" accept="image/*"><br>
+            <label for="footer">Subir Pie de Página:</label>
+            <input type="file" name="footer" accept="image/*"><br><br>
+            <button type="submit">Actualizar Imágenes</button>
+        </form>
+    </div>
+
+    <!-- Div para mostrar mensajes -->
+    <div id="mensaje"></div>
+
+    <div>
+        <h2>Actualizar Leyenda Anual</h2>
+        <form id="updateTextForm" action="/electromecanica/electromecanica_update-text" method="POST">
+            <label for="nuevo_texto">Nueva Leyenda:</label>
+            <input type="text" id="nuevo_texto" name="nuevo_texto"><br><br>
+            <button type="submit">Actualizar</button>
+        </form>
+    </div>
+
+    <!-- Div para mostrar mensajes -->
+    <div id="mensaje"></div>
+
+    <div>
+        <h2>Actualizar URL Temario</h2>
+        <form id="updateTextFormDos" action="/electromecanica/electromecanica_update-text-a54" method="POST">
+            <label for="nuevo_texto_dos">Nueva Leyenda:</label>
+            <input type="text" id="nuevo_texto_dos" name="nuevo_texto_dos"><br><br>
+            <button type="submit">Actualizar</button>
+        </form>
+    </div>
+
+    <script src="{{ url_for('static', filename='electromecanica/js/export.js') }}"></script>
+</body>
+
+</html>
