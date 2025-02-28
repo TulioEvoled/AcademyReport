@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Usuarios - ROOT</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='auth/css/styles2.css') }}">
+</head>
+
+<body>
+    <div class="header-container">
+        <h1>Gestión de Usuarios - Superadministrador</h1>
+        <button onclick="window.location.href='/auth/logout';">Cerrar Sesión</button>
+    </div>
+
+    <!-- Mostrar mensajes flash -->
+    {% with messages = get_flashed_messages(with_categories=True) %}
+    {% if messages %}
+    <div class="flash-messages">
+        {% for category, message in messages %}
+        <p class="flash {{ category }}">{{ message }}</p>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <!-- Formulario para agregar usuario -->
+    <div class="form-container">
+        <h2>Añadir Usuario</h2>
+        <form id="add-user-form" method="POST" action="{{ url_for('auth.add_user') }}">
+            <label for="nombre">Nombre:</label>
+            <input type="text" id="nombre" name="nombre" required><br>
+
+            <label for="usuario">Usuario:</label>
+            <input type="text" id="usuario" name="usuario" required><br>
+
+            <label for="contraseña">Contraseña:</label>
+            <input type="password" id="contraseña" name="contraseña" required><br>
+
+            <label for="cargo">Cargo:</label>
+            <select id="cargo" name="cargo" required>
+                <option value="ROOT">Superadministrador</option>
+                {% for carrera, cargos in cargo_mapping.items() %}
+                {% for cargo in cargos %}
+                <option value="{{ cargo }}">{{ cargo }}</option>
+                {% endfor %}
+                {% endfor %}
+            </select><br>
+
+            <button type="submit">Añadir Usuario</button>
+        </form>
+    </div>
+
+    <!-- Tabla de usuarios -->
+    <div class="table-container">
+        <h2>Lista de Usuarios</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Usuario</th>
+                    <th>Cargo</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{ user['nombre'] }}</td>
+                    <td>{{ user['usuario'] }}</td>
+                    <td>{{ user['cargo'] }}</td>
+                    <td>
+                        {% if user['usuario'] != "root" %}
+                        <button class="edit-button" 
+                                data-id="{{ user['_id'] }}" 
+                                data-nombre="{{ user['nombre'] }}" 
+                                data-usuario="{{ user['usuario'] }}" 
+                                data-cargo="{{ user['cargo'] }}">
+                            Editar
+                        </button>
+                        <form method="POST" action="{{ url_for('auth.delete_user', usuario=user['usuario']) }}" style="display:inline;">
+                            <button type="submit" class="delete-button" onclick="return confirm('¿Estás seguro de eliminar este usuario?')">
+                                Eliminar
+                            </button>
+                        </form>
+                        {% else %}
+                        <span class="root-user">ROOT</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal de edición de usuario -->
+    <div id="edit-user-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Editar Usuario</h2>
+            <form id="edit-user-form" method="POST">
+                <input type="hidden" id="edit-id" name="id">
+                
+                <label for="edit-nombre">Nombre:</label>
+                <input type="text" id="edit-nombre" name="nombre" required><br>
+
+                <label for="edit-usuario">Usuario:</label>
+                <input type="text" id="edit-usuario" name="usuario" required readonly><br>
+
+                <label for="edit-contraseña">Nueva Contraseña (Opcional):</label>
+                <input type="password" id="edit-contraseña" name="contraseña"><br>
+
+                <label for="edit-cargo">Cargo:</label>
+                <select id="edit-cargo" name="cargo" required>
+                    <option value="ROOT">Superadministrador</option>
+                    {% for carrera, cargos in cargo_mapping.items() %}
+                    {% for cargo in cargos %}
+                    <option value="{{ cargo }}">{{ cargo }}</option>
+                    {% endfor %}
+                    {% endfor %}
+                </select><br>
+
+                <button type="submit">Actualizar Usuario</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='auth/js/admin_dashboard.js') }}"></script>
+</body>
+</html>

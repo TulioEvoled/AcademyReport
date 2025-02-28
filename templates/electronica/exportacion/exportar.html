@@ -22,23 +22,27 @@
     <div>
         <h2>Exportar Datos</h2>
         <form id="export-form" method="POST" action="/electronica/electronica_export">
+            <!-- 🔹 Selección de Colección -->
             <label for="collection">Colección:</label>
             <select id="collection" name="collection" required>
-                <option value=""></option>
+                <option value="">Selecciona una colección</option>
                 <option value="profesores">Profesores</option>
                 <option value="asignaturas">Asignaturas</option>
-            </select><br>
-
+                <option value="asignaturasE">Asignaturas Especiales</option>
+            </select>
+            <br>
+    
+            <!-- 🔹 Selección de Formato -->
             <label for="export-format">Formato:</label>
             <select id="export-format" name="format" required>
                 <option value="xlsx">Excel (.xlsx)</option>
-                <option value="csv">CSV (.csv)</option>
-            </select><br>
-
-            <div id="columns-container">
-                <!-- Checkboxes generados dinámicamente -->
-            </div>
-
+            </select>
+            <br>
+    
+            <!-- 🔹 Contenedor para Checkboxes de Columnas -->
+            <div id="columns-container"></div>
+    
+            <!-- 🔹 Botón de Exportación -->
             <button type="submit">Exportar Datos</button>
         </form>
     </div>
@@ -77,9 +81,9 @@
     <div>
         <h2>Actualizar Formato</h2>
         <form id="uploadImagesForm" action="/electronica/electronica_upload-images" method="POST" enctype="multipart/form-data">
-            <label for="header">Subir Encabezado:</label>
+            <label for="header">Subir Encabezado (867x74 px):</label>
             <input type="file" name="header" accept="image/*"><br>
-            <label for="footer">Subir Pie de Página:</label>
+            <label for="footer">Subir Pie de Página (866x66 px):</label>
             <input type="file" name="footer" accept="image/*"><br><br>
             <button type="submit">Actualizar Imágenes</button>
         </form>

@@ -1,0 +1,339 @@
+/* Agrega estilos básicos para los formularios e interfaz */
+
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 20px;
+    background-color: #f9f9f9;
+    /* Fondo más claro para una apariencia más suave */
+    color: #333;
+    /* Color de texto oscuro para contraste */
+}
+
+h1,
+h2 {
+    font-family: 'Helvetica', sans-serif;
+}
+
+form {
+    margin-bottom: 20px;
+    background-color: #fff;
+    /* Fondo blanco para formularios */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    /* Sombra suave */
+}
+
+label {
+    font-weight: bold;
+    color: #383b50;
+}
+
+input,
+select {
+    display: block;
+    margin-top: 8px;
+    padding: 8px;
+    width: 100%;
+    max-width: 350px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 16px;
+    background-color: #f9f9f9;
+    color: #333;
+}
+
+input:focus,
+select:focus {
+    border-color: #383b50;
+    outline: none;
+    background-color: #fff;
+}
+
+.edit-button {
+    display: inline-block;
+    /* Asegura que el enlace se comporte como un botón */
+    margin-top: 15px;
+    padding: 12px 20px;
+    background-color: #383b50;
+    color: #fff;
+    text-decoration: none;
+    /* Quita el subrayado */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.edit-button:hover {
+    background-color: #505a68;
+    /* Color más suave para hover */
+    transform: translateY(-2px);
+    /* Efecto sutil de elevación */
+}
+
+.edit-button:active {
+    background-color: #2d323d;
+    /* Color más oscuro cuando se presiona */
+    transform: translateY(0);
+    /* Eliminar el efecto de elevación */
+}
+
+button {
+    margin-top: 15px;
+    padding: 12px 20px;
+    background-color: #383b50;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+button:hover {
+    background-color: #505a68;
+    /* Color más suave para hover */
+    transform: translateY(-2px);
+    /* Efecto sutil de elevación */
+}
+
+button:active {
+    background-color: #2d323d;
+    /* Color más oscuro cuando se presiona */
+    transform: translateY(0);
+    /* Eliminar el efecto de elevación */
+}
+
+
+/* Estilo para la tabla */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    background-color: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    /* Sombra para la tabla */
+}
+
+th {
+    background-color: #383b50;
+    color: #fff;
+    padding: 10px;
+    text-align: center;
+    border-bottom: 2px solid #ddd;
+}
+
+td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    background-color: #f9f9f9;
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+
+/* Encabezados de la página */
+
+.titulo {
+    text-align: center;
+    background-color: #383b50;
+    padding: 20px;
+    border-radius: 8px;
+    color: white;
+    font-size: 24px;
+    margin-bottom: 10px;
+    /* Reducido margen inferior */
+}
+
+.botones {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.botones button {
+    margin: 10px;
+    padding: 12px 25px;
+    background-color: #505a68;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.botones button:hover {
+    background-color: #383b50;
+}
+
+
+/* Estilo para los formularios de añadir */
+
+.header-container2 {
+    display: flex;
+    justify-content: space-evenly;
+    margin-bottom: 20px;
+}
+
+.header-container2 h2 {
+    cursor: pointer;
+    color: #383b50;
+    text-decoration: none;
+    padding: 12px 24px;
+    border: 1px solid #383b50;
+    border-radius: 4px;
+    transition: background-color 0.3s, color 0.3s;
+    text-align: center;
+    font-size: 18px;
+}
+
+.header-container2 h2:hover {
+    background-color: #383b50;
+    color: #fff;
+}
+
+
+/* Estilo para la sección de exportación */
+
+#export-form {
+    margin-top: 40px;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+#export-form label {
+    font-size: 16px;
+}
+
+#export-form select {
+    width: 100%;
+    max-width: 250px;
+    margin-bottom: 20px;
+}
+
+#export-form button {
+    background-color: #383b50;
+    padding: 12px 25px;
+    font-size: 16px;
+    width: 100%;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+#export-form button:hover {
+    background-color: #505a68;
+}
+
+
+/* Ocultar formularios cuando no se necesiten */
+
+#add-profesor-form,
+#add-asignatura-form,
+#add-asignaturaE-form {
+    display: none;
+}
+
+
+/* Estilo para el encabezado de la página */
+
+.titulo {
+    text-align: center;
+    /* Alineamos el título a la derecha */
+    background-color: #383b50;
+    padding: 20px;
+    border-radius: 8px;
+    color: white;
+    font-size: 24px;
+    margin-bottom: 5px;
+    /* Reducido margen inferior */
+    margin-top: 15px;
+}
+
+
+/* Contenedor para los botones */
+
+.botones-container {
+    display: flex;
+    justify-content: flex-end;
+    /* Alinea los botones a la derecha */
+    gap: 20px;
+    /* Espacio entre los botones */
+    margin-top: -10px;
+    /* Reducido margen superior para acercar los botones al título */
+    margin-bottom: 20px;
+}
+
+
+/* Estilo para los botones */
+
+.botones button {
+    padding: 12px 25px;
+    background-color: #505a68;
+    border-radius: 5px;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.botones button:hover {
+    background-color: #383b50;
+}
+
+.botones-container-principal {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.header-container3 {
+    display: flex;
+    align-items: center;
+    /* Alinea verticalmente los elementos */
+    justify-content: space-between;
+    /* Distribuye los elementos, botón a la derecha */
+}
+
+
+/* Estilos para el mensaje emergente */
+
+#mensaje {
+    display: none;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.flash-messages {
+    text-align: center;
+    margin: 10px auto;
+}
+
+.flash {
+    padding: 10px;
+    border-radius: 5px;
+    font-weight: bold;
+    width: 50%;
+    margin: auto;
+}
+
+
+
+
+.flash.success {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.flash.error {
+    background-color: #f44336;
+    color: white;
+}

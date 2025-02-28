@@ -1,26 +1,34 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='industrial/css/styles.css') }}">
-    <title>Página Principal</title>
-    </div>
-
+    <title>Página Principal - Industrial</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='industrial/css/styles2.css') }}">
 </head>
 
 <body>
-    <div class="header-container">
-        <h1 class="titulo">ACADEMYREPORT</h1>
-    </div>
-    <div class="botones-container-principal">
-        <button onclick="location.href='/index'">ASIGNACION ACADEMICAS</button>
-        <button onclick="location.href='pagina1.html'">ESTRUCTURA EDUCATIVA</button>
-        <button onclick="location.href='/reporteador'">REPORTEADOR</button>
+    <!-- 🔹 Encabezado Fijo -->
+    <header class="header">
+        <h1>AcademyReport</h1>
+    </header>
 
-    </div>
+    <!-- 🔹 Contenedor principal -->
+    <div class="main-container">
+        <div class="content">
+            <!-- 🔹 Agregamos la imagen del título -->
+            <img src="{{ url_for('static', filename='industrial/img/titulo.png') }}" alt="Ingeniería Industrial" class="title-img">
 
+            <!-- 🔹 Botones alineados verticalmente -->
+            <div class="button-group">
+                <button onclick="location.href='/index'">Asignación Académica</button>
+                <button onclick="location.href='/reporteador'">Reporteador</button>
+                <button class="logout-btn" onclick="window.location.href='/auth/logout';">Cerrar Sesión</button>
+            </div>
+        </div>
+        <div class="image-container">
+            <img src="{{ url_for('static', filename='industrial/img/background.png') }}" alt="Background">
+        </div>
+    </div>
 </body>
-
 </html>

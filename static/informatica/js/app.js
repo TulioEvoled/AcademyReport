@@ -41,6 +41,7 @@ document.getElementById('add-profesor-form').addEventListener('submit', function
     }
 
     // Datos del cargo
+    data["carreraC"] = document.getElementById('carreraC').value,
     data["cargo"] = document.getElementById("cargo").value;
     data["vigenciaCargo"] = document.getElementById("vigenciaCargo").value;
     data["horasC"] = document.getElementById("horasC").value;

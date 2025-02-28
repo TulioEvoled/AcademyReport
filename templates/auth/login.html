@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='auth/css/styles.css') }}">
+</head>
+<body>
+
+    <!-- 🔹 Encabezado Fijo -->
+    <div class="header"></div>
+
+    <!-- 🔹 Contenedor del Login -->
+    <div class="login-container">
+        <!-- 🔹 Carrusel de fondo -->
+        <div class="carousel">
+            <div class="carousel-images">
+                <img src="{{ url_for('static', filename='auth/img/image1.png') }}" class="active">
+                <img src="{{ url_for('static', filename='auth/img/image2.png') }}">
+                <img src="{{ url_for('static', filename='auth/img/image3.png') }}">
+                <img src="{{ url_for('static', filename='auth/img/image4.png') }}">
+                <img src="{{ url_for('static', filename='auth/img/image5.png') }}">
+                <img src="{{ url_for('static', filename='auth/img/image6.png') }}">
+                <img src="{{ url_for('static', filename='auth/img/image7.png') }}">
+            </div>
+        </div>
+
+        <!-- 🔹 Formulario de Inicio de Sesión -->
+        <div class="login-form-container">
+            <form id="login-form">
+                <input type="text" id="usuario" name="usuario" placeholder="Usuario" required>
+                <input type="password" id="contraseña" name="contraseña" placeholder="Contraseña" required>
+                <button type="submit" class="login-button">Iniciar sesión</button>
+            </form>
+        </div>
+
+        <!-- 🔹 Mensajes de error -->
+        <div id="login-error" class="flash-messages" style="display: none;">
+            <p class="flash error"></p>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='auth/js/carousel.js') }}"></script>
+    <script src="{{ url_for('static', filename='auth/js/login.js') }}"></script>
+</body>
+</html>

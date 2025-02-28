@@ -1,5 +1,12 @@
 document.getElementById('edit-profesor-form').addEventListener('submit', function(e) {
     e.preventDefault();
+
+     // Confirmación antes de actualizar
+     const confirmacion = confirm("¿Estás seguro de que deseas actualizar los datos del profesor?");
+     if (!confirmacion) {
+         return; // Si el usuario cancela, detenemos el proceso sin enviar el formulario
+     }
+     
     const profesorId = document.getElementById('edit-profesor-form').getAttribute('data-id');
     const data = {
         nombre: document.getElementById('nombre').value,
@@ -13,6 +20,7 @@ document.getElementById('edit-profesor-form').addEventListener('submit', functio
         total_horas: parseInt(document.getElementById('total_horas').value) || 0,
         total_horas_grupo: document.getElementById('total_horas_grupo').value,
         total_horasE_grupo: document.getElementById('total_horasE_grupo').value,
+        carreraC: document.getElementById('carreraC').value,
         cargo: document.getElementById('cargo').value,
         vigenciaCargo: document.getElementById('vigenciaCargo').value,
         horasC: document.getElementById('horasC').value
@@ -519,3 +527,20 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 });
+
+//FUNCION PARA RESETEAR DATOS DE TABLAS
+function limpiarTabla(className) {
+    const table = document.querySelector(`.${className}`);
+    if (!table) return;
+
+    // Buscar todos los inputs y selects dentro de la tabla
+    table.querySelectorAll("input, select").forEach(element => {
+        if (element.tagName === "INPUT") {
+            element.value = ""; // Limpiar los campos de entrada
+        } else if (element.tagName === "SELECT") {
+            element.selectedIndex = 0; // Resetear selects
+        }
+    });
+    
+    alert("Los campos de la tabla han sido limpiados.");
+}

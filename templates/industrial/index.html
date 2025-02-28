@@ -18,7 +18,7 @@
             <button data-url="{{ url_for('industrial.get_all_profesores') }}">Profesores</button>
             <button data-url="{{ url_for('industrial.get_all_asignaturas') }}">Asignaturas</button>
             <button data-url="{{ url_for('industrial.get_all_asignaturasE') }}">Asignaturas Especiales</button>
-            <button data-url="{{ url_for('industrial.get_all_administrativos') }}">Administrativos</button>
+            <!-- <button data-url="{{ url_for('industrial.get_all_administrativos') }}">Administrativos</button> -->
             <button onclick="window.location.href='/';">Volver</button>
         </div>
     </div>
@@ -946,6 +946,7 @@
                 <thead>
                     <tr>
                         <th></th>
+                        <th>Carrera</th>
                         <th>Cargo</th>
                         <th>Vigencia</th>
                         <th>Horas</th>
@@ -959,6 +960,10 @@
                 </thead>
                 <tr>
                     <td><label for="cargo">1.</label></td>
+                    <td>
+                        <select id="carreraC" name="carreraC" class="careerC">
+                        </select>
+                    </td>
                     <!-- CARGO -->
                     <td>
                         <select id="cargo" name="cargo" required>
@@ -1048,8 +1053,8 @@
 
     <!-- FORMULARIO PARA ADMINISTRATIVOS -->
     <div>
-        <h2>Añadir Administrativo</h2>
-        <form id="add-administrativo-form">
+        <!-- <h2>Añadir Administrativo</h2> -->
+        <form id="add-administrativo-form" style="display: none;">
             <label for="nombre_administrativo">Nombre Completo:</label>
             <input type="text" id="nombre_administrativo" name="nombre_administrativo" required><br>
 
@@ -1058,7 +1063,7 @@
 
             <button type="submit">Añadir Administrativo</button>
         </form>
-    </div>
+    </div> 
 
     <!-- EXPORTACION DE EXCEL -->
     <div>

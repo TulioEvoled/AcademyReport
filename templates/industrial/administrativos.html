@@ -17,6 +17,7 @@
         <thead>
             <tr>
                 <th>Nombre</th>
+                <th>Usuario</th>
                 <th>Cargo</th>
                 <th>Acciones</th>
             </tr>
@@ -25,6 +26,7 @@
             {% for administrativo in administrativos %}
             <tr>
                 <td>{{ administrativo['nombre'] }}</td>
+                <td>{{ administrativo['usuario'] }}</td>
                 <td>{{ administrativo['cargo'] }}</td>
                 <td>
                     <button onclick="deleteAdministrativo(`{{ administrativo['_id'] }}`)">Eliminar</button>

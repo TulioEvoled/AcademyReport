@@ -4,19 +4,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='administracion/css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='administracion/css/styles2.css') }}">
     <title>Página Principal - Administración</title>
 </head>
 
 <body>
-    <div class="header-container">
-        <h1 class="titulo">ACADEMYREPORT - ADMINISTRACIÓN</h1>
-    </div>
+    <!-- 🔹 Encabezado Fijo -->
+    <header class="header">
+        <h1>AcademyReport</h1>
+    </header>
 
-    <div class="botones-container-principal">
-        <button onclick="location.href='/administracion/administracion_index'">ASIGNACIÓN ACADÉMICA</button>
-        <button onclick="location.href='/administracion/administracion_reporteador'">REPORTEADOR</button>
+    <!-- 🔹 Contenedor principal -->
+    <div class="main-container">
+        <div class="content">
+            <!-- 🔹 Agregamos la imagen del título -->
+            <img src="{{ url_for('static', filename='administracion/img/titulo.png') }}" alt="Administración" class="title-img">
+
+            <!-- 🔹 Botones alineados verticalmente -->
+            <div class="button-group">
+                <button onclick="location.href='/administracion/administracion_index'">Asignación Académica</button>
+                <button onclick="location.href='/administracion/administracion_reporteador'">Reporteador</button>
+                <button class="logout-btn" onclick="window.location.href='/auth/logout';">Cerrar Sesión</button>
+            </div>
+        </div>
+        <div class="image-container">
+            <img src="{{ url_for('static', filename='administracion/img/background.png') }}" alt="Background">
+        </div>
     </div>
 </body>
-
 </html>

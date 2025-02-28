@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historial de Exportaciones</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='industrial/css/styles.css') }}">
+</head>
+<body>
+    <div class="header-container">
+        <h1>Historial de Exportaciones</h1>
+        <button onclick="window.location.href='/reporteador'">Volver</button>
+    </div>
+
+    <div class="file-list">
+        <h2>Archivos Disponibles</h2>
+        <ul>
+            {% for file in files %}
+                <li>
+                    <a href="{{ url_for('industrial.download_file', filename=file) }}">{{ file }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>

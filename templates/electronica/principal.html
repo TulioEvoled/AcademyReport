@@ -4,19 +4,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='electronica/css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='electronica/css/styles2.css') }}">
     <title>Página Principal - Electrónica</title>
 </head>
 
 <body>
-    <div class="header-container">
-        <h1 class="titulo">ACADEMYREPORT - ELECTRÓNICA</h1>
-    </div>
+    <!-- 🔹 Encabezado Fijo -->
+    <header class="header">
+        <h1>AcademyReport</h1>
+    </header>
 
-    <div class="botones-container-principal">
-        <button onclick="location.href='/electronica/electronica_index'">ASIGNACIÓN ACADÉMICA</button>
-        <button onclick="location.href='/electronica/electronica_reporteador'">REPORTEADOR</button>
+    <!-- 🔹 Contenedor principal -->
+    <div class="main-container">
+        <div class="content">
+            <!-- 🔹 Agregamos la imagen del título -->
+            <img src="{{ url_for('static', filename='electronica/img/titulo.png') }}" alt="Electrónica" class="title-img">
+
+            <!-- 🔹 Botones alineados verticalmente -->
+            <div class="button-group">
+                <button onclick="location.href='/electronica/electronica_index'">Asignación Académica</button>
+                <button onclick="location.href='/electronica/electronica_reporteador'">Reporteador</button>
+                <button class="logout-btn" onclick="window.location.href='/auth/logout';">Cerrar Sesión</button>
+            </div>
+        </div>
+        <div class="image-container">
+            <img src="{{ url_for('static', filename='electronica/img/background.png') }}" alt="Background">
+        </div>
     </div>
 </body>
-
 </html>

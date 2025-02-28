@@ -41,6 +41,7 @@ document.getElementById('add-profesor-form').addEventListener('submit', function
     }
 
     // Datos del cargo
+    data["carreraC"] = document.getElementById('carreraC').value,
     data["cargo"] = document.getElementById("cargo").value;
     data["vigenciaCargo"] = document.getElementById("vigenciaCargo").value;
     data["horasC"] = document.getElementById("horasC").value;
@@ -675,7 +676,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 daySelector.id = `daySelector${index + 1}`;
                 daySelector.name = `daySelector${index + 1}`;
                 daySelector.innerHTML = `
-                    <option value="">Selecciona día</option>
+                    <option value="">Día de Transmisión</option>
                     <option value="1">Lunes</option>
                     <option value="2">Martes</option>
                     <option value="3">Miércoles</option>

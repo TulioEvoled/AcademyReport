@@ -44,6 +44,9 @@
         <label for="total_horas">Total Horas:</label>
         <input type="number" id="total_horas" name="total_horas" value="{{ profesor.total_horas }}" required><br>
 
+        <!-- BOTÓN PARA LIMPIAR TABLA DE ASIGNATURAS -->
+        <button type="button" onclick="limpiarTabla('form-group')">Limpiar Asignaturas</button><br><br>
+
         <!-- Nuevos campos para asignatura y horas -->
         <table class="form-group">
             <thead>
@@ -91,7 +94,7 @@
 
                     <!-- Selector de día, visible solo si el grupo termina en "81" -->
                     <select id="daySelector1" name="daySelector1" style="display: none;">
-                        <option value="">Selecciona día</option>
+                        <option value="">Día de Transmisión</option>
                         <option value="1" {% if profesor.distintivo1 == "1" %}selected{% endif %}>Lunes</option>
                         <option value="2" {% if profesor.distintivo1 == "2" %}selected{% endif %}>Martes</option>
                         <option value="3" {% if profesor.distintivo1 == "3" %}selected{% endif %}>Miércoles</option>
@@ -230,7 +233,7 @@
 
                     <!-- Selector de día, visible solo si el grupo termina en "81" -->
                     <select id="daySelector2" name="daySelector2" style="display: none;">
-                        <option value="">Selecciona día</option>
+                        <option value="">Día de Transmisión</option>
                         <option value="1" {% if profesor.distintivo2 == "1" %}selected{% endif %}>Lunes</option>
                         <option value="2" {% if profesor.distintivo2 == "2" %}selected{% endif %}>Martes</option>
                         <option value="3" {% if profesor.distintivo2 == "3" %}selected{% endif %}>Miércoles</option>
@@ -367,7 +370,7 @@
 
                     <!-- Selector de día, visible solo si el grupo termina en "81" -->
                     <select id="daySelector3" name="daySelector3" style="display: none;">
-                        <option value="">Selecciona día</option>
+                        <option value="">Día de Transmisión</option>
                         <option value="1" {% if profesor.distintivo3 == "1" %}selected{% endif %}>Lunes</option>
                         <option value="2" {% if profesor.distintivo3 == "2" %}selected{% endif %}>Martes</option>
                         <option value="3" {% if profesor.distintivo3 == "3" %}selected{% endif %}>Miércoles</option>
@@ -504,7 +507,7 @@
 
                         <!-- Selector de día, visible solo si el grupo termina en "81" -->
                         <select id="daySelector4" name="daySelector4" style="display: none;">
-                        <option value="">Selecciona día</option>
+                        <option value="">Día de Transmisión</option>
                         <option value="1" {% if profesor.distintivo4 == "1" %}selected{% endif %}>Lunes</option>
                         <option value="2" {% if profesor.distintivo4 == "2" %}selected{% endif %}>Martes</option>
                         <option value="3" {% if profesor.distintivo4 == "3" %}selected{% endif %}>Miércoles</option>
@@ -641,7 +644,7 @@
 
                         <!-- Selector de día, visible solo si el grupo termina en "81" -->
                         <select id="daySelector5" name="daySelector5" style="display: none;">
-                        <option value="">Selecciona día</option>
+                        <option value="">Día de Transmisión</option>
                         <option value="1" {% if profesor.distintivo5 == "1" %}selected{% endif %}>Lunes</option>
                         <option value="2" {% if profesor.distintivo5 == "2" %}selected{% endif %}>Martes</option>
                         <option value="3" {% if profesor.distintivo5 == "3" %}selected{% endif %}>Miércoles</option>
@@ -779,7 +782,7 @@
 
                         <!-- Selector de día, visible solo si el grupo termina en "81" -->
                         <select id="daySelector6" name="daySelector6" style="display: none;">
-                        <option value="">Selecciona día</option>
+                        <option value="">Día de Transmisión</option>
                         <option value="1" {% if profesor.distintivo6 == "1" %}selected{% endif %}>Lunes</option>
                         <option value="2" {% if profesor.distintivo6 == "2" %}selected{% endif %}>Martes</option>
                         <option value="3" {% if profesor.distintivo6 == "3" %}selected{% endif %}>Miércoles</option>
@@ -916,7 +919,7 @@
 
                         <!-- Selector de día, visible solo si el grupo termina en "81" -->
                         <select id="daySelector7" name="daySelector7" style="display: none;">
-                        <option value="">Selecciona día</option>
+                        <option value="">Día de Transmisión</option>
                         <option value="1" {% if profesor.distintivo7 == "1" %}selected{% endif %}>Lunes</option>
                         <option value="2" {% if profesor.distintivo7 == "2" %}selected{% endif %}>Martes</option>
                         <option value="3" {% if profesor.distintivo7 == "3" %}selected{% endif %}>Miércoles</option>
@@ -1053,7 +1056,7 @@
 
                         <!-- Selector de día, visible solo si el grupo termina en "81" -->
                         <select id="daySelector8" name="daySelector8" style="display: none;">
-                        <option value="">Selecciona día</option>
+                        <option value="">Día de Transmisión</option>
                         <option value="1" {% if profesor.distintivo8 == "1" %}selected{% endif %}>Lunes</option>
                         <option value="2" {% if profesor.distintivo8 == "2" %}selected{% endif %}>Martes</option>
                         <option value="3" {% if profesor.distintivo8 == "3" %}selected{% endif %}>Miércoles</option>
@@ -1167,6 +1170,9 @@
 
         <label for="total_horas_grupo">Total de Horas:</label>
         <input type="number" id="total_horas_grupo" name="total_horas_grupo" value="{{ profesor.total_horas_grupo }}" readonly><br>
+
+        <!-- BOTÓN PARA LIMPIAR TABLA DE ASIGNATURAS ESPECIALES -->
+        <button type="button" onclick="limpiarTabla('form-groupE')">Limpiar Asignaturas Especiales</button><br><br>
 
         <!-- Nuevos campos para asignatura especial y horas -->
         <table class="form-groupE">
@@ -2177,11 +2183,15 @@
         <label for="total_horasE_grupo">Total de Horas:</label>
         <input type="number" id="total_horasE_grupo" name="total_horasE_grupo" value="{{ profesor.total_horasE_grupo }}" readonly><br>
 
+        <!-- BOTÓN PARA LIMPIAR TABLA DE CARGOS -->
+        <button type="button" onclick="limpiarTabla('form-groupC')">Limpiar Cargo</button><br><br>
+
         <!-- Nuevos campos para cargo -->
         <table class="form-groupC">
             <thead>
                 <tr>
                     <th></th>
+                    <th>Carrera</th>
                     <th>Cargo</th>
                     <th>Vigencia</th>
                     <th>Horas</th>
@@ -2195,10 +2205,19 @@
             </thead>
             <tr>
                 <td><label for="cargo">1.</label></td>
+                <!-- CARRERA -->
+                <td>
+                    <select id="carreraC" name="carreraC" class="career" data-current-value="{{ profesor.carreraC }}">
+                        <option value=" " {% if profesor.carreraC == " " %}selected{% endif %}> </option>
+                        {% for carrera in carreras %}
+                        <option value="{{ carrera }}" {% if profesor.carreraC == carrera %}selected{% endif %}>{{ carrera }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
                 <!-- CARGO -->
                 <td>
                     <select id="cargo" name="cargo" required>
-                        <option value=" " {% if profesor.cargo == " " %}selected{% endif %}>NO APLICA</option>
+                        <option value=" " {% if profesor.cargo == " " %}selected{% endif %}> </option>
                         <option value="PRESINDENTE DE ACADÉMIA" {% if profesor.cargo == "PRESINDENTE DE ACADÉMIA" %}selected{% endif %}>PRESINDENTE DE ACADEMIA</option>
                         <option value="SECRETARIO DE ACADÉMIA" {% if profesor.cargo == "SECRETARIO DE ACADÉMIA" %}selected{% endif %}>SECRETARIO DE ACADEMIA</option>
                 </select>

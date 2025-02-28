@@ -106,46 +106,15 @@ document.getElementById('updateTextFormDos').addEventListener('submit', function
         });
 });
 
-//EXPORTAR ARCHIVO EXCEL
-document.getElementById('export-form').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const collection = document.getElementById('collection').value;
-    const columns = Array.from(document.querySelectorAll('input[name="columns"]:checked'))
-        .map(checkbox => checkbox.value)
-        .join(',');
-
-    const data = {
-        collection: collection,
-        columns: columns
-    };
-
-    fetch('/export', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        }).then(response => response.blob())
-        .then(blob => {
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.style.display = 'none';
-            a.href = url;
-            a.download = `${collection}.xlsx`;
-            document.body.appendChild(a);
-            a.click();
-            window.URL.revokeObjectURL(url);
-        });
-});
-
-// EXPORTACION DE EXCEL
+// EXPORTACION DE DATOS  EN EXCEL
 document.getElementById('collection').addEventListener('change', function() {
     const collection = this.value;
     fetch(`/columns/${collection}`)
         .then(response => response.json())
         .then(columns => {
             const container = document.getElementById('columns-container');
-            container.innerHTML = ''; // Clear previous checkboxes
+            container.innerHTML = ''; // Limpiar checkboxes previos
+
             columns.forEach(column => {
                 const checkbox = document.createElement('input');
                 checkbox.type = 'checkbox';
@@ -162,41 +131,35 @@ document.getElementById('collection').addEventListener('change', function() {
                 container.appendChild(document.createElement('br'));
             });
 
-            // Añadir el checkbox especial para Asignación de Horas Frente a Grupo
-            if (collection == 'profesores') {
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.id = 'asignacion_horas_frente_grupo';
-                checkbox.name = 'columns';
-                checkbox.value = 'asignacion_horas_frente_grupo';
-
-                const label = document.createElement('label');
-                label.htmlFor = 'asignacion_horas_frente_grupo';
-                label.textContent = 'Asignación de Horas Frente a Grupo';
-
-                const checkbox2 = document.createElement('input');
-                checkbox2.type = 'checkbox';
-                checkbox2.id = 'asignacion_horas_descarga_otras_actividades';
-                checkbox2.name = 'columns';
-                checkbox2.value = 'asignacion_horas_descarga_otras_actividades';
-
-                const label2 = document.createElement('label');
-                label2.htmlFor = 'asignacion_horas_descarga_otras_actividades';
-                label2.textContent = 'Asiganción de Horas de Descarga para otras Actividades';
-
-                container.appendChild(checkbox);
-                container.appendChild(label);
-                container.appendChild(document.createElement('br'));
-
-                container.appendChild(checkbox2);
-                container.appendChild(label2);
-                container.appendChild(document.createElement('br'));
+            // 🔹 Agregar opciones de exportación de asignaciones si la colección es "profesores"
+            if (collection === 'profesores') {
+                addSpecialCheckbox(container, 'asignacion_horas_frente_grupo', 'Asignación de Horas Frente a Grupo');
+                addSpecialCheckbox(container, 'asignacion_horas_descarga_otras_actividades', 'Asignación de Horas de Descarga para otras Actividades');
+                addSpecialCheckbox(container, 'asignacion_horas_cargo_academico', 'Asignación de Horas de Cargo Académico');
             }
         });
 });
 
+// Función para agregar opciones especiales de asignaciones
+function addSpecialCheckbox(container, id, labelText) {
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.id = id;
+    checkbox.name = 'columns';
+    checkbox.value = id;
+
+    const label = document.createElement('label');
+    label.htmlFor = id;
+    label.textContent = labelText;
+
+    container.appendChild(checkbox);
+    container.appendChild(label);
+    container.appendChild(document.createElement('br'));
+}
+
+// Manejar la exportación de datos
 document.getElementById('export-form').addEventListener('submit', function(event) {
-    event.preventDefault(); // Prevent form from submitting the default way
+    event.preventDefault();
 
     const collection = document.getElementById('collection').value;
     const format = document.getElementById('export-format').value;
@@ -207,7 +170,7 @@ document.getElementById('export-form').addEventListener('submit', function(event
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ collection, columns: columns.join(',') }), // Join columns as a comma-separated string
+            body: JSON.stringify({ collection, columns: columns.join(',') }),
         })
         .then(response => response.blob())
         .then(blob => {

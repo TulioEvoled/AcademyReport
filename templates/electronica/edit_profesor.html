@@ -45,6 +45,9 @@
         <label for="total_horas">Total Horas:</label>
         <input type="number" id="total_horas" name="total_horas" value="{{ profesor.total_horas }}" required><br>
 
+        <!-- BOTÓN PARA LIMPIAR TABLA DE ASIGNATURAS -->
+        <button type="button" onclick="limpiarTabla('form-group')">Limpiar Asignaturas</button><br><br>
+
         <!-- Tabla de asignaturas -->
         <table class="form-group">
             <thead>
@@ -136,6 +139,9 @@
         <label for="total_horas_grupo">Total de Horas:</label>
         <input type="number" id="total_horas_grupo" name="total_horas_grupo" value="{{ profesor.total_horas_grupo }}" readonly><br>
 
+        <!-- BOTÓN PARA LIMPIAR TABLA DE ASIGNATURAS ESPECIALES -->
+        <button type="button" onclick="limpiarTabla('form-groupE')">Limpiar Asignaturas Especiales</button><br><br>
+
         <!-- Tabla de asignaturas especiales -->
         <table class="form-groupE">
             <thead>
@@ -211,59 +217,72 @@
         <label for="total_horasE_grupo">Total de Horas:</label>
         <input type="number" id="total_horasE_grupo" name="total_horasE_grupo" value="{{ profesor.total_horasE_grupo }}" readonly><br>
 
+        <!-- BOTÓN PARA LIMPIAR TABLA DE CARGOS -->
+        <button type="button" onclick="limpiarTabla('form-groupC')">Limpiar Cargo</button><br><br>
+        
         <!-- Tabla de Cargo -->
-<table class="form-groupC">
-    <thead>
-        <tr>
-            <th></th>
-            <th>Cargo</th>
-            <th>Vigencia</th>
-            <th>Horas</th>
-            <th>Lunes</th>
-            <th>Martes</th>
-            <th>Miércoles</th>
-            <th>Jueves</th>
-            <th>Viernes</th>
-            <th>Sábado</th>
-        </tr>
-    </thead>
-    <tr>
-        <td><label for="cargo">1.</label></td>
-        <!-- CARGO -->
-        <td>
-            <select id="cargo" name="cargo" required>
-                <option value=" " {% if profesor.cargo == " " %}selected{% endif %}>NO APLICA</option>
-                <option value="PRESIDENTE DE ACADEMIA" {% if profesor.cargo == "PRESIDENTE DE ACADEMIA" %}selected{% endif %}>PRESIDENTE DE ACADEMIA</option>
-                <option value="SECRETARIO DE ACADEMIA" {% if profesor.cargo == "SECRETARIO DE ACADEMIA" %}selected{% endif %}>SECRETARIO DE ACADEMIA</option>
-            </select>
-        </td>
-        <!-- VIGENCIA CARGO -->
-        <td>
-            <input type="text" id="vigenciaCargo" name="vigenciaCargo" value="{{ profesor.vigenciaCargo }}">
-        </td>
-        <!-- HORAS CARGO -->
-        <td>
-            <input type="number" id="horasC" name="horasC" class="groupHoras" value="{{ profesor.horasC }}">
-        </td>
-        <!-- HORARIOS -->
-        {% for dia in range(1, 7) %}
-        <td>
-            <select id="hora_inicioC1{{ dia }}" name="hora_inicioC1{{ dia }}" class="hora-inicio">
-                <option value="" {% if profesor['hora_inicioC1' ~ dia] == "" %}selected{% endif %}></option>
-                {% for horario in horarios %}
-                <option value="{{ horario }}" {% if profesor['hora_inicioC1' ~ dia] == horario %}selected{% endif %}>{{ horario }}</option>
+        <table class="form-groupC">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Carrera</th>
+                    <th>Cargo</th>
+                    <th>Vigencia</th>
+                    <th>Horas</th>
+                    <th>Lunes</th>
+                    <th>Martes</th>
+                    <th>Miércoles</th>
+                    <th>Jueves</th>
+                    <th>Viernes</th>
+                    <th>Sábado</th>
+                </tr>
+            </thead>
+            <tr>
+                <td><label for="cargo">1.</label></td>
+                <!-- CARRERA -->
+                <td>
+                    <select id="carreraC" name="carreraC" class="career" data-current-value="{{ profesor.carreraC }}">
+                        <option value=" " {% if profesor.carreraC == " " %}selected{% endif %}> </option>
+                        {% for carrera in carreras %}
+                        <option value="{{ carrera }}" {% if profesor.carreraC == carrera %}selected{% endif %}>{{ carrera }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <!-- CARGO -->
+                <td>
+                    <select id="cargo" name="cargo" required>
+                        <option value=" " {% if profesor.cargo == " " %}selected{% endif %}>NO APLICA</option>
+                        <option value="PRESIDENTE DE ACADEMIA" {% if profesor.cargo == "PRESIDENTE DE ACADEMIA" %}selected{% endif %}>PRESIDENTE DE ACADEMIA</option>
+                        <option value="SECRETARIO DE ACADEMIA" {% if profesor.cargo == "SECRETARIO DE ACADEMIA" %}selected{% endif %}>SECRETARIO DE ACADEMIA</option>
+                    </select>
+                </td>
+                <!-- VIGENCIA CARGO -->
+                <td>
+                    <input type="text" id="vigenciaCargo" name="vigenciaCargo" value="{{ profesor.vigenciaCargo }}">
+                </td>
+                <!-- HORAS CARGO -->
+                <td>
+                    <input type="number" id="horasC" name="horasC" class="groupHoras" value="{{ profesor.horasC }}">
+                </td>
+                <!-- HORARIOS -->
+                {% for dia in range(1, 7) %}
+                <td>
+                    <select id="hora_inicioC1{{ dia }}" name="hora_inicioC1{{ dia }}" class="hora-inicio">
+                        <option value="" {% if profesor['hora_inicioC1' ~ dia] == "" %}selected{% endif %}></option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor['hora_inicioC1' ~ dia] == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                    <select id="hora_finC1{{ dia }}" name="hora_finC1{{ dia }}" class="hora-fin">
+                        <option value="" {% if profesor['hora_finC1' ~ dia] == "" %}selected{% endif %}></option>
+                        {% for horario in horarios %}
+                        <option value="{{ horario }}" {% if profesor['hora_finC1' ~ dia] == horario %}selected{% endif %}>{{ horario }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
                 {% endfor %}
-            </select>
-            <select id="hora_finC1{{ dia }}" name="hora_finC1{{ dia }}" class="hora-fin">
-                <option value="" {% if profesor['hora_finC1' ~ dia] == "" %}selected{% endif %}></option>
-                {% for horario in horarios %}
-                <option value="{{ horario }}" {% if profesor['hora_finC1' ~ dia] == horario %}selected{% endif %}>{{ horario }}</option>
-                {% endfor %}
-            </select>
-        </td>
-        {% endfor %}
-    </tr>
-</table>
+            </tr>
+        </table>
 
 <!-- Botón de Guardado -->
 <br><button type="submit">Guardar</button>

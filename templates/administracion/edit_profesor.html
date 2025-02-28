@@ -45,6 +45,9 @@
         <label for="total_horas">Total Horas:</label>
         <input type="number" id="total_horas" name="total_horas" value="{{ profesor.total_horas }}" required><br>
     
+        <!-- BOTÓN PARA LIMPIAR TABLA DE ASIGNATURAS -->
+        <button type="button" onclick="limpiarTabla('form-group')">Limpiar Asignaturas</button><br><br>
+    
         <!-- Tabla de asignaturas -->
         <table class="form-group">
             <thead>
@@ -136,6 +139,9 @@
         <label for="total_horas_grupo">Total de Horas:</label>
         <input type="number" id="total_horas_grupo" name="total_horas_grupo" value="{{ profesor.total_horas_grupo }}" readonly><br>
 
+        <!-- BOTÓN PARA LIMPIAR TABLA DE ASIGNATURAS ESPECIALES -->
+        <button type="button" onclick="limpiarTabla('form-groupE')">Limpiar Asignaturas Especiales</button><br><br>
+
         <!-- Tabla de asignaturas especiales -->
         <table class="form-groupE">
             <thead>
@@ -211,11 +217,15 @@
         <label for="total_horasE_grupo">Total de Horas:</label>
         <input type="number" id="total_horasE_grupo" name="total_horasE_grupo" value="{{ profesor.total_horasE_grupo }}" readonly><br>
 
+        <!-- BOTÓN PARA LIMPIAR TABLA DE CARGOS -->
+        <button type="button" onclick="limpiarTabla('form-groupC')">Limpiar Cargo</button><br><br>
+        
         <!-- Tabla de Cargo -->
         <table class="form-groupC">
             <thead>
                 <tr>
                     <th></th>
+                    <th>Carrera</th>
                     <th>Cargo</th>
                     <th>Vigencia</th>
                     <th>Horas</th>
@@ -229,6 +239,15 @@
             </thead>
             <tr>
                 <td><label for="cargo">1.</label></td>
+                <!-- CARRERA -->
+                <td>
+                    <select id="carreraC" name="carreraC" class="career" data-current-value="{{ profesor.carreraC }}">
+                        <option value=" " {% if profesor.carreraC == " " %}selected{% endif %}> </option>
+                        {% for carrera in carreras %}
+                        <option value="{{ carrera }}" {% if profesor.carreraC == carrera %}selected{% endif %}>{{ carrera }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
                 <!-- CARGO -->
                 <td>
                     <select id="cargo" name="cargo" required>

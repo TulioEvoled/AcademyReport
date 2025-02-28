@@ -312,6 +312,7 @@ document.getElementById('add-profesor-form').addEventListener('submit', function
 
         total_horasE_grupo: document.getElementById('total_horasE_grupo').value,
 
+        carreraC: document.getElementById('carreraC').value,
         cargo: document.getElementById('cargo').value,
         vigenciaCargo: document.getElementById('vigenciaCargo').value,
         horasC: document.getElementById('horasC').value,
@@ -904,6 +905,7 @@ const carreras = ["", "INDUSTRIAL", "SISTEMAS COMPUTACIONALES", "ELECTRÓNICA", 
 document.addEventListener("DOMContentLoaded", function() {
     const carreraESelects = document.querySelectorAll(".careerE");
     const carreraSelects = document.querySelectorAll(".career"); // Nuevo para asignaturas normales
+    const carreraCSelects = document.querySelectorAll(".careerC");
 
     // Función para poblar las opciones en el select de carreras
     carreraESelects.forEach(select => {
@@ -911,6 +913,10 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
     carreraSelects.forEach(select => {  // Nuevo para asignaturas normales
+        select.innerHTML = carreras.map(carrera => `<option value="${carrera}">${carrera}</option>`).join("");
+    });
+
+    carreraCSelects.forEach(select => {
         select.innerHTML = carreras.map(carrera => `<option value="${carrera}">${carrera}</option>`).join("");
     });
 });
@@ -1029,7 +1035,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 daySelector.id = `daySelector${index + 1}`;
                 daySelector.name = `daySelector${index + 1}`;
                 daySelector.innerHTML = `
-                    <option value="">Selecciona día</option>
+                    <option value="">Día de Transmisión</option>
                     <option value="1">Lunes</option>
                     <option value="2">Martes</option>
                     <option value="3">Miércoles</option>

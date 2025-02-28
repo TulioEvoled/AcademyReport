@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, send_file, render_template, redirect, url_for
+from flask import Blueprint, request, jsonify, send_file, session, render_template, redirect, url_for
 from pymongo import MongoClient
 from bson import ObjectId
 import pandas as pd
@@ -10,6 +10,7 @@ import win32com.client
 import os
 import pythoncom
 from datetime import datetime
+from routes.auth_routes import login_required
 
 # Definir el Blueprint para Ingeniería en Sistemas Computacionales
 sistemas_bp = Blueprint('sistemas', __name__, url_prefix='/sistemas')
@@ -22,7 +23,7 @@ db = client.tecnologico
 sistemas_profesores = db['sistemas_profesores']
 sistemas_asignaturas = db['sistemas_asignaturas']
 sistemas_asignaturasE = db['sistemas_asignaturasE']
-administrativos = db['sistemas_administrativos']
+administrativos = db['administrativos']
 
 # Listas de grupos, horarios y carreras
 sistemas_grupos = [
@@ -50,39 +51,47 @@ SISTEMAS_ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg"}
 
 # Rutas CRUD para profesores en Sistemas Computacionales
 @sistemas_bp.route('/sistemas_profesores', methods=['POST'])
+@login_required('Sistemas')
+#@login_required
 def add_profesor():
     data = request.json
     sistemas_profesores.insert_one(data)
     return jsonify({'msg': 'Profesor añadido'}), 201
 
 @sistemas_bp.route('/sistemas_profesores/Add_Profesor')
+@login_required('Sistemas')
 def add_profesor2():
     return render_template('sistemas/Add_Profesor.html')
 
 @sistemas_bp.route('/sistemas_profesores/<id>', methods=['GET'])
+@login_required('Sistemas')
 def get_profesor(id):
     profesor = sistemas_profesores.find_one({'_id': ObjectId(id)})
     profesor['_id'] = str(profesor['_id'])
     return jsonify(profesor)
 
 @sistemas_bp.route('/sistemas_profesores/<id>', methods=['PUT'])
+@login_required('Sistemas')
 def update_profesor(id):
     data = request.json
     sistemas_profesores.update_one({'_id': ObjectId(id)}, {'$set': data})
     return jsonify({'msg': 'Profesor actualizado'})
 
 @sistemas_bp.route('/sistemas_profesores/edit/<id>', methods=['GET'])
+@login_required('Sistemas')
 def edit_profesor(id):
     profesor = sistemas_profesores.find_one({'_id': ObjectId(id)})
     profesor['_id'] = str(profesor['_id'])
     return render_template('sistemas/edit_profesor.html', profesor=profesor, grupos=sistemas_grupos, horarios=horarios)
 
 @sistemas_bp.route('/sistemas_profesores/<id>', methods=['DELETE'])
+@login_required('Sistemas')
 def delete_profesor(id):
     sistemas_profesores.delete_one({'_id': ObjectId(id)})
     return jsonify({'msg': 'Profesor eliminado'})
 
 @sistemas_bp.route('/sistemas_profesores', methods=['GET'])
+@login_required('Sistemas')
 def get_all_profesores():
     all_profesores = list(sistemas_profesores.find({}).sort("nombre", 1))
     for profesor in all_profesores:
@@ -91,6 +100,7 @@ def get_all_profesores():
 
 # Ruta para obtener la lista de profesores en formato JSON en Sistemas Computacionales
 @sistemas_bp.route('/sistemas_profesores/json', methods=['GET'])
+@login_required('Sistemas')
 def get_profesores_json():
     all_profesores = list(sistemas_profesores.find({}, {'_id': 1, 'nombre': 1}).sort("nombre", 1))
     for profesor in all_profesores:
@@ -99,18 +109,21 @@ def get_profesores_json():
 
 # Rutas CRUD para asignaturas en Sistemas Computacionales
 @sistemas_bp.route('/sistemas_asignaturas', methods=['POST'])
+@login_required('Sistemas')
 def add_asignatura():
     data = request.json
     sistemas_asignaturas.insert_one(data)
     return jsonify({'msg': 'Asignatura añadida'}), 201
 
 @sistemas_bp.route('/sistemas_asignaturas/<id>', methods=['GET'])
+@login_required('Sistemas')
 def get_asignatura(id):
     asignatura = sistemas_asignaturas.find_one({'_id': ObjectId(id)})
     asignatura['_id'] = str(asignatura['_id'])
     return jsonify(asignatura)
 
 @sistemas_bp.route('/sistemas_asignaturas/<id>', methods=['PUT'])
+@login_required('Sistemas')
 def update_asignatura(id):
     data = request.json
     nombre = data.get('nombre')
@@ -130,17 +143,20 @@ def update_asignatura(id):
         return jsonify({"msg": "Datos inválidos"}), 400
 
 @sistemas_bp.route('/sistemas_edit-asignatura/<id>', methods=['GET'])
+@login_required('Sistemas')
 def edit_asignatura(id):
     asignatura = sistemas_asignaturas.find_one({'_id': ObjectId(id)})
     asignatura['_id'] = str(asignatura['_id'])
     return render_template('sistemas/edit_asignatura.html', asignatura=asignatura)
 
 @sistemas_bp.route('/sistemas_asignaturas/<id>', methods=['DELETE'])
+@login_required('Sistemas')
 def delete_asignatura(id):
     sistemas_asignaturas.delete_one({'_id': ObjectId(id)})
     return jsonify({'msg': 'Asignatura eliminada'})
 
 @sistemas_bp.route('/sistemas_asignaturas/json', methods=['GET'])
+@login_required('Sistemas')
 def get_all_asignaturas_json():
     all_asignaturas = list(sistemas_asignaturas.find({}))
     for asignatura in all_asignaturas:
@@ -148,6 +164,7 @@ def get_all_asignaturas_json():
     return jsonify(all_asignaturas)
 
 @sistemas_bp.route('/sistemas_asignaturas', methods=['GET'])
+@login_required('Sistemas')
 def get_all_asignaturas():
     all_asignaturas = list(sistemas_asignaturas.find({}).sort("nombre", 1))
     for asignatura in all_asignaturas:
@@ -156,18 +173,21 @@ def get_all_asignaturas():
 
 # Rutas CRUD para asignaturas especiales en Sistemas Computacionales
 @sistemas_bp.route('/sistemas_asignaturasE', methods=['POST'])
+@login_required('Sistemas')
 def add_asignaturaE():
     data = request.json
     sistemas_asignaturasE.insert_one(data)
     return jsonify({'msg': 'Asignatura Especial añadida'}), 201
 
 @sistemas_bp.route('/sistemas_asignaturasE/<id>', methods=['GET'])
+@login_required('Sistemas')
 def get_asignaturaE(id):
     asignaturaE = sistemas_asignaturasE.find_one({'_id': ObjectId(id)})
     asignaturaE['_id'] = str(asignaturaE['_id'])
     return jsonify(asignaturaE)
 
 @sistemas_bp.route('/sistemas_asignaturasE/<id>', methods=['PUT'])
+@login_required('Sistemas')
 def update_asignaturaE(id):
     data = request.json
     nombre = data.get('nombre')
@@ -187,17 +207,20 @@ def update_asignaturaE(id):
         return jsonify({"msg": "Datos inválidos"}), 400
 
 @sistemas_bp.route('/sistemas_edit-asignaturaE/<id>', methods=['GET'])
+@login_required('Sistemas')
 def edit_asignaturaE(id):
     asignaturaE = sistemas_asignaturasE.find_one({'_id': ObjectId(id)})
     asignaturaE['_id'] = str(asignaturaE['_id'])
     return render_template('sistemas/edit_asignaturaE.html', asignaturaE=asignaturaE)
 
 @sistemas_bp.route('/sistemas_asignaturasE/<id>', methods=['DELETE'])
+@login_required('Sistemas')
 def delete_asignaturaE(id):
     sistemas_asignaturasE.delete_one({'_id': ObjectId(id)})
     return jsonify({'msg': 'Asignatura Especial eliminada'})
 
 @sistemas_bp.route('/sistemas_asignaturasE/json', methods=['GET'])
+@login_required('Sistemas')
 def get_all_asignaturasE_json():
     all_asignaturasE = list(sistemas_asignaturasE.find({}))
     for asignaturaE in all_asignaturasE:
@@ -205,6 +228,7 @@ def get_all_asignaturasE_json():
     return jsonify(all_asignaturasE)
 
 @sistemas_bp.route('/sistemas_asignaturasE', methods=['GET'])
+@login_required('Sistemas')
 def get_all_asignaturasE():
     all_asignaturasE = list(sistemas_asignaturasE.find({}).sort("nombre", 1))
     for asignaturaE in all_asignaturasE:
@@ -212,24 +236,43 @@ def get_all_asignaturasE():
     return render_template('sistemas/asignaturasE.html', asignaturasE=all_asignaturasE)
 
 # Función para exportar datos en Sistemas Computacionales
+# Rutas para obtener las columnas disponibles
+@sistemas_bp.route('/sistemas_columns/<collection_name>', methods=['GET'])
+@login_required('Sistemas')
+def get_columns(collection_name):
+    column_mappings = {
+        "profesores": [
+            "nombre", "profesion", "adscripcion", "fecha_ingreso",
+            "tiempo_indeterminado", "periodo_actual", "horas_a",
+            "horas_b", "Horas de Asignatura", "Horas Descarga", "total_horas"
+        ],
+        "asignaturas": ["nombre", "horas"],
+        "asignaturasE": ["nombre", "horas"]  # Nueva colección de Asignaturas Especiales
+    }
+
+    if collection_name not in column_mappings:
+        return jsonify({"error": "Colección no encontrada"}), 404
+
+    return jsonify(column_mappings[collection_name])
+
+# Función para exportar datos
 @sistemas_bp.route('/sistemas_export', methods=['POST'])
+@login_required('Sistemas')
 def export_data():
     data = request.json
     selected_columns = data['columns'].split(',')
     collection_name = data['collection']
     export_format = data.get('format', 'xlsx')
-
-    # Verificar si la colección pertenece a Sistemas Computacionales
-    collection_mapping = {
-        "profesores": sistemas_profesores,
-        "asignaturas": sistemas_asignaturas,
-        "asignaturasE": sistemas_asignaturasE
-    }
-
-    collection = collection_mapping.get(collection_name)
     
-    if not collection:
-        return jsonify({"message": "Colección no encontrada"}), 400
+     # Seleccionar la colección correcta
+    if collection_name == "profesores":
+        collection = sistemas_profesores
+    elif collection_name == "asignaturas":
+        collection = sistemas_asignaturas
+    elif collection_name == "asignaturasE":
+        collection = sistemas_asignaturasE
+    else:
+        return jsonify({"error": "Colección no válida"}), 400
 
     cursor = collection.find({})
     df = pd.DataFrame(list(cursor))
@@ -237,156 +280,144 @@ def export_data():
     # Reemplazar valores NaN e Inf en el DataFrame antes de exportarlo
     df = df.replace([float('inf'), -float('inf')], 0).fillna('')
 
-    # Verificar si hay datos en el DataFrame
     if df.empty:
-        return jsonify({"message": "No hay datos para exportar"}), 400
+        return {"message": "No hay datos para exportar"}, 400
 
-    # Mapeos de nombres de columnas
-    profesores_column_mapping = {
-        "Nombre": "nombre",
-        "Profesion": "profesion",
-        "Adscripción": "adscripcion",
-        "Fecha de ingreso": "fecha_ingreso",
-        "Tiempo determinado": "tiempo_determinado",
-        "Periodo actual": "periodo_actual",
-        "Horas A": "horas_a",
-        "Horas B": "horas_b",
-        "Total de Horas": "total_horas",
-    }
+    # Ordenar alfabéticamente por "nombre"
+    df = df.sort_values(by="nombre", ascending=True)
 
-    column_mapping = profesores_column_mapping if collection_name == 'profesores' else {}
+    # **📌 Si el usuario selecciona estas columnas, las calculamos**
+    if "Horas de Asignatura" in selected_columns:
+        df["Horas de Asignatura"] = df.apply(lambda row: sum(
+            int(row.get(f"horas{i}", 0) or 0) for i in range(1, 9) if row.get(f"carrera{i}") == "SISTEMAS COMPUTACIONALES"
+        ), axis=1)
 
-    # Filtrar las columnas seleccionadas y mapear a nombres internos
-    selected_columns_db = [column_mapping[col] for col in selected_columns if col in column_mapping]
-
-    # Verificar columnas dinámicas para asignación de horas
-    for i in range(1, 9):
-        for field in [f'asignatura{i}', f'grupo{i}', f'horas{i}']:
-            if field not in df.columns:
-                df[field] = None  # Agregar columna vacía si no existe
+    if "Horas Descarga" in selected_columns:
+        df["Horas Descarga"] = df.apply(lambda row: sum(
+            int(row.get(f"horasE{i}", 0) or 0) for i in range(1, 9) if row.get(f"carreraE{i}") == "SISTEMAS COMPUTACIONALES"
+        ), axis=1)
 
     output = BytesIO()
 
     if export_format == 'xlsx':
-        # Exportar a formato XLSX
-        with pd.ExcelWriter(output, engine='openpyxl') as writer:
-            df[selected_columns].to_excel(writer, sheet_name='Sheet1', index=False)
+        with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
             workbook = writer.book
-            worksheet = workbook.add_worksheet('Sheet1')
-            format_header = workbook.add_format({'bold': True, 'align': 'center', 'bg_color': '#f4cccc'})
-            format_centered = workbook.add_format({'align': 'center'})
+            sheet = workbook.add_worksheet('Datos')
 
-            # Definir encabezados
-            headers = [col for col in selected_columns if col in profesores_column_mapping]
+            # Definir colores alternos
+            format_white = workbook.add_format({'bg_color': '#FFFFFF'})  # Blanco
+            format_gray = workbook.add_format({'bg_color': '#F2F2F2'})  # Gris claro
+            format_header = workbook.add_format({'bold': True, 'bg_color': '#4472C4', 'font_color': '#FFFFFF'})
+            format_red = workbook.add_format({'bg_color': '#FF0000', 'font_color': '#FFFFFF'})  # Rojo para errores
+
+            # **📌 Filtrar solo las columnas seleccionadas**
+            selected_columns_filtered = [col for col in selected_columns if col not in [
+                "asignacion_horas_frente_grupo", "asignacion_horas_descarga_otras_actividades", "asignacion_horas_cargo_academico"
+            ]]
+
+            # Escribir encabezados
+            sheet.write_row(0, 0, selected_columns_filtered, format_header)
+
+            # Escribir datos con colores alternos
+            for row_num, row in enumerate(df[selected_columns_filtered].values, start=1):
+                color_format = format_gray if row_num % 2 == 0 else format_white
+
+                # Escribir toda la fila normalmente
+                sheet.write_row(row_num, 0, row, color_format)
+
+                # Verificar si "total_horas" debe ser pintado de rojo
+                if "total_horas" in selected_columns_filtered:
+                    total_horas_index = selected_columns_filtered.index("total_horas")
+                    total_horas = int(row[total_horas_index]) if row[total_horas_index] else 0
+                    horas_asignatura = int(row[selected_columns_filtered.index("Horas de Asignatura")]) if "Horas de Asignatura" in selected_columns_filtered else 0
+                    horas_descarga = int(row[selected_columns_filtered.index("Horas Descarga")]) if "Horas Descarga" in selected_columns_filtered else 0
+
+                    # Verificar si la diferencia es distinta de 0
+                    if (horas_asignatura + horas_descarga) != total_horas:
+                        sheet.write(row_num, selected_columns_filtered.index("total_horas"), total_horas, format_red)
+
+            # **📌 1. Horas Frente a Grupo**
             if 'asignacion_horas_frente_grupo' in selected_columns:
-                headers.append('Asignación de Horas Frente a Grupo')
-            worksheet.write_row('A1', headers, format_header)
+                sheet_horarios = workbook.add_worksheet("Horas Frente a Grupo")
+                headers = ["Carrera", "Asignatura", "Grupo", "Horas", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"]
+                sheet_horarios.write_row(0, 0, headers, format_header)
 
-            # Combinar celdas para 'Asignación de Horas Frente a Grupo' si está seleccionado
-            if 'asignacion_horas_frente_grupo' in selected_columns:
-                worksheet.merge_range('K1:S1', 'Asignación de Horas Frente a Grupo', format_header)
-
-            # Escribir datos
-            row_num = 1
-            for index, row in df.iterrows():
-                col_num = 0
-                for col in headers:
-                    if col in profesores_column_mapping:
-                        db_col = profesores_column_mapping[col]
-                        if db_col in row:
-                            worksheet.write(row_num, col_num, row[db_col])
-                    col_num += 1
-
-                if 'asignacion_horas_frente_grupo' in selected_columns:
-                    asignaciones_headers = ['Asignatura', 'Grupo', 'Horas', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado']
-                    worksheet.write_row(row_num, col_num, asignaciones_headers, format_header)
-
+                row_num = 1
+                for index, profesor in enumerate(df.to_dict(orient="records")):
+                    color_format = format_gray if index % 2 == 0 else format_white
                     for i in range(1, 9):
-                        asignatura = row.get(f'asignatura{i}', '')
-                        grupo = row.get(f'grupo{i}', '')
-                        horas = row.get(f'horas{i}', 0) if row.get(f'horas{i}') else 0
+                        sheet_horarios.write(row_num, 0, profesor.get(f"carrera{i}", ""), color_format)
+                        sheet_horarios.write(row_num, 1, profesor.get(f"asignatura{i}", ""), color_format)
+                        sheet_horarios.write(row_num, 2, profesor.get(f"grupo{i}", ""), color_format)
+                        sheet_horarios.write(row_num, 3, profesor.get(f"horas{i}", 0), color_format)
 
-                        if asignatura or grupo or horas:
-                            worksheet.write_string(row_num + i, col_num, asignatura)
-                            worksheet.write_string(row_num + i, col_num + 1, grupo)
-                            worksheet.write_number(row_num + i, col_num + 2, float(horas))
-                            worksheet.write_string(row_num + i, col_num + 3, f"{row.get(f'hora_inicio{i}1', '')} {row.get(f'hora_fin{i}1', '')}")
-                            worksheet.write_string(row_num + i, col_num + 4, f"{row.get(f'hora_inicio{i}2', '')} {row.get(f'hora_fin{i}2', '')}")
-                            worksheet.write_string(row_num + i, col_num + 5, f"{row.get(f'hora_inicio{i}3', '')} {row.get(f'hora_fin{i}3', '')}")
-                            worksheet.write_string(row_num + i, col_num + 6, f"{row.get(f'hora_inicio{i}4', '')} {row.get(f'hora_fin{i}4', '')}")
-                            worksheet.write_string(row_num + i, col_num + 7, f"{row.get(f'hora_inicio{i}5', '')} {row.get(f'hora_fin{i}5', '')}")
-                            worksheet.write_string(row_num + i, col_num + 8, f"{row.get(f'hora_inicio{i}6', '')} {row.get(f'hora_fin{i}6', '')}")
+                        # Horarios por día (Lunes - Sábado)
+                        for j in range(1, 7):  
+                            horario_inicio = profesor.get(f"hora_inicio{i}{j}", "")
+                            horario_fin = profesor.get(f"hora_fin{i}{j}", "")
+                            sheet_horarios.write(row_num, 3 + j, f"{horario_inicio} - {horario_fin}", color_format)
 
-                    worksheet.write_string(row_num + 9, col_num + 1, "Total:")
-                    worksheet.write_number(row_num + 9, col_num + 2, float(row.get('total_horas_grupo', 0)) if row.get('total_horas_grupo') else 0)
+                        row_num += 1
 
-                row_num += 10  # Avanzar 10 filas para el próximo profesor
+            # **📌 2. Horas Descarga Otras Actividades**
+            if 'asignacion_horas_descarga_otras_actividades' in selected_columns:
+                sheet_descarga = workbook.add_worksheet("Horas Descarga")
+                headers_descarga = ["Carrera", "Asignatura", "Grupo", "Horas", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"]
+                sheet_descarga.write_row(0, 0, headers_descarga, format_header)
+
+                row_num = 1
+                for index, profesor in enumerate(df.to_dict(orient="records")):
+                    color_format = format_gray if index % 2 == 0 else format_white
+                    for i in range(1, 9):
+                        sheet_descarga.write(row_num, 0, profesor.get(f"carreraE{i}", ""), color_format)
+                        sheet_descarga.write(row_num, 1, profesor.get(f"asignaturaE{i}", ""), color_format)
+                        sheet_descarga.write(row_num, 2, profesor.get(f"grupoE{i}", ""), color_format)
+                        sheet_descarga.write(row_num, 3, profesor.get(f"horasE{i}", 0), color_format)
+
+                        for j in range(1, 7):
+                            horario_inicio = profesor.get(f"hora_inicioE{i}{j}", "")
+                            horario_fin = profesor.get(f"hora_finE{i}{j}", "")
+                            sheet_descarga.write(row_num, 3 + j, f"{horario_inicio} - {horario_fin}", color_format)
+
+                        row_num += 1
+
+            # **📌 3. Horas Cargo Académico**
+            if 'asignacion_horas_cargo_academico' in selected_columns:
+                sheet_cargo = workbook.add_worksheet("Horas Cargo Académico")
+                headers_cargo = ["Carrera", "Cargo", "Vigencia", "Horas", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"]
+                sheet_cargo.write_row(0, 0, headers_cargo, format_header)
+
+                row_num = 1
+                for index, profesor in enumerate(df.to_dict(orient="records")):
+                    color_format = format_gray if index % 2 == 0 else format_white
+                    sheet_cargo.write(row_num, 0, profesor.get("carreraC", ""), color_format)  # Primera carrera registrada
+                    sheet_cargo.write(row_num, 1, profesor.get("cargo", ""), color_format)
+                    sheet_cargo.write(row_num, 2, profesor.get("vigenciaCargo", ""), color_format)
+                    sheet_cargo.write(row_num, 3, profesor.get("horasC", 0), color_format)
+
+                    for j in range(1, 7):
+                        horario_inicio = profesor.get(f"hora_inicioC1{j}", "")
+                        horario_fin = profesor.get(f"hora_finC1{j}", "")
+                        sheet_cargo.write(row_num, 3 + j, f"{horario_inicio} - {horario_fin}", color_format)
+
+                    row_num += 1
 
         output.seek(0)
-        return send_file(
-            output,
-            as_attachment=True,
-            download_name=f"{collection_name}.xlsx",
-            mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        )
-
-    elif export_format == 'csv':
-        # Exportar a formato CSV, incluyendo las asignaciones de horas
-        csv_output = StringIO()
-        if 'asignacion_horas_frente_grupo' in selected_columns:
-            # Agregar columnas dinámicas para la asignación de horas
-            for i in range(1, 9):
-                df[f'Asignatura {i}'] = df[f'asignatura{i}']
-                df[f'Grupo {i}'] = df[f'grupo{i}']
-                df[f'Horas {i}'] = df[f'horas{i}']
-
-        df.to_csv(csv_output, index=False, encoding='utf-8-sig')
-        csv_output.seek(0)
-        return send_file(
-            csv_output,
-            as_attachment=True,
-            download_name=f"{collection_name}.csv",
-            mimetype='text/csv',
-        )
-
-    return {"message": "Formato no soportado"}, 400
-
-# Rutas para obtener las columnas de cada colección en Sistemas Computacionales
-@sistemas_bp.route('/sistemas_columns/<collection_name>', methods=['GET'])
-def get_columns(collection_name):
-    if collection_name == 'profesores':
-        columns = [
-            "Nombre",
-            "Profesion",
-            "Adscripción",
-            "Fecha de ingreso",
-            "Tiempo determinado",
-            "Periodo actual",
-            "Horas A",
-            "Horas B",
-            "Total de Horas",
-            "Cargo"
-        ]
-    elif collection_name == 'asignaturas':
-        columns = [
-            "Nombre",
-            "Horas",
-        ]
-    else:
-        return jsonify({"error": "Colección no encontrada"}), 404
-
-    return jsonify(columns)
+        return send_file(output, as_attachment=True, download_name=f"{collection_name}.xlsx")
 
 # Rutas de la interfaz de usuario para Sistemas Computacionales
 @sistemas_bp.route('/sistemas_index')
+@login_required('Sistemas')
 def index():
     return render_template('sistemas/index.html')
 
 @sistemas_bp.route('/sistemas')
+@login_required('Sistemas')
 def principal():
     return render_template('sistemas/principal.html')
 
 @sistemas_bp.route('/sistemas_reporteador')
+@login_required('Sistemas')
 def reporteador():
     return render_template('sistemas/exportacion/exportar.html')
 
@@ -398,6 +429,7 @@ def allowed_file(filename):
 
 # Ruta para subir imágenes de encabezado y pie de página
 @sistemas_bp.route("/sistemas_upload-images", methods=["POST"])
+@login_required('Sistemas')
 def upload_images():
     upload_folder = "static/sistemas/src/"
 
@@ -415,6 +447,7 @@ def upload_images():
 
 # Ruta para actualizar el texto en la celda A4
 @sistemas_bp.route('/sistemas_update-text', methods=['POST'])
+@login_required('Sistemas')
 def update_text():
     nuevo_texto = request.form.get('nuevo_texto', '')
     if not nuevo_texto:
@@ -429,6 +462,7 @@ def update_text():
 
 # Ruta para actualizar el texto en la celda A54
 @sistemas_bp.route('/sistemas_update-text-a54', methods=['POST'])
+@login_required('Sistemas')
 def update_text_a54():
     nuevo_texto_dos = request.form.get('nuevo_texto_dos', '')
     if not nuevo_texto_dos:
@@ -443,6 +477,7 @@ def update_text_a54():
 
 # Ruta para exportar los profesores seleccionados usando la plantilla con 32 hojas EXCEL
 @sistemas_bp.route('/sistemas_export-selected', methods=['POST'])
+@login_required('Sistemas')
 def export_selected():
     profesor_ids = request.form.getlist('profesor_ids')
     fecha_aplicacion = request.form.get('fechaAplicacion', '')
@@ -503,10 +538,10 @@ def export_selected():
 
     # Definir el mapeo de carreras a cargos administrativos
     cargo_mapping = {
-        "SISTEMAS COMPUTACIONALES": ["JEFA DE DIVISIÓN DE ING. SISTEMAS COMPUTACIONALES", "JEFE DE DIVISIÓN DE ING. SISTEMAS COMPUTACIONALES"],
+        "SISTEMAS COMPUTACIONALES": ["JEFA DE DIVISIÓN DE ING. EN SISTEMAS COMPUTACIONALES", "JEFE DE DIVISIÓN DE ING. EN SISTEMAS COMPUTACIONALES"],
         "INDUSTRIAL": ["JEFA DE DIVISIÓN DE ING. INDUSTRIAL", "JEFE DE DIVISIÓN DE ING. INDUSTRIAL"],
         "ELECTRÓNICA": ["JEFA DE DIVISIÓN DE ING. ELECTRÓNICA", "JEFE DE DIVISIÓN DE ING. ELECTRÓNICA"],
-        "MECATRÓNICA": ["JEFA DE DIVISIÓN DE ING. MECATRÓNICA", "JEFE DE DIVISIÓN DE ING. MECATRÓNICA"],
+        "ELECTROMECÁNICA": ["JEFA DE DIVISIÓN DE ING. ELECTROMECÁNICA", "JEFE DE DIVISIÓN DE ING. ELECTROMECÁNICA"],
         "INFORMÁTICA": ["JEFA DE DIVISIÓN DE ING. INFORMÁTICA", "JEFE DE DIVISIÓN DE ING. INFORMÁTICA"],
         "ADMINISTRACIÓN": ["JEFA DE DIVISIÓN DE ING. ADMINISTRACIÓN", "JEFE DE DIVISIÓN DE ING. ADMINISTRACIÓN"]
     }
@@ -571,8 +606,16 @@ def export_selected():
             if grupo:
                 if str(grupo).startswith("1"):
                     sheet[f"A{row}"] = "INDUSTRIAL"
+                elif str(grupo).startswith("2"):
+                    sheet[f"A{row}"] = "ELECTROMECÁNICA"
+                elif str(grupo).startswith("3"):
+                    sheet[f"A{row}"] = "ELECTRÓNICA"
                 elif str(grupo).startswith("4"):
                     sheet[f"A{row}"] = "SISTEMAS COMPUTACIONALES"
+                elif str(grupo).startswith("6"):
+                    sheet[f"A{row}"] = "INFORMÁTICA"
+                elif str(grupo).startswith("9"):
+                    sheet[f"A{row}"] = "ADMINISTRACIÓN"
 
         # Asignaturas especiales y horarios
         for j in range(1, 9):
@@ -749,6 +792,7 @@ def excel_to_pdf_sistemas(input_excel_path, output_pdf_path):
 
 # Ruta para exportar los profesores seleccionados en PDF
 @sistemas_bp.route('/sistemas_export-selected-pdf', methods=['POST'])
+@login_required('Sistemas')
 def export_selected_pdf_sistemas():
     profesor_ids = request.form.getlist('profesor_ids')
     print("Profesores seleccionados:", profesor_ids)  # Verificar si se reciben los IDs correctamente
@@ -814,10 +858,10 @@ def export_selected_pdf_sistemas():
 
     # Definir el mapeo de carreras a cargos administrativos
     cargo_mapping = {
-        "SISTEMAS COMPUTACIONALES": ["JEFA DE DIVISIÓN DE ING. SISTEMAS COMPUTACIONALES", "JEFE DE DIVISIÓN DE ING. SISTEMAS COMPUTACIONALES"],
+        "SISTEMAS COMPUTACIONALES": ["JEFA DE DIVISIÓN DE ING. EN SISTEMAS COMPUTACIONALES", "JEFE DE DIVISIÓN DE ING. EN SISTEMAS COMPUTACIONALES"],
         "INDUSTRIAL": ["JEFA DE DIVISIÓN DE ING. INDUSTRIAL", "JEFE DE DIVISIÓN DE ING. INDUSTRIAL"],
         "ELECTRÓNICA": ["JEFA DE DIVISIÓN DE ING. ELECTRÓNICA", "JEFE DE DIVISIÓN DE ING. ELECTRÓNICA"],
-        "MECATRÓNICA": ["JEFA DE DIVISIÓN DE ING. MECATRÓNICA", "JEFE DE DIVISIÓN DE ING. MECATRÓNICA"],
+        "ELECTROMECÁNICA": ["JEFA DE DIVISIÓN DE ING. ELECTROMECÁNICA", "JEFE DE DIVISIÓN DE ING. ELECTROMECÁNICA"],
         "INFORMÁTICA": ["JEFA DE DIVISIÓN DE ING. INFORMÁTICA", "JEFE DE DIVISIÓN DE ING. INFORMÁTICA"],
         "ADMINISTRACIÓN": ["JEFA DE DIVISIÓN DE ING. ADMINISTRACIÓN", "JEFE DE DIVISIÓN DE ING. ADMINISTRACIÓN"]
     }
@@ -882,8 +926,16 @@ def export_selected_pdf_sistemas():
             if grupo:
                 if str(grupo).startswith("1"):
                     sheet[f"A{row}"] = "INDUSTRIAL"
+                elif str(grupo).startswith("2"):
+                    sheet[f"A{row}"] = "ELECTROMECÁNICA"
+                elif str(grupo).startswith("3"):
+                    sheet[f"A{row}"] = "ELECTRÓNICA"
                 elif str(grupo).startswith("4"):
                     sheet[f"A{row}"] = "SISTEMAS COMPUTACIONALES"
+                elif str(grupo).startswith("6"):
+                    sheet[f"A{row}"] = "INFORMÁTICA"
+                elif str(grupo).startswith("9"):
+                    sheet[f"A{row}"] = "ADMINISTRACIÓN"
 
         # Asignaturas especiales y horarios
         for j in range(1, 9):

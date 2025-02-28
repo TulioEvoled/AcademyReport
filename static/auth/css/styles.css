@@ -1,0 +1,112 @@
+/* 🔹 Reset de estilos */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+}
+
+/* 🔹 Encabezado fijo */
+.header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: 50px;
+    background-color: #111E48; /* Color del encabezado */
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: bold;
+    z-index: 1000;
+}
+
+/* 🔹 Contenedor principal (fondo con carrusel) */
+.login-container {
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+/* 🔹 Carrusel de fondo */
+.carousel {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+
+.carousel-images img {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 1.5s ease-in-out;
+}
+
+.carousel-images img.active {
+    opacity: 1;
+}
+
+/* 🔹 Formulario de login */
+.login-form-container {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(17, 30, 72, 0.9); /* Fondo oscuro con transparencia */
+    padding: 20px 30px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+    max-width: 1500px;
+    justify-content: flex-end;
+}
+
+/* 🔹 Campos de entrada */
+.login-form-container input {
+    flex: 1;
+    padding: 12px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+}
+
+/* 🔹 Botón de login */
+.login-button {
+    padding: 12px 20px;
+    font-size: 16px;
+    background-color: #FFC107; /* Color amarillo */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s;
+}
+
+.login-button:hover {
+    background-color: #E0A800; /* Amarillo más oscuro */
+}
+
+/* 🔹 Mensaje de error */
+.flash-messages {
+    position: absolute;
+    top: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: red;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    display: none;
+}

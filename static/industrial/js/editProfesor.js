@@ -1,336 +1,69 @@
-document.getElementById('edit-profesor-form').addEventListener('submit', function(e) {
-    e.preventDefault();
-    // const id = window.location.pathname.split('/').pop();
-    const data = {
-        nombre: document.getElementById('nombre').value,
-        profesion: document.getElementById('profesion').value,
-        adscripcion: document.getElementById('adscripcion').value,
-        fecha_ingreso: document.getElementById('fecha_ingreso').value,
-        tiempo_indeterminado: document.getElementById('tiempo_indeterminado').value,
-        periodo_actual: document.getElementById('periodo_actual').value,
-        horas_a: parseInt(document.getElementById('horas_a').value) || 0,
-        horas_b: parseInt(document.getElementById('horas_b').value) || 0,
-        total_horas: parseInt(document.getElementById('total_horas').value) || 0,
+document.addEventListener("DOMContentLoaded", function () {
+    const editForm = document.getElementById("edit-profesor-form");
 
-        carrera1: document.getElementById('carrera1').value,
-        asignatura1: document.getElementById('asignatura1').value,
-        grupo1: document.getElementById('grupo1').value,
-        horas1: document.getElementById('horas1').value,
-        distintivo1: document.getElementById('distintivo1') ? document.getElementById('distintivo1').value : "",
+    editForm.addEventListener("submit", function (event) {
+        event.preventDefault(); // Evitar envío inmediato del formulario
 
-        hora_inicio11: document.getElementById('hora_inicio11').value,
-        hora_fin11: document.getElementById('hora_fin11').value,
-        hora_inicio12: document.getElementById('hora_inicio12').value,
-        hora_fin12: document.getElementById('hora_fin12').value,
-        hora_inicio13: document.getElementById('hora_inicio13').value,
-        hora_fin13: document.getElementById('hora_fin13').value,
-        hora_inicio14: document.getElementById('hora_inicio14').value,
-        hora_fin14: document.getElementById('hora_fin14').value,
-        hora_inicio15: document.getElementById('hora_inicio15').value,
-        hora_fin15: document.getElementById('hora_fin15').value,
-        hora_inicio16: document.getElementById('hora_inicio16').value,
-        hora_fin16: document.getElementById('hora_fin16').value,
+        const confirmacion = confirm("¿Estás seguro de que deseas actualizar los datos del profesor?");
+        if (!confirmacion) {
+            return; // Si el usuario cancela, detenemos el proceso sin enviar el formulario
+        }
 
-        carrera2: document.getElementById('carrera2').value,
-        asignatura2: document.getElementById('asignatura2').value,
-        grupo2: document.getElementById('grupo2').value,
-        horas2: document.getElementById('horas2').value,
-        distintivo2: document.getElementById('distintivo2') ? document.getElementById('distintivo2').value : "",
+        // Obtener ID del profesor
+        const id = window.location.pathname.split('/').pop();
 
-        hora_inicio21: document.getElementById('hora_inicio21').value,
-        hora_fin21: document.getElementById('hora_fin21').value,
-        hora_inicio22: document.getElementById('hora_inicio22').value,
-        hora_fin22: document.getElementById('hora_fin22').value,
-        hora_inicio23: document.getElementById('hora_inicio23').value,
-        hora_fin23: document.getElementById('hora_fin23').value,
-        hora_inicio24: document.getElementById('hora_inicio24').value,
-        hora_fin24: document.getElementById('hora_fin24').value,
-        hora_inicio25: document.getElementById('hora_inicio25').value,
-        hora_fin25: document.getElementById('hora_fin25').value,
-        hora_inicio26: document.getElementById('hora_inicio26').value,
-        hora_fin26: document.getElementById('hora_fin26').value,
+        // Capturar datos del formulario
+        const data = {
+            nombre: document.getElementById('nombre').value,
+            profesion: document.getElementById('profesion').value,
+            adscripcion: document.getElementById('adscripcion').value,
+            fecha_ingreso: document.getElementById('fecha_ingreso').value,
+            tiempo_indeterminado: document.getElementById('tiempo_indeterminado').value,
+            periodo_actual: document.getElementById('periodo_actual').value,
+            horas_a: parseInt(document.getElementById('horas_a').value) || 0,
+            horas_b: parseInt(document.getElementById('horas_b').value) || 0,
+            total_horas: parseInt(document.getElementById('total_horas').value) || 0,
+            carreraC: document.getElementById('carreraC').value,
+            cargo: document.getElementById('cargo').value,
+            vigenciaCargo: document.getElementById('vigenciaCargo').value,
+            horasC: document.getElementById('horasC').value
+        };
 
-        carrera3: document.getElementById('carrera3').value,
-        asignatura3: document.getElementById('asignatura3').value,
-        grupo3: document.getElementById('grupo3').value,
-        horas3: document.getElementById('horas3').value,
-        distintivo3: document.getElementById('distintivo3') ? document.getElementById('distintivo3').value : "",
+        // Recorremos las asignaturas normales (1-8)
+    for (let i = 1; i <= 8; i++) {
+        data[`carrera${i}`] = document.getElementById(`carrera${i}`).value;
+        data[`asignatura${i}`] = document.getElementById(`asignatura${i}`).value;
+        data[`grupo${i}`] = document.getElementById(`grupo${i}`).value;
+        data[`horas${i}`] = document.getElementById(`horas${i}`).value;
+        data[`distintivo${i}`] = document.getElementById(`distintivo${i}`) ? document.getElementById(`distintivo${i}`).value : "";
 
-        hora_inicio31: document.getElementById('hora_inicio31').value,
-        hora_fin31: document.getElementById('hora_fin31').value,
-        hora_inicio32: document.getElementById('hora_inicio32').value,
-        hora_fin32: document.getElementById('hora_fin32').value,
-        hora_inicio33: document.getElementById('hora_inicio33').value,
-        hora_fin33: document.getElementById('hora_fin33').value,
-        hora_inicio34: document.getElementById('hora_inicio34').value,
-        hora_fin34: document.getElementById('hora_fin34').value,
-        hora_inicio35: document.getElementById('hora_inicio35').value,
-        hora_fin35: document.getElementById('hora_fin35').value,
-        hora_inicio36: document.getElementById('hora_inicio36').value,
-        hora_fin36: document.getElementById('hora_fin36').value,
+        for (let j = 1; j <= 6; j++) {
+            data[`hora_inicio${i}${j}`] = document.getElementById(`hora_inicio${i}${j}`).value;
+            data[`hora_fin${i}${j}`] = document.getElementById(`hora_fin${i}${j}`).value;
+        }
+    }
 
-        carrera4: document.getElementById('carrera4').value,
-        asignatura4: document.getElementById('asignatura4').value,
-        grupo4: document.getElementById('grupo4').value,
-        horas4: document.getElementById('horas4').value,
-        distintivo4: document.getElementById('distintivo4') ? document.getElementById('distintivo4').value : "",
+    // Recorremos las asignaturas especiales (1-8)
+    for (let i = 1; i <= 8; i++) {
+        data[`carreraE${i}`] = document.getElementById(`carreraE${i}`).value;
+        data[`asignaturaE${i}`] = document.getElementById(`asignaturaE${i}`).value;
+        data[`grupoE${i}`] = document.getElementById(`grupoE${i}`).value;
+        data[`horasE${i}`] = document.getElementById(`horasE${i}`).value;
 
-        hora_inicio41: document.getElementById('hora_inicio41').value,
-        hora_fin41: document.getElementById('hora_fin41').value,
-        hora_inicio42: document.getElementById('hora_inicio42').value,
-        hora_fin42: document.getElementById('hora_fin42').value,
-        hora_inicio43: document.getElementById('hora_inicio43').value,
-        hora_fin43: document.getElementById('hora_fin43').value,
-        hora_inicio44: document.getElementById('hora_inicio44').value,
-        hora_fin44: document.getElementById('hora_fin44').value,
-        hora_inicio45: document.getElementById('hora_inicio45').value,
-        hora_fin45: document.getElementById('hora_fin45').value,
-        hora_inicio46: document.getElementById('hora_inicio46').value,
-        hora_fin46: document.getElementById('hora_fin46').value,
+        for (let j = 1; j <= 6; j++) {
+            data[`hora_inicioE${i}${j}`] = document.getElementById(`hora_inicioE${i}${j}`).value;
+            data[`hora_finE${i}${j}`] = document.getElementById(`hora_finE${i}${j}`).value;
+        }
+    }
 
-        carrera5: document.getElementById('carrera5').value,
-        asignatura5: document.getElementById('asignatura5').value,
-        grupo5: document.getElementById('grupo5').value,
-        horas5: document.getElementById('horas5').value,
-        distintivo5: document.getElementById('distintivo5') ? document.getElementById('distintivo5').value : "",
+    // Recorremos los horarios del cargo (1-6 días)
+    for (let j = 1; j <= 6; j++) {
+        data[`hora_inicioC1${j}`] = document.getElementById(`hora_inicioC1${j}`).value;
+        data[`hora_finC1${j}`] = document.getElementById(`hora_finC1${j}`).value;
+    }
 
-        hora_inicio51: document.getElementById('hora_inicio51').value,
-        hora_fin51: document.getElementById('hora_fin51').value,
-        hora_inicio52: document.getElementById('hora_inicio52').value,
-        hora_fin52: document.getElementById('hora_fin52').value,
-        hora_inicio53: document.getElementById('hora_inicio53').value,
-        hora_fin53: document.getElementById('hora_fin53').value,
-        hora_inicio54: document.getElementById('hora_inicio54').value,
-        hora_fin54: document.getElementById('hora_fin54').value,
-        hora_inicio55: document.getElementById('hora_inicio55').value,
-        hora_fin55: document.getElementById('hora_fin55').value,
-        hora_inicio56: document.getElementById('hora_inicio56').value,
-        hora_fin56: document.getElementById('hora_fin56').value,
-
-        carrera6: document.getElementById('carrera6').value,
-        asignatura6: document.getElementById('asignatura6').value,
-        grupo6: document.getElementById('grupo6').value,
-        horas6: document.getElementById('horas6').value,
-        distintivo6: document.getElementById('distintivo6') ? document.getElementById('distintivo6').value : "",
-
-        hora_inicio61: document.getElementById('hora_inicio61').value,
-        hora_fin61: document.getElementById('hora_fin61').value,
-        hora_inicio62: document.getElementById('hora_inicio62').value,
-        hora_fin62: document.getElementById('hora_fin62').value,
-        hora_inicio63: document.getElementById('hora_inicio63').value,
-        hora_fin63: document.getElementById('hora_fin63').value,
-        hora_inicio64: document.getElementById('hora_inicio64').value,
-        hora_fin64: document.getElementById('hora_fin64').value,
-        hora_inicio65: document.getElementById('hora_inicio65').value,
-        hora_fin65: document.getElementById('hora_fin65').value,
-        hora_inicio66: document.getElementById('hora_inicio66').value,
-        hora_fin66: document.getElementById('hora_fin66').value,
-
-        carrera7: document.getElementById('carrera7').value,
-        asignatura7: document.getElementById('asignatura7').value,
-        grupo7: document.getElementById('grupo7').value,
-        horas7: document.getElementById('horas7').value,
-        distintivo7: document.getElementById('distintivo7') ? document.getElementById('distintivo7').value : "",
-
-        hora_inicio71: document.getElementById('hora_inicio71').value,
-        hora_fin71: document.getElementById('hora_fin71').value,
-        hora_inicio72: document.getElementById('hora_inicio72').value,
-        hora_fin72: document.getElementById('hora_fin72').value,
-        hora_inicio73: document.getElementById('hora_inicio73').value,
-        hora_fin73: document.getElementById('hora_fin73').value,
-        hora_inicio74: document.getElementById('hora_inicio74').value,
-        hora_fin74: document.getElementById('hora_fin74').value,
-        hora_inicio75: document.getElementById('hora_inicio75').value,
-        hora_fin75: document.getElementById('hora_fin75').value,
-        hora_inicio76: document.getElementById('hora_inicio76').value,
-        hora_fin76: document.getElementById('hora_fin76').value,
-
-        carrera8: document.getElementById('carrera8').value,
-        asignatura8: document.getElementById('asignatura8').value,
-        grupo8: document.getElementById('grupo8').value,
-        horas8: document.getElementById('horas8').value,
-        distintivo8: document.getElementById('distintivo8') ? document.getElementById('distintivo8').value : "",
-
-        hora_inicio81: document.getElementById('hora_inicio81').value,
-        hora_fin81: document.getElementById('hora_fin81').value,
-        hora_inicio82: document.getElementById('hora_inicio82').value,
-        hora_fin82: document.getElementById('hora_fin82').value,
-        hora_inicio83: document.getElementById('hora_inicio83').value,
-        hora_fin83: document.getElementById('hora_fin83').value,
-        hora_inicio84: document.getElementById('hora_inicio84').value,
-        hora_fin84: document.getElementById('hora_fin84').value,
-        hora_inicio85: document.getElementById('hora_inicio85').value,
-        hora_fin85: document.getElementById('hora_fin85').value,
-        hora_inicio86: document.getElementById('hora_inicio86').value,
-        hora_fin86: document.getElementById('hora_fin86').value,
-
-        total_horas_grupo: document.getElementById('total_horas_grupo').value,
-
-        carreraE1: document.getElementById('carreraE1').value,
-        asignaturaE1: document.getElementById('asignaturaE1').value,
-        grupoE1: document.getElementById('grupoE1').value,
-        horasE1: document.getElementById('horasE1').value,
-
-        hora_inicioE11: document.getElementById('hora_inicioE11').value,
-        hora_finE11: document.getElementById('hora_finE11').value,
-        hora_inicioE12: document.getElementById('hora_inicioE12').value,
-        hora_finE12: document.getElementById('hora_finE12').value,
-        hora_inicioE13: document.getElementById('hora_inicioE13').value,
-        hora_finE13: document.getElementById('hora_finE13').value,
-        hora_inicioE14: document.getElementById('hora_inicioE14').value,
-        hora_finE14: document.getElementById('hora_finE14').value,
-        hora_inicioE15: document.getElementById('hora_inicioE15').value,
-        hora_finE15: document.getElementById('hora_finE15').value,
-        hora_inicioE16: document.getElementById('hora_inicioE16').value,
-        hora_finE16: document.getElementById('hora_finE16').value,
-
-        carreraE2: document.getElementById('carreraE2').value,
-        asignaturaE2: document.getElementById('asignaturaE2').value,
-        grupoE2: document.getElementById('grupoE2').value,
-        horasE2: document.getElementById('horasE2').value,
-
-        hora_inicioE21: document.getElementById('hora_inicioE21').value,
-        hora_finE21: document.getElementById('hora_finE21').value,
-        hora_inicioE22: document.getElementById('hora_inicioE22').value,
-        hora_finE22: document.getElementById('hora_finE22').value,
-        hora_inicioE23: document.getElementById('hora_inicioE23').value,
-        hora_finE23: document.getElementById('hora_finE23').value,
-        hora_inicioE24: document.getElementById('hora_inicioE24').value,
-        hora_finE24: document.getElementById('hora_finE24').value,
-        hora_inicioE25: document.getElementById('hora_inicioE25').value,
-        hora_finE25: document.getElementById('hora_finE25').value,
-        hora_inicioE26: document.getElementById('hora_inicioE26').value,
-        hora_finE26: document.getElementById('hora_finE26').value,
-
-        carreraE3: document.getElementById('carreraE3').value,
-        asignaturaE3: document.getElementById('asignaturaE3').value,
-        grupoE3: document.getElementById('grupoE3').value,
-        horasE3: document.getElementById('horasE3').value,
-
-        hora_inicioE31: document.getElementById('hora_inicioE31').value,
-        hora_finE31: document.getElementById('hora_finE31').value,
-        hora_inicioE32: document.getElementById('hora_inicioE32').value,
-        hora_finE32: document.getElementById('hora_finE32').value,
-        hora_inicioE33: document.getElementById('hora_inicioE33').value,
-        hora_finE33: document.getElementById('hora_finE33').value,
-        hora_inicioE34: document.getElementById('hora_inicioE34').value,
-        hora_finE34: document.getElementById('hora_finE34').value,
-        hora_inicioE35: document.getElementById('hora_inicioE35').value,
-        hora_finE35: document.getElementById('hora_finE35').value,
-        hora_inicioE36: document.getElementById('hora_inicioE36').value,
-        hora_finE36: document.getElementById('hora_finE36').value,
-
-        carreraE4: document.getElementById('carreraE4').value,
-        asignaturaE4: document.getElementById('asignaturaE4').value,
-        grupoE4: document.getElementById('grupoE4').value,
-        horasE4: document.getElementById('horasE4').value,
-
-        hora_inicioE41: document.getElementById('hora_inicioE41').value,
-        hora_finE41: document.getElementById('hora_finE41').value,
-        hora_inicioE42: document.getElementById('hora_inicioE42').value,
-        hora_finE42: document.getElementById('hora_finE42').value,
-        hora_inicioE43: document.getElementById('hora_inicioE43').value,
-        hora_finE43: document.getElementById('hora_finE43').value,
-        hora_inicioE44: document.getElementById('hora_inicioE44').value,
-        hora_finE44: document.getElementById('hora_finE44').value,
-        hora_inicioE45: document.getElementById('hora_inicioE45').value,
-        hora_finE45: document.getElementById('hora_finE45').value,
-        hora_inicioE46: document.getElementById('hora_inicioE46').value,
-        hora_finE46: document.getElementById('hora_finE46').value,
-
-        carreraE5: document.getElementById('carreraE5').value,
-        asignaturaE5: document.getElementById('asignaturaE5').value,
-        grupoE5: document.getElementById('grupoE5').value,
-        horasE5: document.getElementById('horasE5').value,
-
-        hora_inicioE51: document.getElementById('hora_inicioE51').value,
-        hora_finE51: document.getElementById('hora_finE51').value,
-        hora_inicioE52: document.getElementById('hora_inicioE52').value,
-        hora_finE52: document.getElementById('hora_finE52').value,
-        hora_inicioE53: document.getElementById('hora_inicioE53').value,
-        hora_finE53: document.getElementById('hora_finE53').value,
-        hora_inicioE54: document.getElementById('hora_inicioE54').value,
-        hora_finE54: document.getElementById('hora_finE54').value,
-        hora_inicioE55: document.getElementById('hora_inicioE55').value,
-        hora_finE55: document.getElementById('hora_finE55').value,
-        hora_inicioE56: document.getElementById('hora_inicioE56').value,
-        hora_finE56: document.getElementById('hora_finE56').value,
-
-        carreraE6: document.getElementById('carreraE6').value,
-        asignaturaE6: document.getElementById('asignaturaE6').value,
-        grupoE6: document.getElementById('grupoE6').value,
-        horasE6: document.getElementById('horasE6').value,
-
-        hora_inicioE61: document.getElementById('hora_inicioE61').value,
-        hora_finE61: document.getElementById('hora_finE61').value,
-        hora_inicioE62: document.getElementById('hora_inicioE62').value,
-        hora_finE62: document.getElementById('hora_finE62').value,
-        hora_inicioE63: document.getElementById('hora_inicioE63').value,
-        hora_finE63: document.getElementById('hora_finE63').value,
-        hora_inicioE64: document.getElementById('hora_inicioE64').value,
-        hora_finE64: document.getElementById('hora_finE64').value,
-        hora_inicioE65: document.getElementById('hora_inicioE65').value,
-        hora_finE65: document.getElementById('hora_finE65').value,
-        hora_inicioE66: document.getElementById('hora_inicioE66').value,
-        hora_finE66: document.getElementById('hora_finE66').value,
-
-        carreraE7: document.getElementById('carreraE7').value,
-        asignaturaE7: document.getElementById('asignaturaE7').value,
-        grupoE7: document.getElementById('grupoE7').value,
-        horasE7: document.getElementById('horasE7').value,
-
-        hora_inicioE71: document.getElementById('hora_inicioE71').value,
-        hora_finE71: document.getElementById('hora_finE71').value,
-        hora_inicioE72: document.getElementById('hora_inicioE72').value,
-        hora_finE72: document.getElementById('hora_finE72').value,
-        hora_inicioE73: document.getElementById('hora_inicioE73').value,
-        hora_finE73: document.getElementById('hora_finE73').value,
-        hora_inicioE74: document.getElementById('hora_inicioE74').value,
-        hora_finE74: document.getElementById('hora_finE74').value,
-        hora_inicioE75: document.getElementById('hora_inicioE75').value,
-        hora_finE75: document.getElementById('hora_finE75').value,
-        hora_inicioE76: document.getElementById('hora_inicioE76').value,
-        hora_finE76: document.getElementById('hora_finE76').value,
-
-        carreraE8: document.getElementById('carreraE8').value,
-        asignaturaE8: document.getElementById('asignaturaE8').value,
-        grupoE8: document.getElementById('grupoE8').value,
-        horasE8: document.getElementById('horasE8').value,
-
-        hora_inicioE81: document.getElementById('hora_inicioE81').value,
-        hora_finE81: document.getElementById('hora_finE81').value,
-        hora_inicioE82: document.getElementById('hora_inicioE82').value,
-        hora_finE82: document.getElementById('hora_finE82').value,
-        hora_inicioE83: document.getElementById('hora_inicioE83').value,
-        hora_finE83: document.getElementById('hora_finE83').value,
-        hora_inicioE84: document.getElementById('hora_inicioE84').value,
-        hora_finE84: document.getElementById('hora_finE84').value,
-        hora_inicioE85: document.getElementById('hora_inicioE85').value,
-        hora_finE85: document.getElementById('hora_finE85').value,
-        hora_inicioE86: document.getElementById('hora_inicioE86').value,
-        hora_finE86: document.getElementById('hora_finE86').value,
-
-        total_horasE_grupo: document.getElementById('total_horasE_grupo').value,
-
-        cargo: document.getElementById('cargo').value,
-        vigenciaCargo: document.getElementById('vigenciaCargo').value,
-        horasC: document.getElementById('horasC').value,
-
-        hora_inicioC11: document.getElementById('hora_inicioC11').value,
-        hora_finC11: document.getElementById('hora_finC11').value,
-        hora_inicioC12: document.getElementById('hora_inicioC12').value,
-        hora_finC12: document.getElementById('hora_finC12').value,
-        hora_inicioC13: document.getElementById('hora_inicioC13').value,
-        hora_finC13: document.getElementById('hora_finC13').value,
-        hora_inicioC14: document.getElementById('hora_inicioC14').value,
-        hora_finC14: document.getElementById('hora_finC14').value,
-        hora_inicioC15: document.getElementById('hora_inicioC15').value,
-        hora_finC15: document.getElementById('hora_finC15').value,
-        hora_inicioC16: document.getElementById('hora_inicioC16').value,
-        hora_finC16: document.getElementById('hora_finC16').value,
-    };
-
-    fetch(`/profesores/${id}`, {
+        // Enviar datos al servidor
+        fetch(`/profesores/${id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
@@ -340,7 +73,9 @@ document.getElementById('edit-profesor-form').addEventListener('submit', functio
         .then(response => response.json())
         .then(data => alert(data.msg))
         .catch(error => console.error('Error:', error));
+    });
 });
+
 
 //AUTOCOMPLETADO
 document.addEventListener('DOMContentLoaded', function() {
@@ -856,3 +591,20 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 });
+
+//FUNCION PARA RESETEAR DATOS DE TABLAS
+function limpiarTabla(className) {
+    const table = document.querySelector(`.${className}`);
+    if (!table) return;
+
+    // Buscar todos los inputs y selects dentro de la tabla
+    table.querySelectorAll("input, select").forEach(element => {
+        if (element.tagName === "INPUT") {
+            element.value = ""; // Limpiar los campos de entrada
+        } else if (element.tagName === "SELECT") {
+            element.selectedIndex = 0; // Resetear selects
+        }
+    });
+    
+    alert("Los campos de la tabla han sido limpiados.");
+}
