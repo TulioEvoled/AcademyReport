@@ -16,7 +16,7 @@ from routes.auth_routes import login_required
 sistemas_bp = Blueprint('sistemas', __name__, url_prefix='/sistemas')
 
 # Conexión a MongoDB
-client = MongoClient('mongodb+srv://ivan:tuliogaymer077@cluster0.bkahq7u.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
+client = MongoClient("mongodb+srv://tecnologico:tecno077@cluster0.tjkln.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
 db = client.tecnologico
 
 # Colecciones específicas de Ingeniería en Sistemas Computacionales

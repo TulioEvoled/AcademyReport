@@ -20,7 +20,7 @@ HISTORIAL_PATH = os.path.join("static", "industrial", "historial")
 os.makedirs(HISTORIAL_PATH, exist_ok=True)  # Asegurar que la carpeta exista
 
 # Conexión a MongoDB
-client = MongoClient('mongodb+srv://ivan:tuliogaymer077@cluster0.bkahq7u.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
+client = MongoClient('mongodb+srv://tecnologico:tecno077@cluster0.tjkln.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
 db = client.tecnologico
 
 # Colecciones específicas de Ingeniería Industrial
