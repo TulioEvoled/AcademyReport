@@ -12,10 +12,12 @@
 
 <body>
     <div class="header-container">
-        <h1 class="titulo">Bienvenido</h1>
+        <h1 class="titulo">Gestión de Reportes - Electrónica</h1>
         <div class="botones-container">
-            <button onclick="window.location.href='/electronica/electronica';">Volver</button>
-        </div>
+        <button onclick="window.location.href='/electronica/electronica';">Volver</button>
+        <button type="button" onclick="window.location.href='/electronica/historial'">
+            Ver Historial de Exportaciones
+        </button>
     </div>
 
     <!-- EXPORTACIÓN DE EXCEL -->
@@ -43,7 +45,7 @@
             <div id="columns-container"></div>
     
             <!-- 🔹 Botón de Exportación -->
-            <button type="submit">Exportar Datos</button>
+            <button type="submit" style="color: #fff;">Exportar Datos</button>
         </form>
     </div>
 

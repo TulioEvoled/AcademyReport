@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, send_file, render_template, redirect, url_for
+from flask import Blueprint, request, jsonify, send_file, render_template, redirect, url_for, send_from_directory
 from pymongo import MongoClient
 from bson import ObjectId
 import pandas as pd
@@ -20,17 +20,33 @@ client = MongoClient('mongodb+srv://tecnologico:tecno077@cluster0.tjkln.mongodb.
 db = client.tecnologico
 
 # Colecciones específicas de Ingeniería en Informática
-informatica_profesores = db['informatica_profesores']
+informatica_profesores = db['profesores']
 informatica_asignaturas = db['informatica_asignaturas']
 informatica_asignaturasE = db['informatica_asignaturasE']
 administrativos = db['administrativos']
 
 # Listas de grupos, horarios y carreras
 informatica_grupos = [
-    "NG", "6101", "6102", "6151", "6152", "6201", "6202", "6251", "6252",
-    "6301", "6302", "6351", "6352", "6401", "6402", "6451", "6452", "6501", 
-    "6502", "6551", "6552", "6601", "6602", "6651", "6652", "6751", "6752", 
-    "6851", "6852", "6951", "6952"
+    #INDUSTRIAL
+    "NG", "1101", "1102", "1151", "1152", "1181", "1201", "1202", "1251", "1252", "1281", "1301", "1302", "1351", "1352", "1381", "1401", "1402", "1451",
+    "1452", "1481", "1501", "1502", "1551", "1552", "1581", "1601", "1602", "1651", "1652", "1681", "1751", "1752", "1781", "1851", "1852", "1881",
+    "1951", "1952", "1981",
+    #SISTEMAS
+    "4101", "4102", "4151", "4152", "4171", "4201", "4202", "4251", "4252", "4271", "4301", "4302", "4351", "4352", "4371", "4401", "4402", "4451",
+    "4452", "4471", "4501", "4502", "4551", "4552", "4571", "4601", "4602", "4651", "4652", "4671", "4751", "4752", "4771", "4851", "4852", "4871",
+    "4951", "4952", "4971",
+    #INFORMATICA
+    "6101", "6102", "6151", "6152", "6201", "6202", "6251", "6252", "6301", "6302", "6351", "6352", "6401", "6402", "6451", "6452", "6501", 
+    "6502", "6551", "6552", "6601", "6602", "6651", "6652", "6751", "6752", "6851", "6852", "6951", "6952",
+    #ELECTRONICA
+    "3101", "3102", "3151", "3152", "3201", "3202", "3251", "3252", "3301", "3302", "3351", "3352", "3401", "3402", "3451", "3452", "3501", 
+    "3502", "3551", "3552", "3601", "3602", "3651", "3652", "3751", "3752", "3851", "3852", "3951", "3952",
+    #ELECTROMECANICA
+    "2101", "2102", "2151", "2152", "2201", "2202", "2251", "2252", "2301", "2302", "2351", "2352", "2401", "2402", "2451", "2452", "2501", 
+    "2502", "2551", "2552", "2601", "2602", "2651", "2652", "2751", "2752", "2851", "2852", "2951", "2952",
+    #ADMINISTRACION
+    "9101", "9102", "9151", "9152", "9201", "9202", "9251", "9252", "9301", "9302", "9351", "9352", "9401", "9402", "9451", "9452", "9501",
+    "9502", "9551", "9552", "9601", "9602", "9651", "9652", "9751", "9752", "9851", "9852", "9951", "9952"
 ]
 
 horarios = [
@@ -91,7 +107,17 @@ def delete_profesor(id):
 @informatica_bp.route('/informatica_profesores', methods=['GET'])
 @login_required('Informatica')
 def get_all_profesores():
-    all_profesores = list(informatica_profesores.find({}).sort("nombre", 1))
+    all_profesores = list(informatica_profesores.find({
+        "$or": [
+            {"carrera1": "INFORMÁTICA"}, {"carrera2": "INFORMÁTICA"}, {"carrera3": "INFORMÁTICA"},
+            {"carrera4": "INFORMÁTICA"}, {"carrera5": "INFORMÁTICA"}, {"carrera6": "INFORMÁTICA"},
+            {"carrera7": "INFORMÁTICA"}, {"carrera8": "INFORMÁTICA"},
+            {"carreraE1": "INFORMÁTICA"}, {"carreraE2": "INFORMÁTICA"}, {"carreraE3": "INFORMÁTICA"},
+            {"carreraE4": "INFORMÁTICA"}, {"carreraE5": "INFORMÁTICA"}, {"carreraE6": "INFORMÁTICA"},
+            {"carreraE7": "INFORMÁTICA"}, {"carreraE8": "INFORMÁTICA"},
+            {"carreraC": "INFORMÁTICA"}
+        ]
+    }).sort("nombre", 1))
     for profesor in all_profesores:
         profesor['_id'] = str(profesor['_id'])
     return render_template('informatica/profesores.html', profesores=all_profesores)
@@ -100,7 +126,17 @@ def get_all_profesores():
 @informatica_bp.route('/informatica_profesores/json', methods=['GET'])
 @login_required('Informatica')
 def get_profesores_json():
-    all_profesores = list(informatica_profesores.find({}, {'_id': 1, 'nombre': 1}).sort("nombre", 1))
+    all_profesores = list(informatica_profesores.find({
+        "$or": [
+            {"carrera1": "INFORMÁTICA"}, {"carrera2": "INFORMÁTICA"}, {"carrera3": "INFORMÁTICA"},
+            {"carrera4": "INFORMÁTICA"}, {"carrera5": "INFORMÁTICA"}, {"carrera6": "INFORMÁTICA"},
+            {"carrera7": "INFORMÁTICA"}, {"carrera8": "INFORMÁTICA"},
+            {"carreraE1": "INFORMÁTICA"}, {"carreraE2": "INFORMÁTICA"}, {"carreraE3": "INFORMÁTICA"},
+            {"carreraE4": "INFORMÁTICA"}, {"carreraE5": "INFORMÁTICA"}, {"carreraE6": "INFORMÁTICA"},
+            {"carreraE7": "INFORMÁTICA"}, {"carreraE8": "INFORMÁTICA"},
+            {"carreraC": "INFORMÁTICA"}
+        ]
+    }, {'_id': 1, 'nombre': 1}).sort("nombre", 1))
     for profesor in all_profesores:
         profesor['_id'] = str(profesor['_id'])
     return jsonify(all_profesores)
@@ -154,7 +190,6 @@ def delete_asignatura(id):
     return jsonify({'msg': 'Asignatura eliminada'})
 
 @informatica_bp.route('/informatica_asignaturas/json', methods=['GET'])
-@login_required('Informatica')
 def get_all_asignaturas_json():
     all_asignaturas = list(informatica_asignaturas.find({}))
     for asignatura in all_asignaturas:
@@ -218,7 +253,6 @@ def delete_asignaturaE(id):
     return jsonify({'msg': 'Asignatura Especial eliminada'})
 
 @informatica_bp.route('/informatica_asignaturasE/json', methods=['GET'])
-@login_required('Informatica')
 def get_all_asignaturasE_json():
     all_asignaturasE = list(informatica_asignaturasE.find({}))
     for asignaturaE in all_asignaturasE:
@@ -272,7 +306,17 @@ def export_data():
     else:
         return jsonify({"error": "Colección no válida"}), 400
 
-    cursor = collection.find({})
+    cursor = collection.find({
+        "$or": [
+            {"carrera1": "INFORMÁTICA"}, {"carrera2": "INFORMÁTICA"}, {"carrera3": "INFORMÁTICA"},
+            {"carrera4": "INFORMÁTICA"}, {"carrera5": "INFORMÁTICA"}, {"carrera6": "INFORMÁTICA"},
+            {"carrera7": "INFORMÁTICA"}, {"carrera8": "INFORMÁTICA"},
+            {"carreraE1": "INFORMÁTICA"}, {"carreraE2": "INFORMÁTICA"}, {"carreraE3": "INFORMÁTICA"},
+            {"carreraE4": "INFORMÁTICA"}, {"carreraE5": "INFORMÁTICA"}, {"carreraE6": "INFORMÁTICA"},
+            {"carreraE7": "INFORMÁTICA"}, {"carreraE8": "INFORMÁTICA"},
+            {"carreraC": "INFORMÁTICA"}
+        ]
+    })
     df = pd.DataFrame(list(cursor))
 
     # Reemplazar valores NaN e Inf en el DataFrame antes de exportarlo
@@ -403,6 +447,170 @@ def export_data():
         output.seek(0)
         return send_file(output, as_attachment=True, download_name=f"{collection_name}.xlsx")
 
+#RUTAS PARA MOSTRAR Y DESCARGAR ARCHIVOS AUTOMATICOS
+@informatica_bp.route('/historial')
+@login_required('Informatica')
+def historial_exportaciones():
+    """Muestra la lista de archivos exportados en la carpeta historial."""
+    files = os.listdir(HISTORIAL_PATH)
+    return render_template("informatica/historial.html", files=files)
+
+@informatica_bp.route('/historial/download/<filename>')
+@login_required('Informatica')
+def download_file(filename):
+    """Permite descargar los archivos almacenados en historial."""
+    return send_from_directory(HISTORIAL_PATH, filename, as_attachment=True)
+
+# 📌 Ruta para guardar los archivos exportados
+HISTORIAL_PATH = os.path.join("static", "informatica", "historial")
+os.makedirs(HISTORIAL_PATH, exist_ok=True)  # Asegurar que la carpeta exista
+
+#EXPORTACION DE DATOS AUTOMATICA
+def export_data_auto():
+    """Ejecuta la exportación automática el 10 de junio, 25 de octubre y 1 de marzo."""
+
+    current_date = datetime.now()
+    current_year = current_date.year
+
+    # 📌 Definir el semestre basado en la fecha actual
+    if current_date.month == 6 and current_date.day == 10:
+        period = "1"
+    elif current_date.month == 10 and current_date.day == 29:
+        period = "2"
+    elif current_date.month == 3 and current_date.day == 3:
+        period = "3"
+    else:
+        print("📌 No es una fecha de exportación automática. Se cancela la ejecución.")
+        return
+
+    # 📌 Nombre del archivo
+    filename = f"Datos_Informática_{current_year}-{period}.xlsx"
+    filepath = os.path.join(HISTORIAL_PATH, filename)
+
+    # 📌 Columnas a exportar
+    selected_columns = [
+        "nombre", "profesion", "adscripcion", "fecha_ingreso",
+        "tiempo_indeterminado", "periodo_actual", "horas_a",
+        "horas_b", "Horas de Asignatura", "Horas Descarga", "total_horas",
+        "asignacion_horas_frente_grupo", "asignacion_horas_descarga_otras_actividades",
+        "asignacion_horas_cargo_academico"
+    ]
+
+    # 📌 Seleccionar colección específica de la carrera
+    collection_name = "profesores"
+    collection = db[collection_name]
+
+    # Filtrar solo profesores que pertenezcan a Industrial
+    cursor = collection.find({
+        "$or": [
+            {"carrera1": "INFORMÁTICA"}, {"carrera2": "INFORMÁTICA"},
+            {"carrera3": "INFORMÁTICA"}, {"carrera4": "INFORMÁTICA"},
+            {"carrera5": "INFORMÁTICA"}, {"carrera6": "INFORMÁTICA"},
+            {"carrera7": "INFORMÁTICA"}, {"carrera8": "INFORMÁTICA"},
+            {"carreraE1": "INFORMÁTICA"}, {"carreraE2": "INFORMÁTICA"},
+            {"carreraE3": "INFORMÁTICA"}, {"carreraE4": "INFORMÁTICA"},
+            {"carreraE5": "INFORMÁTICA"}, {"carreraE6": "INFORMÁTICA"},
+            {"carreraE7": "INFORMÁTICA"}, {"carreraE8": "INFORMÁTICA"},
+            {"carreraC": "INFORMÁTICA"}
+        ]
+    })
+    df = pd.DataFrame(list(cursor))
+
+    if df.empty:
+        print("⚠ No hay datos para exportar.")
+        return
+
+    df = df.replace([float('inf'), -float('inf')], 0).fillna('')
+    df = df.sort_values(by="nombre", ascending=True)
+
+    # 📌 Asegurar que todas las columnas existan en `df`
+    for col in selected_columns:
+        if col not in df.columns:
+            df[col] = 0 if "horas" in col.lower() else ""
+
+    # 📌 Calcular Horas de Asignatura y Horas Descarga
+    df["Horas de Asignatura"] = df.apply(lambda row: sum(
+        int(row.get(f"horas{i}", 0) or 0) for i in range(1, 9) if row.get(f"carrera{i}") == "INDUSTRIAL"
+    ), axis=1)
+
+    df["Horas Descarga"] = df.apply(lambda row: sum(
+        int(row.get(f"horasE{i}", 0) or 0) for i in range(1, 9) if row.get(f"carreraE{i}") == "INDUSTRIAL"
+    ), axis=1)
+
+    # 📌 Exportar a Excel
+    with pd.ExcelWriter(filepath, engine='xlsxwriter') as writer:
+        workbook = writer.book
+        sheet = workbook.add_worksheet('Datos')
+
+        # 📌 Definir formatos de celda
+        format_white = workbook.add_format({'bg_color': '#FFFFFF'})
+        format_gray = workbook.add_format({'bg_color': '#F2F2F2'})
+        format_header = workbook.add_format({'bold': True, 'bg_color': '#4472C4', 'font_color': '#FFFFFF'})
+        format_red = workbook.add_format({'bg_color': '#FF0000', 'font_color': '#FFFFFF'})
+
+        # 📌 Escribir encabezados
+        sheet.write_row(0, 0, selected_columns, format_header)
+
+        # 📌 Escribir datos con colores alternos
+        for row_num, row in enumerate(df[selected_columns].values, start=1):
+            color_format = format_gray if row_num % 2 == 0 else format_white
+            sheet.write_row(row_num, 0, row, color_format)
+
+            # 📌 Validar `total_horas`
+            total_horas = int(row[selected_columns.index("total_horas")]) if row[selected_columns.index("total_horas")] else 0
+            horas_asignatura = int(row[selected_columns.index("Horas de Asignatura")]) if "Horas de Asignatura" in selected_columns else 0
+            horas_descarga = int(row[selected_columns.index("Horas Descarga")]) if "Horas Descarga" in selected_columns else 0
+
+            if (horas_asignatura + horas_descarga) != total_horas:
+                sheet.write(row_num, selected_columns.index("total_horas"), total_horas, format_red)
+
+        # 📌 1. Horas Frente a Grupo
+        sheet_horarios = workbook.add_worksheet("Horas Frente a Grupo")
+        headers = ["Carrera", "Asignatura", "Grupo", "Horas", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"]
+        sheet_horarios.write_row(0, 0, headers, format_header)
+
+        row_num = 1
+        for index, profesor in enumerate(df.to_dict(orient="records")):
+            color_format = format_gray if index % 2 == 0 else format_white
+            for i in range(1, 9):
+                sheet_horarios.write_row(row_num, 0, [
+                    profesor.get(f"carrera{i}", ""), profesor.get(f"asignatura{i}", ""),
+                    profesor.get(f"grupo{i}", ""), profesor.get(f"horas{i}", 0)
+                ] + [f"{profesor.get(f'hora_inicio{i}{j}', '')} - {profesor.get(f'hora_fin{i}{j}', '')}" for j in range(1, 7)],
+                color_format)
+                row_num += 1
+
+        # 📌 2. Horas Descarga Otras Actividades
+        sheet_descarga = workbook.add_worksheet("Horas Descarga")
+        sheet_descarga.write_row(0, 0, headers, format_header)
+
+        row_num = 1
+        for index, profesor in enumerate(df.to_dict(orient="records")):
+            color_format = format_gray if index % 2 == 0 else format_white
+            for i in range(1, 9):
+                sheet_descarga.write_row(row_num, 0, [
+                    profesor.get(f"carreraE{i}", ""), profesor.get(f"asignaturaE{i}", ""),
+                    profesor.get(f"grupoE{i}", ""), profesor.get(f"horasE{i}", 0)
+                ] + [f"{profesor.get(f'hora_inicioE{i}{j}', '')} - {profesor.get(f'hora_finE{i}{j}', '')}" for j in range(1, 7)],
+                color_format)
+                row_num += 1
+
+        # 📌 3. Horas Cargo Académico
+        sheet_cargo = workbook.add_worksheet("Horas Cargo Académico")
+        sheet_cargo.write_row(0, 0, ["Carrera", "Cargo", "Vigencia", "Horas", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"], format_header)
+
+        row_num = 1
+        for index, profesor in enumerate(df.to_dict(orient="records")):
+            color_format = format_gray if index % 2 == 0 else format_white
+            sheet_cargo.write_row(row_num, 0, [
+                profesor.get("carreraC", ""), profesor.get("cargo", ""), profesor.get("vigenciaCargo", ""),
+                profesor.get("horasC", 0)
+            ] + [f"{profesor.get(f'hora_inicioC1{j}', '')} - {profesor.get(f'hora_finC1{j}', '')}" for j in range(1, 7)],
+            color_format)
+            row_num += 1
+
+    print(f"✅ Exportación automática completada: {filepath}")
+
 # Rutas de la interfaz de usuario para Ingeniería en Informática
 @informatica_bp.route('/informatica_index')
 @login_required('Informatica')
@@ -485,7 +693,16 @@ def export_selected():
     if fecha_aplicacion:
         fecha_aplicacion = datetime.strptime(fecha_aplicacion, "%Y-%m-%d").strftime("%d/%m/%Y")
 
-    selected_profesores = [informatica_profesores.find_one({'_id': ObjectId(profesor_id)}) for profesor_id in profesor_ids]
+    selected_profesores = [informatica_profesores.find_one({'_id': ObjectId(profesor_id),
+        "$or": [
+            {"carrera1": "INFORMÁTICA"}, {"carrera2": "INFORMÁTICA"}, {"carrera3": "INFORMÁTICA"},
+            {"carrera4": "INFORMÁTICA"}, {"carrera5": "INFORMÁTICA"}, {"carrera6": "INFORMÁTICA"},
+            {"carrera7": "INFORMÁTICA"}, {"carrera8": "INFORMÁTICA"},
+            {"carreraE1": "INFORMÁTICA"}, {"carreraE2": "INFORMÁTICA"}, {"carreraE3": "INFORMÁTICA"},
+            {"carreraE4": "INFORMÁTICA"}, {"carreraE5": "INFORMÁTICA"}, {"carreraE6": "INFORMÁTICA"},
+            {"carreraE7": "INFORMÁTICA"}, {"carreraE8": "INFORMÁTICA"},
+            {"carreraC": "INFORMÁTICA"}
+        ]}) for profesor_id in profesor_ids]
 
     # Ruta de la plantilla con 32 hojas
     template_path = "static/informatica/src/Plantilla_pie_reducido_2cm.xlsx"
@@ -769,7 +986,16 @@ def export_selected_pdf_informatica():
     if fecha_aplicacion:
         fecha_aplicacion = datetime.strptime(fecha_aplicacion, "%Y-%m-%d").strftime("%d/%m/%Y")
 
-    selected_profesores = [informatica_profesores.find_one({'_id': ObjectId(profesor_id)}) for profesor_id in profesor_ids]
+    selected_profesores = [informatica_profesores.find_one({'_id': ObjectId(profesor_id),
+        "$or": [
+            {"carrera1": "INFORMÁTICA"}, {"carrera2": "INFORMÁTICA"}, {"carrera3": "INFORMÁTICA"},
+            {"carrera4": "INFORMÁTICA"}, {"carrera5": "INFORMÁTICA"}, {"carrera6": "INFORMÁTICA"},
+            {"carrera7": "INFORMÁTICA"}, {"carrera8": "INFORMÁTICA"},
+            {"carreraE1": "INFORMÁTICA"}, {"carreraE2": "INFORMÁTICA"}, {"carreraE3": "INFORMÁTICA"},
+            {"carreraE4": "INFORMÁTICA"}, {"carreraE5": "INFORMÁTICA"}, {"carreraE6": "INFORMÁTICA"},
+            {"carreraE7": "INFORMÁTICA"}, {"carreraE8": "INFORMÁTICA"},
+            {"carreraC": "INFORMÁTICA"}
+        ]}) for profesor_id in profesor_ids]
 
     # Ruta de la plantilla con 32 hojas en Informática
     template_path = "static/informatica/src/Plantilla_pie_reducido_2cm.xlsx"

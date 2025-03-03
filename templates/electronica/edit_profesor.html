@@ -11,7 +11,10 @@
 <body>
     <div class="header-container3">
         <h1>Editar Profesor - Electrónica</h1>
-        <button onclick="window.location.href='/electronica/electronica_profesores';">Volver</button>
+        <div class="botones-container">
+            <button onclick="window.location.href='/electronica/electronica_profesores';">Volver</button>
+        </div>
+        
     </div>
 
     <form id="edit-profesor-form" data-id="{{ profesor['_id'] }}">
@@ -183,7 +186,7 @@
                 <td>
                     <div class="input-group">
                         <input id="grupoE{{ i }}" type="text" class="custom-input" value="{{ profesor['grupoE' ~ i] }}" placeholder="Escribe o selecciona un grupo">
-                        <select id="grupoE{{ i }}" name="grupoE{{ i }}" class="group"></select>
+                        <select id="grupoSelectE{{ i }}" name="grupoE{{ i }}" class="group"></select>
                     </div>
                 </td>
 

@@ -32,17 +32,25 @@ administrativos = db['administrativos']
 # Listas de grupos, horarios y carreras
 grupos = [
     #INDUSTRIAL
-    "NG", "1101", "1102", "1151", "1152", "1181", "1201", "1202", "1251", "1252",
-    "1281", "1301", "1302", "1351", "1352", "1381", "1401", "1402", "1451",
-    "1452", "1481", "1501", "1502", "1551", "1552", "1581", "1601", "1602",
-    "1651", "1652", "1681", "1751", "1752", "1781", "1851", "1852", "1881",
+    "NG", "1101", "1102", "1151", "1152", "1181", "1201", "1202", "1251", "1252", "1281", "1301", "1302", "1351", "1352", "1381", "1401", "1402", "1451",
+    "1452", "1481", "1501", "1502", "1551", "1552", "1581", "1601", "1602", "1651", "1652", "1681", "1751", "1752", "1781", "1851", "1852", "1881",
     "1951", "1952", "1981",
     #SISTEMAS
-    "4101", "4102", "4151", "4152", "4181", "4201", "4202", "4251", "4252",
-    "4281", "4301", "4302", "4351", "4352", "4381", "4401", "4402", "4451",
-    "4452", "4481", "4501", "4502", "4551", "4552", "4581", "4601", "4602",
-    "4651", "4652", "4681", "4751", "4752", "4781", "4851", "4852", "4881",
-    "4951", "4952", "4981"
+    "4101", "4102", "4151", "4152", "4171", "4201", "4202", "4251", "4252", "4271", "4301", "4302", "4351", "4352", "4371", "4401", "4402", "4451",
+    "4452", "4471", "4501", "4502", "4551", "4552", "4571", "4601", "4602", "4651", "4652", "4671", "4751", "4752", "4771", "4851", "4852", "4871",
+    "4951", "4952", "4971",
+    #INFORMATICA
+    "6101", "6102", "6151", "6152", "6201", "6202", "6251", "6252", "6301", "6302", "6351", "6352", "6401", "6402", "6451", "6452", "6501", 
+    "6502", "6551", "6552", "6601", "6602", "6651", "6652", "6751", "6752", "6851", "6852", "6951", "6952",
+    #ELECTRONICA
+    "3101", "3102", "3151", "3152", "3201", "3202", "3251", "3252", "3301", "3302", "3351", "3352", "3401", "3402", "3451", "3452", "3501", 
+    "3502", "3551", "3552", "3601", "3602", "3651", "3652", "3751", "3752", "3851", "3852", "3951", "3952",
+    #ELECTROMECANICA
+    "2101", "2102", "2151", "2152", "2201", "2202", "2251", "2252", "2301", "2302", "2351", "2352", "2401", "2402", "2451", "2452", "2501", 
+    "2502", "2551", "2552", "2601", "2602", "2651", "2652", "2751", "2752", "2851", "2852", "2951", "2952",
+    #ADMINISTRACION
+    "9101", "9102", "9151", "9152", "9201", "9202", "9251", "9252", "9301", "9302", "9351", "9352", "9401", "9402", "9451", "9452", "9501",
+    "9502", "9551", "9552", "9601", "9602", "9651", "9652", "9751", "9752", "9851", "9852", "9951", "9952"
 ]
 
 horarios = [
@@ -100,21 +108,46 @@ def delete_profesor(id):
     profesores.delete_one({'_id': ObjectId(id)})
     return jsonify({'msg': 'Profesor eliminado'})
 
+# 📌 Ruta para obtener todos los profesores filtrados por carrera (INDUSTRIAL)
 @industrial_bp.route('/profesores', methods=['GET'])
 @login_required('Industrial')
 def get_all_profesores():
-    all_profesores = list(profesores.find({}).sort("nombre", 1))
+    all_profesores = list(profesores.find({
+        "$or": [
+            {"carrera1": "INDUSTRIAL"}, {"carrera2": "INDUSTRIAL"}, {"carrera3": "INDUSTRIAL"},
+            {"carrera4": "INDUSTRIAL"}, {"carrera5": "INDUSTRIAL"}, {"carrera6": "INDUSTRIAL"},
+            {"carrera7": "INDUSTRIAL"}, {"carrera8": "INDUSTRIAL"},
+            {"carreraE1": "INDUSTRIAL"}, {"carreraE2": "INDUSTRIAL"}, {"carreraE3": "INDUSTRIAL"},
+            {"carreraE4": "INDUSTRIAL"}, {"carreraE5": "INDUSTRIAL"}, {"carreraE6": "INDUSTRIAL"},
+            {"carreraE7": "INDUSTRIAL"}, {"carreraE8": "INDUSTRIAL"},
+            {"carreraC": "INDUSTRIAL"}
+        ]
+    }).sort("nombre", 1))
+    
     for profesor in all_profesores:
         profesor['_id'] = str(profesor['_id'])
+    
     return render_template('industrial/profesores.html', profesores=all_profesores)
 
-# Ruta para obtener la lista de profesores en formato JSON
+# 📌 Ruta para obtener la lista de profesores en formato JSON (INDUSTRIAL)
 @industrial_bp.route('/profesores/json', methods=['GET'])
 @login_required('Industrial')
 def get_profesores_json():
-    all_profesores = list(profesores.find({}, {'_id': 1, 'nombre': 1}).sort("nombre", 1))
+    all_profesores = list(profesores.find({
+        "$or": [
+            {"carrera1": "INDUSTRIAL"}, {"carrera2": "INDUSTRIAL"}, {"carrera3": "INDUSTRIAL"},
+            {"carrera4": "INDUSTRIAL"}, {"carrera5": "INDUSTRIAL"}, {"carrera6": "INDUSTRIAL"},
+            {"carrera7": "INDUSTRIAL"}, {"carrera8": "INDUSTRIAL"},
+            {"carreraE1": "INDUSTRIAL"}, {"carreraE2": "INDUSTRIAL"}, {"carreraE3": "INDUSTRIAL"},
+            {"carreraE4": "INDUSTRIAL"}, {"carreraE5": "INDUSTRIAL"}, {"carreraE6": "INDUSTRIAL"},
+            {"carreraE7": "INDUSTRIAL"}, {"carreraE8": "INDUSTRIAL"},
+            {"carreraC": "INDUSTRIAL"}
+        ]
+    }, {'_id': 1, 'nombre': 1}).sort("nombre", 1))
+    
     for profesor in all_profesores:
         profesor['_id'] = str(profesor['_id'])
+    
     return jsonify(all_profesores)
 
 # Rutas CRUD para asignaturas
@@ -166,7 +199,6 @@ def delete_asignatura(id):
     return jsonify({'msg': 'Asignatura eliminada'})
 
 @industrial_bp.route('/asignaturas/json', methods=['GET'])
-@login_required('Industrial')
 def get_all_asignaturas_json():
     all_asignaturas = list(asignaturas.find({}))
     for asignatura in all_asignaturas:
@@ -230,7 +262,6 @@ def delete_asignaturaE(id):
     return jsonify({'msg': 'Asignatura Especial eliminada'})
 
 @industrial_bp.route('/asignaturasE/json', methods=['GET'])
-@login_required('Industrial')
 def get_all_asignaturasE_json():
     all_asignaturasE = list(asignaturasE.find({}))
     for asignaturaE in all_asignaturasE:
@@ -339,7 +370,18 @@ def export_data():
     export_format = data.get('format', 'xlsx')
     collection = db[collection_name]
 
-    cursor = collection.find({})
+    # Filtrar solo profesores que pertenezcan a Industrial
+    cursor = collection.find({
+        "$or": [
+            {"carrera1": "INDUSTRIAL"}, {"carrera2": "INDUSTRIAL"}, {"carrera3": "INDUSTRIAL"},
+            {"carrera4": "INDUSTRIAL"}, {"carrera5": "INDUSTRIAL"}, {"carrera6": "INDUSTRIAL"},
+            {"carrera7": "INDUSTRIAL"}, {"carrera8": "INDUSTRIAL"},
+            {"carreraE1": "INDUSTRIAL"}, {"carreraE2": "INDUSTRIAL"}, {"carreraE3": "INDUSTRIAL"},
+            {"carreraE4": "INDUSTRIAL"}, {"carreraE5": "INDUSTRIAL"}, {"carreraE6": "INDUSTRIAL"},
+            {"carreraE7": "INDUSTRIAL"}, {"carreraE8": "INDUSTRIAL"},
+            {"carreraC": "INDUSTRIAL"}
+        ]
+    })
     df = pd.DataFrame(list(cursor))
 
     # Reemplazar valores NaN e Inf en el DataFrame antes de exportarlo
@@ -497,14 +539,14 @@ def export_data_auto():
         period = "1"
     elif current_date.month == 10 and current_date.day == 29:
         period = "2"
-    elif current_date.month == 2 and current_date.day == 26:
+    elif current_date.month == 3 and current_date.day == 3:
         period = "3"
     else:
         print("📌 No es una fecha de exportación automática. Se cancela la ejecución.")
         return
 
     # 📌 Nombre del archivo
-    filename = f"Datos {current_year}-{period}.xlsx"
+    filename = f"Datos_Industrial_{current_year}-{period}.xlsx"
     filepath = os.path.join(HISTORIAL_PATH, filename)
 
     # 📌 Columnas a exportar
@@ -520,7 +562,18 @@ def export_data_auto():
     collection_name = "profesores"
     collection = db[collection_name]
 
-    cursor = collection.find({})
+    # Filtrar solo profesores que pertenezcan a Industrial
+    cursor = collection.find({
+        "$or": [
+            {"carrera1": "INDUSTRIAL"}, {"carrera2": "INDUSTRIAL"}, {"carrera3": "INDUSTRIAL"},
+            {"carrera4": "INDUSTRIAL"}, {"carrera5": "INDUSTRIAL"}, {"carrera6": "INDUSTRIAL"},
+            {"carrera7": "INDUSTRIAL"}, {"carrera8": "INDUSTRIAL"},
+            {"carreraE1": "INDUSTRIAL"}, {"carreraE2": "INDUSTRIAL"}, {"carreraE3": "INDUSTRIAL"},
+            {"carreraE4": "INDUSTRIAL"}, {"carreraE5": "INDUSTRIAL"}, {"carreraE6": "INDUSTRIAL"},
+            {"carreraE7": "INDUSTRIAL"}, {"carreraE8": "INDUSTRIAL"},
+            {"carreraC": "INDUSTRIAL"}
+        ]
+    })
     df = pd.DataFrame(list(cursor))
 
     if df.empty:
@@ -699,7 +752,17 @@ def export_selected():
     if fecha_aplicacion:
         fecha_aplicacion = datetime.strptime(fecha_aplicacion, "%Y-%m-%d").strftime("%d/%m/%Y")
 
-    selected_profesores = [profesores.find_one({'_id': ObjectId(profesor_id)}) for profesor_id in profesor_ids]
+    # Filtrar profesores que pertenezcan a la carrera INDUSTRIAL
+    selected_profesores = [profesores.find_one({'_id': ObjectId(profesor_id),
+        "$or": [
+            {"carrera1": "INDUSTRIAL"}, {"carrera2": "INDUSTRIAL"}, {"carrera3": "INDUSTRIAL"},
+            {"carrera4": "INDUSTRIAL"}, {"carrera5": "INDUSTRIAL"}, {"carrera6": "INDUSTRIAL"},
+            {"carrera7": "INDUSTRIAL"}, {"carrera8": "INDUSTRIAL"},
+            {"carreraE1": "INDUSTRIAL"}, {"carreraE2": "INDUSTRIAL"}, {"carreraE3": "INDUSTRIAL"},
+            {"carreraE4": "INDUSTRIAL"}, {"carreraE5": "INDUSTRIAL"}, {"carreraE6": "INDUSTRIAL"},
+            {"carreraE7": "INDUSTRIAL"}, {"carreraE8": "INDUSTRIAL"},
+            {"carreraC": "INDUSTRIAL"}
+        ]}) for profesor_id in profesor_ids]
 
     # Ruta de la plantilla con 32 hojas
     template_path = "static/industrial/src/Plantilla_pie_reducido_2cm.xlsx"  # Cambia esta ruta si es necesario
@@ -1026,7 +1089,17 @@ def export_selected_pdf():
     if fecha_aplicacion:
         fecha_aplicacion = datetime.strptime(fecha_aplicacion, "%Y-%m-%d").strftime("%d/%m/%Y")
 
-    selected_profesores = [profesores.find_one({'_id': ObjectId(profesor_id)}) for profesor_id in profesor_ids]
+    # Filtrar profesores que pertenezcan a la carrera INDUSTRIAL
+    selected_profesores = [profesores.find_one({'_id': ObjectId(profesor_id),
+        "$or": [
+            {"carrera1": "INDUSTRIAL"}, {"carrera2": "INDUSTRIAL"}, {"carrera3": "INDUSTRIAL"},
+            {"carrera4": "INDUSTRIAL"}, {"carrera5": "INDUSTRIAL"}, {"carrera6": "INDUSTRIAL"},
+            {"carrera7": "INDUSTRIAL"}, {"carrera8": "INDUSTRIAL"},
+            {"carreraE1": "INDUSTRIAL"}, {"carreraE2": "INDUSTRIAL"}, {"carreraE3": "INDUSTRIAL"},
+            {"carreraE4": "INDUSTRIAL"}, {"carreraE5": "INDUSTRIAL"}, {"carreraE6": "INDUSTRIAL"},
+            {"carreraE7": "INDUSTRIAL"}, {"carreraE8": "INDUSTRIAL"},
+            {"carreraC": "INDUSTRIAL"}
+        ]}) for profesor_id in profesor_ids]
 
     # Ruta de la plantilla con 32 hojas
     template_path = "static/industrial/src/Plantilla_pie_reducido_2cm.xlsx"  # Cambia esta ruta si es necesario
