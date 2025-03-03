@@ -10,6 +10,8 @@ import win32com.client
 import os
 import pythoncom
 from datetime import datetime
+import subprocess
+import time
 from routes.auth_routes import login_required  # Importamos el middleware
 
 # Definir el Blueprint para Ingeniería Industrial
@@ -768,10 +770,6 @@ def export_selected():
     template_path = "static/industrial/src/Plantilla_pie_reducido_2cm.xlsx"  # Cambia esta ruta si es necesario
     workbook = openpyxl.load_workbook(template_path)
 
-    # Cargar imágenes
-    header_image = Image("static/industrial/src/Encabezado1.PNG")
-    footer_image = Image("static/industrial/src/PieDePagina1.PNG")
-
     # Establecer borde inferior e izquierdo
     # Definir los bordes
     thin_side = Side(style='thin')
@@ -818,7 +816,7 @@ def export_selected():
         "INDUSTRIAL": ["JEFA DE DIVISIÓN DE ING. INDUSTRIAL", "JEFE DE DIVISIÓN DE ING. INDUSTRIAL"],
         "ELECTRÓNICA": ["JEFA DE DIVISIÓN DE ING. ELECTRÓNICA", "JEFE DE DIVISIÓN DE ING. ELECTRÓNICA"],
         "ELECTROMECÁNICA": ["JEFA DE DIVISIÓN DE ING. ELECTROMECÁNICA", "JEFE DE DIVISIÓN DE ING. ELECTROMECÁNICA"],
-        "SISTEMAS COMPUTACIONALES": ["JEFA DE DIVISIÓN DE ING. SISTEMAS COMPUTACIONALES", "JEFE DE DIVISIÓN DE ING. SISTEMAS COMPUTACIONALES"],
+        "SISTEMAS COMPUTACIONALES": ["JEFA DE DIVISIÓN DE ING. EN SISTEMAS COMPUTACIONALES", "JEFE DE DIVISIÓN DE ING. EN SISTEMAS COMPUTACIONALES"],
         "INFORMÁTICA": ["JEFA DE DIVISIÓN DE ING. INFORMÁTICA", "JEFE DE DIVISIÓN DE ING. INFORMÁTICA"],
         "ADMINISTRACIÓN": ["JEFA DE DIVISIÓN DE ING. ADMINISTRACIÓN", "JEFE DE DIVISIÓN DE ING. ADMINISTRACIÓN"]
     }
@@ -829,9 +827,16 @@ def export_selected():
             break
         sheet = workbook[workbook.sheetnames[i]]
 
-        # Insertar imágenes en encabezado y pie de página
-        sheet.add_image(header_image, "A1")
-        sheet.add_image(footer_image, "A56")
+        # Eliminar imágenes existentes
+        sheet._images.clear()
+
+        # ⚠️ IMPORTANTE: Crear nuevas instancias de la imagen en cada iteración
+        header_image_copy = Image("static/industrial/src/Encabezado1.PNG")
+        footer_image_copy = Image("static/industrial/src/PieDePagina1.PNG")
+
+        # Agregar las imágenes sin generar duplicados
+        sheet.add_image(header_image_copy, "A1")
+        sheet.add_image(footer_image_copy, "A56")
 
         # Actualizar el texto en la celda A4
         sheet["A4"] = texto_a4
@@ -1046,31 +1051,52 @@ def export_selected():
         mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
 
-# Función para convertir Excel a PDF usando win32com
-def excel_to_pdf(input_excel_path, output_pdf_path):
-    pythoncom.CoInitialize()  # Inicializa el entorno COM
-    try:
-        
-        excel = win32com.client.Dispatch("Excel.Application")
-        excel.Visible = False  # Ejecutar Excel en segundo plano
 
-        workbook = excel.Workbooks.Open(os.path.abspath(input_excel_path))
-        
-        # Iterar por todas las hojas y deshabilitar encabezados/pies de página
-        for sheet in workbook.Sheets:
-            sheet.PageSetup.CenterFooter = ""  # Elimina el pie de página central
-            sheet.PageSetup.LeftFooter = ""    # Elimina el pie de página izquierdo
-            sheet.PageSetup.RightFooter = ""   # Elimina el pie de página derecho
-            sheet.PageSetup.CenterHeader = ""  # Elimina el encabezado central
-            sheet.PageSetup.LeftHeader = ""    # Elimina el encabezado izquierdo
-            sheet.PageSetup.RightHeader = ""   # Elimina el encabezado derecho
-        
-        # Exportar como PDF sin encabezado ni pie de página
-        workbook.ExportAsFixedFormat(0, os.path.abspath(output_pdf_path))
-        workbook.Close(False)
-        excel.Quit()
-    finally:
-        pythoncom.CoUninitialize()  # Liberar el entorno COM
+# 📌 Función mejorada para convertir Excel a PDF usando LibreOffice
+def excel_to_pdf_libreoffice(input_excel_path, output_pdf_path):
+    try:
+        # 📌 Verifica que el archivo Excel existe antes de la conversión
+        if not os.path.exists(input_excel_path):
+            print(f"❌ Error: El archivo Excel {input_excel_path} no existe.")
+            return False
+
+        libreoffice_path = "C:\\Program Files\\LibreOffice\\program\\soffice.exe"  # Ajustar según instalación
+
+        # 📌 Comando para convertir Excel a PDF
+        cmd = [
+            libreoffice_path, "--headless", "--convert-to", "pdf",
+            input_excel_path, "--outdir", os.path.dirname(output_pdf_path)
+        ]
+
+        print(f"📄 Ejecutando comando: {' '.join(cmd)}")  # Debug: Ver el comando
+
+        # 📌 Ejecutar el comando y capturar la salida
+        result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+
+        # 📌 Mostrar la salida del comando en caso de error
+        if result.returncode != 0:
+            print("❌ Error al convertir Excel a PDF:", result.stderr)
+            return False
+
+        # 📌 Asegurar que el PDF fue generado
+        generated_pdf = input_excel_path.replace(".xlsx", ".pdf")  # LibreOffice cambia automáticamente la extensión
+        if not os.path.exists(generated_pdf):
+            print("❌ Error: No se generó el archivo PDF.")
+            return False
+
+        # 📌 Eliminar el archivo PDF de salida si ya existe
+        if os.path.exists(output_pdf_path):
+            os.remove(output_pdf_path)
+            print(f"🔄 Archivo existente {output_pdf_path} eliminado antes de renombrar.")
+
+        # 📌 Renombrar el PDF al nombre esperado
+        os.rename(generated_pdf, output_pdf_path)
+        print(f"✅ Conversión exitosa: {output_pdf_path}")
+        return True
+
+    except Exception as e:
+        print("❌ Error inesperado al convertir Excel a PDF:", e)
+        return False
 
 # Ruta para exportar los profesores seleccionados en PDF
 @industrial_bp.route('/export-selected-pdf', methods=['POST'])
@@ -1104,10 +1130,6 @@ def export_selected_pdf():
     # Ruta de la plantilla con 32 hojas
     template_path = "static/industrial/src/Plantilla_pie_reducido_2cm.xlsx"  # Cambia esta ruta si es necesario
     workbook = openpyxl.load_workbook(template_path)
-
-    # Cargar imágenes
-    header_image = Image("static/industrial/src/Encabezado1.PNG")
-    footer_image = Image("static/industrial/src/PieDePagina1.PNG")
 
     # Establecer borde inferior e izquierdo
     # Definir los bordes
@@ -1152,10 +1174,10 @@ def export_selected_pdf():
 
     # Definir el mapeo de carreras a cargos administrativos
     cargo_mapping = {
+        "SISTEMAS COMPUTACIONALES": ["JEFA DE DIVISIÓN DE ING. EN SISTEMAS COMPUTACIONALES", "JEFE DE DIVISIÓN DE ING. EN SISTEMAS COMPUTACIONALES"],
         "INDUSTRIAL": ["JEFA DE DIVISIÓN DE ING. INDUSTRIAL", "JEFE DE DIVISIÓN DE ING. INDUSTRIAL"],
         "ELECTRÓNICA": ["JEFA DE DIVISIÓN DE ING. ELECTRÓNICA", "JEFE DE DIVISIÓN DE ING. ELECTRÓNICA"],
         "ELECTROMECÁNICA": ["JEFA DE DIVISIÓN DE ING. ELECTROMECÁNICA", "JEFE DE DIVISIÓN DE ING. ELECTROMECÁNICA"],
-        "SISTEMAS COMPUTACIONALES": ["JEFA DE DIVISIÓN DE ING. EN SISTEMAS COMPUTACIONALES", "JEFE DE DIVISIÓN DE ING. EN SISTEMAS COMPUTACIONALES"],
         "INFORMÁTICA": ["JEFA DE DIVISIÓN DE ING. INFORMÁTICA", "JEFE DE DIVISIÓN DE ING. INFORMÁTICA"],
         "ADMINISTRACIÓN": ["JEFA DE DIVISIÓN DE ING. ADMINISTRACIÓN", "JEFE DE DIVISIÓN DE ING. ADMINISTRACIÓN"]
     }
@@ -1166,9 +1188,13 @@ def export_selected_pdf():
             break
         sheet = workbook[workbook.sheetnames[i]]
 
+        # ⚠️ IMPORTANTE: Crear nuevas instancias de la imagen en cada iteración
+        header_image_copy = Image("static/industrial/src/Encabezado1.PNG")
+        footer_image_copy = Image("static/industrial/src/PieDePagina1.PNG")
+
         #Insertar imagenes en encabezado y pie de pagina
-        sheet.add_image(header_image, "A1")
-        sheet.add_image(footer_image, "A56")
+        sheet.add_image(header_image_copy, "A1")
+        sheet.add_image(footer_image_copy, "A56")
 
         # Actualizar el texto en la celda A4
         sheet["A4"] = texto_a4
@@ -1339,12 +1365,12 @@ def export_selected_pdf():
             encargado = administrativos.find_one({
                 'cargo': {'$in': cargo_mapping[carrera]}
             })
-            nombre_encargado = encargado["nombre"] if encargado else ""
-            cargo_encargado = encargado["cargo"] if encargado else ""
+            nombre_encargado1 = encargado["nombre"] if encargado else ""
+            cargo_encargado1 = encargado["cargo"] if encargado else ""
             
             # Asignar valores en las celdas
-            sheet["A43"] = cargo_encargado
-            sheet["A46"] = nombre_encargado
+            sheet["A43"] = cargo_encargado1
+            sheet["A46"] = nombre_encargado1
         
         # Si hay exactamente dos valores en carreras_detectadas
         elif len(carreras_detectadas) == 2:
@@ -1369,16 +1395,23 @@ def export_selected_pdf():
     for i in range(len(selected_profesores), len(workbook.sheetnames)):
         del workbook[workbook.sheetnames[-1]]
 
-    # Guardar el archivo Excel temporalmente para la conversión a PDF
+    # 📌 Guardar el archivo Excel antes de convertirlo a PDF
     temp_excel_path = "temp_reporte.xlsx"
+    pdf_path = "Reporte_Profesores.pdf"
+
     workbook.save(temp_excel_path)
     workbook.close()
 
-    # Convertir el archivo Excel a PDF
-    pdf_path = "Reporte_Profesores.pdf"
-    excel_to_pdf(temp_excel_path, pdf_path)
+    # 📌 Esperar un breve momento para garantizar que el archivo se guarde correctamente
+    time.sleep(2)
 
-    # Enviar el archivo PDF como respuesta
+    # 📌 Convertir Excel a PDF
+    conversion_exitosa = excel_to_pdf_libreoffice(temp_excel_path, pdf_path)
+
+    if not conversion_exitosa:
+        return "Error al generar el PDF", 500
+
+    # 📌 Enviar el archivo PDF generado
     return send_file(
         pdf_path,
         as_attachment=True,

@@ -1,5 +1,21 @@
 /* Agrega estilos básicos para los formularios e interfaz */
 
+/* 🔹 Encabezado fijo */
+.header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: 50px;
+    background-color: #111E48; /* Color del encabezado */
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: bold;
+    z-index: 1000;
+}
+
 body {
     font-family: 'Arial', sans-serif;
     margin: 20px;
@@ -26,7 +42,7 @@ form {
 
 label {
     font-weight: bold;
-    color: #383b50;
+    color: #111E48;
 }
 
 input,
@@ -46,7 +62,7 @@ select {
 
 input:focus,
 select:focus {
-    border-color: #383b50;
+    border-color: #111E48;
     outline: none;
     background-color: #fff;
 }
@@ -56,7 +72,7 @@ select:focus {
     /* Asegura que el enlace se comporte como un botón */
     margin-top: 15px;
     padding: 12px 20px;
-    background-color: #383b50;
+    background-color: #FFD700;
     color: #fff;
     text-decoration: none;
     /* Quita el subrayado */
@@ -68,14 +84,14 @@ select:focus {
 }
 
 .edit-button:hover {
-    background-color: #505a68;
+    background-color: #E6C200;
     /* Color más suave para hover */
     transform: translateY(-2px);
     /* Efecto sutil de elevación */
 }
 
 .edit-button:active {
-    background-color: #2d323d;
+    background-color: #CCAA00;
     /* Color más oscuro cuando se presiona */
     transform: translateY(0);
     /* Eliminar el efecto de elevación */
@@ -84,7 +100,7 @@ select:focus {
 button {
     margin-top: 15px;
     padding: 12px 20px;
-    background-color: #383b50;
+    background-color: #FFD700;
     color: #fff;
     border: none;
     border-radius: 5px;
@@ -94,14 +110,14 @@ button {
 }
 
 button:hover {
-    background-color: #505a68;
+    background-color: #E6C200;
     /* Color más suave para hover */
     transform: translateY(-2px);
     /* Efecto sutil de elevación */
 }
 
 button:active {
-    background-color: #2d323d;
+    background-color: #CCAA00;
     /* Color más oscuro cuando se presiona */
     transform: translateY(0);
     /* Eliminar el efecto de elevación */
@@ -120,7 +136,7 @@ table {
 }
 
 th {
-    background-color: #383b50;
+    background-color: #111E48;
     color: #fff;
     padding: 10px;
     text-align: center;
@@ -139,19 +155,6 @@ tr:nth-child(even) {
 }
 
 
-/* Encabezados de la página */
-
-.titulo {
-    text-align: center;
-    background-color: #383b50;
-    padding: 20px;
-    border-radius: 8px;
-    color: white;
-    font-size: 24px;
-    margin-bottom: 10px;
-    /* Reducido margen inferior */
-}
-
 .botones {
     text-align: center;
     margin-bottom: 30px;
@@ -160,13 +163,15 @@ tr:nth-child(even) {
 .botones button {
     margin: 10px;
     padding: 12px 25px;
-    background-color: #505a68;
+    background-color: #FFD700;
     border-radius: 5px;
+    color: #111E48;
+    font-weight: bold;
     transition: background-color 0.3s;
 }
 
 .botones button:hover {
-    background-color: #383b50;
+    background-color: #E6C200;
 }
 
 
@@ -180,10 +185,10 @@ tr:nth-child(even) {
 
 .header-container2 h2 {
     cursor: pointer;
-    color: #383b50;
+    color: #111E48;
     text-decoration: none;
     padding: 12px 24px;
-    border: 1px solid #383b50;
+    border: 1px solid #111E48;
     border-radius: 4px;
     transition: background-color 0.3s, color 0.3s;
     text-align: center;
@@ -191,7 +196,7 @@ tr:nth-child(even) {
 }
 
 .header-container2 h2:hover {
-    background-color: #383b50;
+    background-color: #111E48;
     color: #fff;
 }
 
@@ -217,17 +222,18 @@ tr:nth-child(even) {
 }
 
 #export-form button {
-    background-color: #383b50;
+    background-color: #FFD700;
     padding: 12px 25px;
     font-size: 16px;
     width: 100%;
     cursor: pointer;
     border-radius: 5px;
-    transition: background-color 0.3s;
+    font-weight: bold;
+    color: #111E48;
 }
 
 #export-form button:hover {
-    background-color: #505a68;
+    background-color: #E6C200;
 }
 
 
@@ -245,14 +251,24 @@ tr:nth-child(even) {
 .titulo {
     text-align: center;
     /* Alineamos el título a la derecha */
-    background-color: #383b50;
+    background-color: #111E48; /* Color del encabezado */
     padding: 20px;
     border-radius: 8px;
     color: white;
     font-size: 24px;
     margin-bottom: 5px;
     /* Reducido margen inferior */
-    margin-top: 15px;
+    width: 97%;
+    height: 50px;
+    background-color: #111E48; /* Color del encabezado */
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: bold;
+    z-index: 1000;
+    
 }
 
 
@@ -272,18 +288,19 @@ tr:nth-child(even) {
 
 /* Estilo para los botones */
 
-.botones button {
+.botones-container button {
     padding: 12px 25px;
-    background-color: #505a68;
+    background-color: #FFD700;
     border-radius: 5px;
-    color: white;
+    color: #111E48;
     font-size: 16px;
+    font-weight: bold;
     cursor: pointer;
     transition: background-color 0.3s;
 }
 
-.botones button:hover {
-    background-color: #383b50;
+.botones-container button:hover {
+    background-color: #E6C200;
 }
 
 .botones-container-principal {
@@ -310,30 +327,4 @@ tr:nth-child(even) {
     margin-top: 10px;
     border-radius: 5px;
     text-align: center;
-}
-
-.flash-messages {
-    text-align: center;
-    margin: 10px auto;
-}
-
-.flash {
-    padding: 10px;
-    border-radius: 5px;
-    font-weight: bold;
-    width: 50%;
-    margin: auto;
-}
-
-
-
-
-.flash.success {
-    background-color: #4CAF50;
-    color: white;
-}
-
-.flash.error {
-    background-color: #f44336;
-    color: white;
 }

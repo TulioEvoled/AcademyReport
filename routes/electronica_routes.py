@@ -10,6 +10,8 @@ import win32com.client
 import os
 import pythoncom
 from datetime import datetime
+import subprocess
+import time
 from routes.auth_routes import login_required
 
 # Definir el Blueprint para Ingeniería en Electrónica
@@ -708,10 +710,6 @@ def export_selected():
     template_path = "static/electronica/src/Plantilla_pie_reducido_2cm.xlsx"
     workbook = openpyxl.load_workbook(template_path)
 
-    # Cargar imágenes
-    header_image = Image("static/electronica/src/Encabezado1.PNG")
-    footer_image = Image("static/electronica/src/PieDePagina1.PNG")
-
     # Establecer bordes
     thin_side = Side(style='thin')
     border_A44 = Border(bottom=thin_side, left=thin_side)
@@ -753,9 +751,13 @@ def export_selected():
             break
         sheet = workbook[workbook.sheetnames[i]]
 
+        # ⚠️ IMPORTANTE: Crear nuevas instancias de la imagen en cada iteración
+        header_image_copy = Image("static/electronica/src/Encabezado1.PNG")
+        footer_image_copy = Image("static/electronica/src/PieDePagina1.PNG")
+
         # Insertar imágenes en encabezado y pie de página
-        sheet.add_image(header_image, "A1")
-        sheet.add_image(footer_image, "A56")
+        sheet.add_image(header_image_copy, "A1")
+        sheet.add_image(footer_image_copy, "A56")
 
         # Actualizar el texto en la celda A4 y A54
         sheet["A4"] = texto_a4
@@ -945,30 +947,51 @@ def export_selected():
         mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
 
-# Función para convertir Excel a PDF usando win32com en Electrónica
-def excel_to_pdf_electronica(input_excel_path, output_pdf_path):
-    pythoncom.CoInitialize()  # Inicializa el entorno COM
+# 📌 Función mejorada para convertir Excel a PDF usando LibreOffice
+def excel_to_pdf_libreoffice(input_excel_path, output_pdf_path):
     try:
-        excel = win32com.client.Dispatch("Excel.Application")
-        excel.Visible = False  # Ejecutar Excel en segundo plano
+        # 📌 Verifica que el archivo Excel existe antes de la conversión
+        if not os.path.exists(input_excel_path):
+            print(f"❌ Error: El archivo Excel {input_excel_path} no existe.")
+            return False
 
-        workbook = excel.Workbooks.Open(os.path.abspath(input_excel_path))
-        
-        # Iterar por todas las hojas y deshabilitar encabezados/pies de página
-        for sheet in workbook.Sheets:
-            sheet.PageSetup.CenterFooter = ""  # Elimina el pie de página central
-            sheet.PageSetup.LeftFooter = ""    # Elimina el pie de página izquierdo
-            sheet.PageSetup.RightFooter = ""   # Elimina el pie de página derecho
-            sheet.PageSetup.CenterHeader = ""  # Elimina el encabezado central
-            sheet.PageSetup.LeftHeader = ""    # Elimina el encabezado izquierdo
-            sheet.PageSetup.RightHeader = ""   # Elimina el encabezado derecho
-        
-        # Exportar como PDF sin encabezado ni pie de página
-        workbook.ExportAsFixedFormat(0, os.path.abspath(output_pdf_path))
-        workbook.Close(False)
-        excel.Quit()
-    finally:
-        pythoncom.CoUninitialize()  # Liberar el entorno COM
+        libreoffice_path = "C:\\Program Files\\LibreOffice\\program\\soffice.exe"  # Ajustar según instalación
+
+        # 📌 Comando para convertir Excel a PDF
+        cmd = [
+            libreoffice_path, "--headless", "--convert-to", "pdf",
+            input_excel_path, "--outdir", os.path.dirname(output_pdf_path)
+        ]
+
+        print(f"📄 Ejecutando comando: {' '.join(cmd)}")  # Debug: Ver el comando
+
+        # 📌 Ejecutar el comando y capturar la salida
+        result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+
+        # 📌 Mostrar la salida del comando en caso de error
+        if result.returncode != 0:
+            print("❌ Error al convertir Excel a PDF:", result.stderr)
+            return False
+
+        # 📌 Asegurar que el PDF fue generado
+        generated_pdf = input_excel_path.replace(".xlsx", ".pdf")  # LibreOffice cambia automáticamente la extensión
+        if not os.path.exists(generated_pdf):
+            print("❌ Error: No se generó el archivo PDF.")
+            return False
+
+        # 📌 Eliminar el archivo PDF de salida si ya existe
+        if os.path.exists(output_pdf_path):
+            os.remove(output_pdf_path)
+            print(f"🔄 Archivo existente {output_pdf_path} eliminado antes de renombrar.")
+
+        # 📌 Renombrar el PDF al nombre esperado
+        os.rename(generated_pdf, output_pdf_path)
+        print(f"✅ Conversión exitosa: {output_pdf_path}")
+        return True
+
+    except Exception as e:
+        print("❌ Error inesperado al convertir Excel a PDF:", e)
+        return False
 
 # Ruta para exportar los profesores seleccionados en PDF en Electrónica
 @electronica_bp.route('/electronica_export-selected-pdf', methods=['POST'])
@@ -1000,10 +1023,6 @@ def export_selected_pdf_electronica():
     # Ruta de la plantilla con 32 hojas en Electrónica
     template_path = "static/electronica/src/Plantilla_pie_reducido_2cm.xlsx"
     workbook = openpyxl.load_workbook(template_path)
-
-    # Cargar imágenes
-    header_image = Image("static/electronica/src/Encabezado1.PNG")
-    footer_image = Image("static/electronica/src/PieDePagina1.PNG")
 
     # Establecer bordes
     thin_side = Side(style='thin')
@@ -1046,9 +1065,13 @@ def export_selected_pdf_electronica():
             break
         sheet = workbook[workbook.sheetnames[i]]
 
+        # ⚠️ IMPORTANTE: Crear nuevas instancias de la imagen en cada iteración
+        header_image_copy = Image("static/electronica/src/Encabezado1.PNG")
+        footer_image_copy = Image("static/electronica/src/PieDePagina1.PNG")
+
         # Insertar imágenes en encabezado y pie de página
-        sheet.add_image(header_image, "A1")
-        sheet.add_image(footer_image, "A56")
+        sheet.add_image(header_image_copy, "A1")
+        sheet.add_image(footer_image_copy, "A56")
 
         # Actualizar el texto en la celda A4 y A54
         sheet["A4"] = texto_a4
@@ -1225,16 +1248,23 @@ def export_selected_pdf_electronica():
     for i in range(len(selected_profesores), len(workbook.sheetnames)):
         del workbook[workbook.sheetnames[-1]]
 
-    # Guardar el archivo Excel temporalmente para la conversión a PDF
-    temp_excel_path = "temp_reporte_electronica.xlsx"
+    # 📌 Guardar el archivo Excel antes de convertirlo a PDF
+    temp_excel_path = "temp_reporte_Electronica.xlsx"
+    pdf_path = "Reporte_Profesores_Electronica.pdf"
+    
     workbook.save(temp_excel_path)
     workbook.close()
 
-    # Convertir el archivo Excel a PDF
-    pdf_path = "Reporte_Profesores_Electronica.pdf"
-    excel_to_pdf_electronica(temp_excel_path, pdf_path)
+    # 📌 Esperar un breve momento para garantizar que el archivo se guarde correctamente
+    time.sleep(2)
 
-    # Enviar el archivo PDF como respuesta
+    # 📌 Convertir Excel a PDF
+    conversion_exitosa = excel_to_pdf_libreoffice(temp_excel_path, pdf_path)
+
+    if not conversion_exitosa:
+        return "Error al generar el PDF", 500
+
+    # 📌 Enviar el archivo PDF generado
     return send_file(
         pdf_path,
         as_attachment=True,
