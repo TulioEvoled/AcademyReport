@@ -4,20 +4,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Asignaturas Especiales - Administración</title>
+    <title>Apoyo a la Docencia</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='administracion/css/styles.css') }}">
 </head>
 
 <body>
     <div class="header-container3">
-        <h1>Lista de Asignaturas Especiales - Administración</h1>
+        <h1>Lista de Apoyo a la Docencia</h1>
         <div class="botones-container">
-            <button onclick="window.location.href='/administracion/administracion_index';">Volver</button>
+            <button onclick="window.location.href='/administracion/administracion_index';">Volver</button>\
+            <button onclick="toggleSearchBar()">🔍 Buscar</button>
         </div>
-        
     </div>
-
-    <table>
+    <!-- 🔹 Barra de búsqueda fija arriba -->
+    <div id="searchBar" class="search-bar hide">
+        <input type="text" id="searchInput" placeholder="🔍 Buscar...">
+        <button onclick="searchText()">Buscar</button>
+        <button onclick="prevMatch()">⬅ Anterior</button>
+        <button onclick="nextMatch()">Siguiente ➡</button>
+        <button onclick="toggleSearchBar()">❌ Cerrar</button>
+        <p id="matchCount" style="margin-left: 10px"></p>
+    </div>
+    <table id="asignaturasTable">
         <thead>
             <tr>
                 <th>Nombre</th>
@@ -40,8 +48,82 @@
     </table>
 
     <script>
+        let matches = [];
+        let currentIndex = -1;
+
+        // Mostrar/Ocultar la barra de búsqueda
+        function toggleSearchBar() {
+            let searchBar = document.getElementById("searchBar");
+            searchBar.classList.toggle("hide");
+            if (!searchBar.classList.contains("hide")) {
+                document.getElementById("searchInput").focus();
+            }
+        }
+
+        function searchText() {
+            let text = document.getElementById("searchInput").value.trim();
+            if (text === "") return;
+
+            clearHighlights();
+            let regex = new RegExp(text, "gi");
+
+            matches = [];
+            currentIndex = -1;
+
+            document.querySelectorAll("#asignaturasTable tbody td").forEach(td => {
+                let originalText = td.innerHTML;
+                let newHTML = originalText.replace(regex, match => {
+                    matches.push(td);
+                    return `<mark>${match}</mark>`;
+                });
+                td.innerHTML = newHTML;
+            });
+
+            if (matches.length > 0) {
+                currentIndex = 0;
+                updateMatchInfo();
+                scrollToMatch();
+            } else {
+                document.getElementById("matchCount").textContent = "⚠ No se encontraron coincidencias.";
+            }
+        }
+
+        function clearHighlights() {
+            document.querySelectorAll("mark").forEach(mark => {
+                let parent = mark.parentNode;
+                parent.replaceChild(document.createTextNode(mark.textContent), mark);
+            });
+            document.getElementById("matchCount").textContent = "";
+        }
+
+        function updateMatchInfo() {
+            document.getElementById("matchCount").textContent = `Coincidencia ${currentIndex + 1} de ${matches.length}`;
+        }
+
+        function scrollToMatch() {
+            if (matches.length > 0) {
+                matches[currentIndex].scrollIntoView({ behavior: "smooth", block: "center" });
+            }
+        }
+
+        function nextMatch() {
+            if (matches.length > 0 && currentIndex < matches.length - 1) {
+                currentIndex++;
+                updateMatchInfo();
+                scrollToMatch();
+            }
+        }
+
+        function prevMatch() {
+            if (matches.length > 0 && currentIndex > 0) {
+                currentIndex--;
+                updateMatchInfo();
+                scrollToMatch();
+            }
+        }
+        
         function deleteAsignaturaE(id) {
-            if (confirm("¿Estás seguro de que quieres eliminar esta asignatura especial?")) {
+            if (confirm("¿Estás seguro de que quieres eliminar este apoyo a la docencia?")) {
                 fetch(`/administracion/administracion_asignaturasE/${id}`, { // 🔹 Ruta actualizada a Administración
                     method: 'DELETE'
                 })

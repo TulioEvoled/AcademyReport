@@ -5,6 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Historial de Exportaciones</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='administracion/css/styles.css') }}">
+    <script>
+        function confirmarEliminacion(filename) {
+            if (confirm(`⚠️ ¿Estás seguro de eliminar el archivo "${filename}"? Esta acción no se puede deshacer.`)) {
+                fetch(`/administracion/historial/delete/${filename}`, { method: 'DELETE' })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert("✅ Archivo eliminado correctamente.");
+                            location.reload(); // Recargar la página
+                        } else {
+                            alert("❌ Error al eliminar el archivo.");
+                        }
+                    })
+                    .catch(error => alert("❌ Ocurrió un error."));
+            }
+        }
+    </script>
 </head>
 <body>
     <div class="header-container">
@@ -18,11 +35,19 @@
     <div class="file-list">
         <h2>Archivos Disponibles</h2>
         <ul>
-            {% for file in files %}
-                <li>
-                    <a href="{{ url_for('administracion.download_file', filename=file) }}">{{ file }}</a>
-                </li>
-            {% endfor %}
+            {% if files %}
+                {% for file in files %}
+                    <li>
+                        📄 <strong>{{ file.filename }}</strong> <br>
+                        📅 Subido el: {{ file.uploadDate.strftime('%d-%m-%Y %H:%M:%S') }} <br>
+                        🔗 <a href="{{ url_for('administracion.download_file', filename=file.filename) }}" download>Descargar</a><br>
+                        ❌ <button onclick="confirmarEliminacion('{{ file.filename }}')" class="btn-delete">Eliminar</button>
+                    </li>
+                    <hr>
+                {% endfor %}
+            {% else %}
+                <p>No hay archivos disponibles.</p>
+            {% endif %}
         </ul>
     </div>
 </body>

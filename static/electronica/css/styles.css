@@ -328,3 +328,70 @@ tr:nth-child(even) {
     border-radius: 5px;
     text-align: center;
 }
+
+/* 🔹 Estilos para tooltip */
+.tooltip-btn {
+    position: relative;
+    cursor: pointer;
+}
+
+.tooltip-btn::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    padding: 8px;
+    border-radius: 5px;
+    font-size: 12px;
+    white-space: pre-line;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+    pointer-events: none;
+    transform: translateY(-10px);
+    visibility: hidden;
+    max-width: 400px; /* Ajusta el ancho máximo */
+    min-width: 300px;
+}
+
+.tooltip-btn:hover::after {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Estilos para Buscador */
+mark {
+    background-color: yellow;
+    color: black;
+}
+
+/* 🔹 Estilos para el buscador superior */
+.search-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: #f8f9fa;
+    padding: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 1000;
+    transition: top 0.3s;
+}
+
+.search-bar input {
+    padding: 5px;
+    font-size: 16px;
+    width: 200px;
+}
+
+.search-bar button {
+    padding: 5px 10px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.hide {
+    top: -60px;
+}

@@ -15,6 +15,10 @@
         <h1 class="titulo">Gestión de Reportes - Sistemas Computacionales</h1>
         <div class="botones-container">
             <button onclick="window.location.href='/sistemas/sistemas';">Volver</button>
+            <button id="exportarManual" class="btn btn-warning tooltip-btn"
+                data-tooltip="Este botón permite exportar los datos manualmente. Úselo si desea realizar la exportación antes de la fecha automática.">
+                    Exportar Ahora
+            </button>
             <button type="button" onclick="window.location.href='/sistemas/historial'">
                 Ver Historial de Exportaciones
             </button>
@@ -29,9 +33,9 @@
             <label for="collection">Colección:</label>
             <select id="collection" name="collection" required>
                 <option value="">Selecciona una colección</option>
-                <option value="profesores">Profesores</option>
+                <option value="profesores">Docentes</option>
                 <option value="asignaturas">Asignaturas</option>
-                <option value="asignaturasE">Asignaturas Especiales</option>
+                <option value="asignaturasE">Apoyo a la Docencia</option>
             </select>
             <br>
     
@@ -51,8 +55,8 @@
     </div>
 
     <div>
-        <h2>Exportar Reporte de Profesores</h2>
-        <button id="load-professors">Cargar Profesores</button>
+        <h2>Exportar Asignación Académica de Docentes</h2>
+        <button id="load-professors">Cargar Docentes</button>
         <button id="select-all">Seleccionar Todos</button>
 
         <form id="export-selected-form" method="POST" action="/sistemas/sistemas_export-selected">
@@ -82,7 +86,7 @@
     </div>
 
     <div>
-        <h2>Actualizar Formato</h2>
+        <h2>Actualizar Imágenes</h2>
         <form id="uploadImagesForm" action="/sistemas/sistemas_upload-images" method="POST" enctype="multipart/form-data">
             <label for="header">Subir Encabezado (867x74 px):</label>
             <input type="file" name="header" accept="image/*"><br>
@@ -110,7 +114,7 @@
     <div>
         <h2>Actualizar URL Temario</h2>
         <form id="updateTextFormDos" action="/sistemas/sistemas_update-text-a54" method="POST">
-            <label for="nuevo_texto_dos">Nueva Leyenda:</label>
+            <label for="nuevo_texto_dos">Nuevo URL Temario:</label>
             <input type="text" id="nuevo_texto_dos" name="nuevo_texto_dos"><br><br>
             <button type="submit">Actualizar</button>
         </form>

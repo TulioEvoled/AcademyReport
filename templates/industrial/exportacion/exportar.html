@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión de Tecnológico</title>
+    <title>Gestión de Tecnológico - Industrial</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='industrial/css/styles.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
@@ -16,6 +16,10 @@
         <!-- Aquí se coloca el contenedor para los botones -->
         <div class="botones-container">
             <button onclick="window.location.href='/';">Volver</button>
+            <button id="exportarManual" class="btn btn-warning tooltip-btn"
+                data-tooltip="Este botón permite exportar los datos manualmente. Úselo si desea realizar la exportación antes de la fecha automática.">
+                    Exportar Ahora
+            </button>
             <button type="button" onclick="window.location.href='/historial'">
                 Ver Historial de Exportaciones
             </button>
@@ -48,9 +52,9 @@
             <label for="collection">Colección:</label>
             <select id="collection" name="collection" required>
                 <option value="">Selecciona una colección</option>
-                <option value="profesores">Profesores</option>
+                <option value="profesores">Docentes</option>
                 <option value="asignaturas">Asignaturas</option>
-                <option value="asignaturasE">Asignaturas Especiales</option>
+                <option value="asignaturasE">Apoyo a la Docencia</option>
             </select>
             <br>
     
@@ -71,9 +75,9 @@
         
 
     <div>
-        <h2>Exportar Reporte de Profesores</h2>
+        <h2>Exportar Asignación Académica de Docentes</h2>
         <!-- Botones para cargar y seleccionar -->
-        <button id="load-professors">Cargar Profesores</button>
+        <button id="load-professors">Cargar Docentes</button>
         <button id="select-all">Seleccionar Todos</button>
 
         <!-- Formulario emergente para solicitar FECHA DE APLICACIÓN y CONSECUTIVO -->
@@ -104,7 +108,7 @@
     </div>
 
     <div>
-        <h2>Actualizar Formato</h2>
+        <h2>Actualizar Imágenes</h2>
         <form id="uploadImagesForm" action="/upload-images" method="POST" enctype="multipart/form-data">
             <label for="header">Subir Encabezado (867x74 px):</label>
             <input type="file" name="header" accept="image/*">
@@ -135,7 +139,7 @@
     <div>
         <h2>Actualizar URL Temario</h2>
         <form id="updateTextFormDos" action="/update-text-a54" method="POST">
-            <label for="nuevo_texto_dos">Nueva Leyenda:</label>
+            <label for="nuevo_texto_dos">Nuevo URL Temario:</label>
             <input type="text" id="nuevo_texto_dos" name="nuevo_texto_dos">
             <br><br>
             <button type="submit">Actualizar</button>

@@ -96,3 +96,32 @@ body {
     max-width: 450px;
     height: auto;
 }
+
+/* 🔹 Estilos para tooltip */
+.tooltip-btn {
+    position: relative;
+    cursor: pointer;
+}
+
+.tooltip-btn::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    padding: 8px;
+    border-radius: 5px;
+    font-size: 12px;
+    white-space: pre-line;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+    pointer-events: none;
+    transform: translateY(-10px);
+    visibility: hidden;
+    max-width: 500px; /* Ajusta el ancho máximo */
+    min-width: 400px;
+}
+
+.tooltip-btn:hover::after {
+    opacity: 1;
+    visibility: visible;
+}

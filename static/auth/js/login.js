@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const loginError = document.getElementById("login-error");
 
     loginForm.addEventListener("submit", function (event) {
-        event.preventDefault();
+        event.preventDefault(); // Evitar recarga de la página
 
         const formData = new FormData(loginForm);
 
@@ -12,18 +12,24 @@ document.addEventListener("DOMContentLoaded", function () {
             body: formData
         })
         .then(response => {
-            if (response.redirected) {
-                window.location.href = response.url;  // Redirige al usuario a su panel correspondiente
+            if (response.ok) {
+                return response.json(); // Si la respuesta es 200 OK, procesamos JSON
             } else {
-                return response.json();
+                throw new Error("Usuario o contraseña incorrectos."); // Lanzamos error si no es 200
             }
         })
         .then(data => {
-            if (data && data.error) {
-                loginError.style.display = "block";
-                loginError.querySelector(".flash.error").textContent = data.error;
+            if (data.success) {
+                window.location.href = data.redirect_url; // Redirigir al usuario a su panel
             }
         })
-        .catch(error => console.error("Error:", error));
+        .catch(error => {
+            // Mostrar alerta con el error
+            alert(`⚠️ ${error.message}`);
+
+            // También mostrar el mensaje en la interfaz si es necesario
+            loginError.style.display = "block";
+            loginError.querySelector(".flash.error").textContent = error.message;
+        });
     });
 });

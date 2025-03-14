@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión de Tecnológico</title>
+    <title>Gestión de Asignación Académica</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='industrial/css/styles.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
@@ -15,18 +15,18 @@
         <h1 class="titulo">Asignación Académica - Industrial</h1>
         <!-- Aquí se coloca el contenedor para los botones -->
         <div class="botones-container">
-            <button data-url="{{ url_for('industrial.get_all_profesores') }}">Profesores</button>
+            <button data-url="{{ url_for('industrial.get_all_profesores') }}">Docentes</button>
             <button data-url="{{ url_for('industrial.get_all_asignaturas') }}">Asignaturas</button>
-            <button data-url="{{ url_for('industrial.get_all_asignaturasE') }}">Asignaturas Especiales</button>
+            <button data-url="{{ url_for('industrial.get_all_asignaturasE') }}">Apoyo a la Docencia</button>
             <!-- <button data-url="{{ url_for('industrial.get_all_administrativos') }}">Administrativos</button> -->
             <button onclick="window.location.href='/';">Volver</button>
         </div>
     </div>
 
     <div class="header-container2">
-        <h2 id="toggle-profesor-form">Añadir Profesor</h2>
+        <h2 id="toggle-profesor-form">Añadir Docente</h2>
         <h2 id="toggle-asignatura-form">Añadir Asignatura</h2>
-        <h2 id="toggle-asignaturaE-form">Añadir Asignatura Especial</h2>
+        <h2 id="toggle-asignaturaE-form">Añadir Apoyo a la Docencia</h2>
     </div>
     <div>
 
@@ -77,6 +77,7 @@
                         <th>Jueves</th>
                         <th>Viernes</th>
                         <th>Sábado</th>
+                        <th>Verificar Horas</th>
                     </tr>
                 </thead>
                 <tr>
@@ -134,6 +135,9 @@
                         <select id="hora_inicio16" name="hora_inicio16" class="hora-inicio"></select>
                         <select id="hora_fin16" name="hora_fin16" class="hora-fin"></select>
                     </td>
+                    <td>
+                        <button id="validateButton1" type="button">Validar</button>
+                    </td>
                 </tr>
                 <tr>
                     <td><label for="asignatura2">2.</label></td>
@@ -189,6 +193,9 @@
                     <td>
                         <select id="hora_inicio26" name="hora_inicio26" class="hora-inicio"></select>
                         <select id="hora_fin26" name="hora_fin26" class="hora-fin"></select>
+                    </td>
+                    <td>
+                        <button id="validateButton2" type="button">Validar</button>
                     </td>
                 </tr>
                 <tr>
@@ -246,6 +253,9 @@
                         <select id="hora_inicio36" name="hora_inicio36" class="hora-inicio"></select>
                         <select id="hora_fin36" name="hora_fin36" class="hora-fin"></select>
                     </td>
+                    <td>
+                        <button id="validateButton3" type="button">Validar</button>
+                    </td>
                 </tr>
                 <tr>
                     <td><label for="asignatura4">4.</label></td>
@@ -301,6 +311,9 @@
                         <td>
                             <select id="hora_inicio46" name="hora_inicio46" class="hora-inicio"></select>
                             <select id="hora_fin46" name="hora_fin46" class="hora-fin"></select>
+                        </td>
+                        <td>
+                            <button id="validateButton4" type="button">Validar</button>
                         </td>
                 </tr>
                 <tr>
@@ -358,6 +371,9 @@
                             <select id="hora_inicio56" name="hora_inicio56" class="hora-inicio"></select>
                             <select id="hora_fin56" name="hora_fin56" class="hora-fin"></select>
                         </td>
+                        <td>
+                            <button id="validateButton5" type="button">Validar</button>
+                        </td>
                 </tr>
                 <tr>
                     <td><label for="asignatura6">6.</label></td>
@@ -413,6 +429,9 @@
                         <td>
                             <select id="hora_inicio66" name="hora_inicio66" class="hora-inicio"></select>
                             <select id="hora_fin66" name="hora_fin66" class="hora-fin"></select>
+                        </td>
+                        <td>
+                            <button id="validateButton6" type="button">Validar</button>
                         </td>
                 </tr>
                 <tr>
@@ -470,6 +489,9 @@
                             <select id="hora_inicio76" name="hora_inicio76" class="hora-inicio"></select>
                             <select id="hora_fin76" name="hora_fin76" class="hora-fin"></select>
                         </td>
+                        <td>
+                            <button id="validateButton7" type="button">Validar</button>
+                        </td>
                 </tr>
                 <tr>
                     <td><label for="asignatura8">8.</label></td>
@@ -526,6 +548,9 @@
                             <select id="hora_inicio86" name="hora_inicio86" class="hora-inicio"></select>
                             <select id="hora_fin86" name="hora_fin86" class="hora-fin"></select>
                         </td>
+                        <td>
+                            <button id="validateButton8" type="button">Validar</button>
+                        </td>
                 </tr>
             </table>
 
@@ -539,7 +564,7 @@
                     <tr>
                         <th></th>
                         <th>Carrera</th>
-                        <th>Asignatura</th>
+                        <th>Apoyo a la Docencia</th>
                         <th>Grupo</th>
                         <th>Horas</th>
                         <th>Lunes</th>
@@ -548,6 +573,7 @@
                         <th>Jueves</th>
                         <th>Viernes</th>
                         <th>Sábado</th>
+                        <th>Verificar Horas</th>
                     </tr>
                 </thead>
                 <tr>
@@ -609,6 +635,9 @@
                         <select id="hora_inicioE16" name="hora_inicioE16" class="hora-inicio"></select>
                         <select id="hora_finE16" name="hora_finE16" class="hora-fin"></select>
                     </td>
+                    <td>
+                        <button id="validateButtonE1" type="button">Validar</button>
+                    </td>
                 </tr>
                 <tr>
                     <td><label for="asignaturaE2">2.</label></td>
@@ -659,6 +688,9 @@
                     <td>
                         <select id="hora_inicioE26" name="hora_inicioE26" class="hora-inicio"></select>
                         <select id="hora_finE26" name="hora_finE26" class="hora-fin"></select>
+                    </td>
+                    <td>
+                        <button id="validateButtonE2" type="button">Validar</button>
                     </td>
                 </tr>
 
@@ -712,6 +744,9 @@
                         <select id="hora_inicioE36" name="hora_inicioE36" class="hora-inicio"></select>
                         <select id="hora_finE36" name="hora_finE36" class="hora-fin"></select>
                     </td>
+                    <td>
+                        <button id="validateButtonE3" type="button">Validar</button>
+                    </td>
                 </tr>
                 <tr>
                     <td><label for="asignaturaE4">4.</label></td>
@@ -755,6 +790,9 @@
                     <td>
                         <select id="hora_inicioE46" name="hora_inicioE46" class="hora-inicio"></select>
                         <select id="hora_finE46" name="hora_finE46" class="hora-fin"></select>
+                    </td>
+                    <td>
+                        <button id="validateButtonE4" type="button">Validar</button>
                     </td>
                 </tr>
 
@@ -801,6 +839,9 @@
                         <select id="hora_inicioE56" name="hora_inicioE56" class="hora-inicio"></select>
                         <select id="hora_finE56" name="hora_finE56" class="hora-fin"></select>
                     </td>
+                    <td>
+                        <button id="validateButtonE5" type="button">Validar</button>
+                    </td>
                 </tr>
 
                 <tr>
@@ -846,6 +887,9 @@
                         <select id="hora_inicioE66" name="hora_inicioE66" class="hora-inicio"></select>
                         <select id="hora_finE66" name="hora_finE66" class="hora-fin"></select>
                     </td>
+                    <td>
+                        <button id="validateButtonE6" type="button">Validar</button>
+                    </td>
                 </tr>
                 <tr>
                     <td><label for="asignaturaE7">7.</label></td>
@@ -889,6 +933,9 @@
                     <td>
                         <select id="hora_inicioE76" name="hora_inicioE76" class="hora-inicio"></select>
                         <select id="hora_finE76" name="hora_finE76" class="hora-fin"></select>
+                    </td>
+                    <td>
+                        <button id="validateButtonE7" type="button">Validar</button>
                     </td>
                 </tr>
 
@@ -935,6 +982,9 @@
                         <select id="hora_inicioE86" name="hora_inicioE86" class="hora-inicio"></select>
                         <select id="hora_finE86" name="hora_finE86" class="hora-fin"></select>
                     </td>
+                    <td>
+                        <button id="validateButtonE8" type="button">Validar</button>
+                    </td>
                 </tr>
             </table>
 
@@ -947,7 +997,7 @@
                     <tr>
                         <th></th>
                         <th>Carrera</th>
-                        <th>Cargo</th>
+                        <th>Cargo Académico</th>
                         <th>Vigencia</th>
                         <th>Horas</th>
                         <th>Lunes</th>
@@ -956,6 +1006,7 @@
                         <th>Jueves</th>
                         <th>Viernes</th>
                         <th>Sábado</th>
+                        <th>Verificar Horas</th>
                     </tr>
                 </thead>
                 <tr>
@@ -968,8 +1019,10 @@
                     <td>
                         <select id="cargo" name="cargo" required>
                             <option value=" ">NO APLICA</option>
-                            <option value="PRESINDENTE DE ACADÉMIA">PRESINDENTE DE ACADEMIA</option>
-                            <option value="SECRETARIO DE ACADEMIA">SECRETARIO DE ACADEMIA</option>
+                            <option value="PRESIDENTE DE ACADÉMIA">PRESIDENTE DE ACADEMIA</option>
+                            <option value="PRESIDENTA DE ACADÉMIA">PRESIDENTA DE ACADEMIA</option>
+                            <option value="SECRETARIO DE ACADÉMIA">SECRETARIO DE ACADEMIA</option>         
+                            <option value="SECRETARIA DE ACADÉMIA">SECRETARIA DE ACADEMIA</option>
                         </select>
                     </td>
                     <!-- VIGENCIA CARGO -->
@@ -1016,11 +1069,15 @@
                         <select id="hora_inicioC16" name="hora_inicioC16" class="hora-inicio"></select>
                         <select id="hora_finC16" name="hora_finC16" class="hora-fin"></select>
                     </td>
+                    <td>
+                        <!-- Botón para validar Cargo -->
+                        <button id="validateButtonC" type="button">Validar</button>
+                    </td>
                 </tr>
             </table>
 
             <br>
-            <button type="submit">Añadir Profesor</button>
+            <button type="submit">Añadir Docente</button>
         </form>
     </div>
 
@@ -1047,7 +1104,7 @@
             <label for="horas_asignaturaE">Cantidad de Horas:</label>
             <input type="number" id="horas_asignaturaE" name="horas_asignaturaE" required><br>
 
-            <button type="submit">Añadir Asignatura Especial</button>
+            <button type="submit">Añadir Apoyo a la Docencia</button>
         </form>
     </div>
 

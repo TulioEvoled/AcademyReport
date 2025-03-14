@@ -26,28 +26,22 @@ scheduler = BackgroundScheduler()
 
 # **📌 Agregar tareas programadas para cada carrera**
 #INDUSTRIAL
-scheduler.add_job(export_industrial, 'cron', month=3, day=3, hour=1, minute=42)
-scheduler.add_job(export_industrial, 'cron', month=6, day=10, hour=12, minute=0)  # 10 de junio
+scheduler.add_job(export_industrial, 'cron', month=5, day=30, hour=12, minute=0)  # 30 de Mayo
 scheduler.add_job(export_industrial, 'cron', month=10, day=29, hour=12, minute=0) # 29 de octubre
 #SISTEMAS COMPUTACIONALES
-scheduler.add_job(export_sistemas, 'cron', month=3, day=3, hour=1, minute=42)
-scheduler.add_job(export_sistemas, 'cron', month=6, day=10, hour=12, minute=0)  # 10 de junio
+scheduler.add_job(export_sistemas, 'cron', month=5, day=30, hour=12, minute=0)  # 30 de Mayo
 scheduler.add_job(export_sistemas, 'cron', month=10, day=29, hour=12, minute=0) # 29 de octubre
 #INFORMATICA
-scheduler.add_job(export_informatica, 'cron', month=3, day=3, hour=1, minute=42)
-scheduler.add_job(export_informatica, 'cron', month=6, day=10, hour=12, minute=0)  # 10 de junio
+scheduler.add_job(export_informatica, 'cron', month=5, day=30, hour=12, minute=0)  # 30 de Mayo
 scheduler.add_job(export_informatica, 'cron', month=10, day=29, hour=12, minute=0) # 29 de octubre
 #ELECTRONICA
-scheduler.add_job(export_electronica, 'cron', month=3, day=3, hour=1, minute=42)
-scheduler.add_job(export_electronica, 'cron', month=6, day=10, hour=12, minute=0)  # 10 de junio
+scheduler.add_job(export_electronica, 'cron', month=5, day=30, hour=12, minute=0)  # 30 de Mayo
 scheduler.add_job(export_electronica, 'cron', month=10, day=29, hour=12, minute=0) # 29 de octubre
 #ELECTROMECANICA
-scheduler.add_job(export_electromecanica, 'cron', month=3, day=3, hour=1, minute=42)
-scheduler.add_job(export_electromecanica, 'cron', month=6, day=10, hour=12, minute=0)  # 10 de junio
+scheduler.add_job(export_electromecanica, 'cron', month=5, day=30, hour=12, minute=0)  # 30 de Mayo
 scheduler.add_job(export_electromecanica, 'cron', month=10, day=29, hour=12, minute=0) # 29 de octubre
 #ADMINISTRACION
-scheduler.add_job(export_administracion, 'cron', month=3, day=3, hour=1, minute=42)
-scheduler.add_job(export_administracion, 'cron', month=6, day=10, hour=12, minute=0)  # 10 de junio
+scheduler.add_job(export_administracion, 'cron', month=5, day=30, hour=12, minute=0)  # 30 de Mayo
 scheduler.add_job(export_administracion, 'cron', month=10, day=29, hour=12, minute=0) # 29 de octubre
 
 

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión de Tecnológico - Administración</title>
+    <title>Gestión de Asignación Académica</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='administracion/css/styles.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
@@ -15,17 +15,17 @@
         <h1 class="titulo">Asignación Académica - Administración</h1>
         <!-- Contenedor de botones -->
         <div class="botones-container">
-            <button data-url="{{ url_for('administracion.get_all_profesores') }}">Profesores</button>
+            <button data-url="{{ url_for('administracion.get_all_profesores') }}">Docentes</button>
             <button data-url="{{ url_for('administracion.get_all_asignaturas') }}">Asignaturas</button>
-            <button data-url="{{ url_for('administracion.get_all_asignaturasE') }}">Asignaturas Especiales</button>
+            <button data-url="{{ url_for('administracion.get_all_asignaturasE') }}">Apoyo a la Docencia</button>
             <button onclick="window.location.href='/administracion/administracion';">Volver</button>
         </div>
     </div>
 
     <div class="header-container2">
-        <h2 id="toggle-profesor-form">Añadir Profesor</h2>
+        <h2 id="toggle-profesor-form">Añadir Docentes</h2>
         <h2 id="toggle-asignatura-form">Añadir Asignatura</h2>
-        <h2 id="toggle-asignaturaE-form">Añadir Asignatura Especial</h2>
+        <h2 id="toggle-asignaturaE-form">Añadir Apoyo a la Docencia</h2>
     </div>
     <div>
         <!-- FORMULARIO PARA PROFESORES EN ADMINISTRACIÓN -->
@@ -75,6 +75,7 @@
                         <th>Jueves</th>
                         <th>Viernes</th>
                         <th>Sábado</th>
+                        <th>Verificar Horas</th>
                     </tr>
                 </thead>
                 {% for i in range(1, 9) %}
@@ -99,6 +100,9 @@
                         <select id="hora_fin{{ i }}{{ j }}" name="hora_fin{{ i }}{{ j }}" class="hora-fin"></select>
                     </td>
                     {% endfor %}
+                    <td>
+                        <button id="validateButton{{ i }}" type="button">Validar</button>
+                    </td>
                 </tr>
                 {% endfor %}
             </table>
@@ -112,7 +116,7 @@
                     <tr>
                         <th>#</th>
                         <th>Carrera</th>
-                        <th>Asignatura</th>
+                        <th>Apoyo a la Docencia</th>
                         <th>Grupo</th>
                         <th>Horas</th>
                         <th>Lunes</th>
@@ -121,6 +125,7 @@
                         <th>Jueves</th>
                         <th>Viernes</th>
                         <th>Sábado</th>
+                        <th>Verificar Horas</th>
                     </tr>
                 </thead>
                 {% for i in range(1, 9) %}
@@ -158,6 +163,9 @@
                         <select id="hora_finE{{ i }}{{ j }}" name="hora_finE{{ i }}{{ j }}" class="hora-fin"></select>
                     </td>
                     {% endfor %}
+                    <td>
+                        <button id="validateButtonE{{ i }}" type="button">Validar</button>
+                    </td>
                 </tr>
                 {% endfor %}
             </table>
@@ -171,7 +179,7 @@
                 <thead>
                     <tr>
                         <th>Carrera</th>
-                        <th>Cargo</th>
+                        <th>Cargo Académico</th>
                         <th>Vigencia</th>
                         <th>Horas</th>
                         <th>Lunes</th>
@@ -180,6 +188,7 @@
                         <th>Jueves</th>
                         <th>Viernes</th>
                         <th>Sábado</th>
+                        <th>Verificar Horas</th>
                     </tr>
                 </thead>
                 <tr>
@@ -190,8 +199,10 @@
                     <td>
                         <select id="cargo" name="cargo" required>
                             <option value=" ">NO APLICA</option>
-                            <option value="PRESIDENTE DE ACADEMIA">PRESIDENTE DE ACADEMIA</option>
-                            <option value="SECRETARIO DE ACADEMIA">SECRETARIO DE ACADEMIA</option>
+                            <option value="PRESIDENTE DE ACADÉMIA">PRESIDENTE DE ACADEMIA</option>
+                            <option value="PRESIDENTA DE ACADÉMIA">PRESIDENTA DE ACADEMIA</option>
+                            <option value="SECRETARIO DE ACADÉMIA">SECRETARIO DE ACADEMIA</option>         
+                            <option value="SECRETARIA DE ACADÉMIA">SECRETARIA DE ACADEMIA</option>
                         </select>
                     </td>
                     <td>
@@ -206,11 +217,14 @@
                         <select id="hora_finC1{{ j }}" name="hora_finC1{{ j }}" class="hora-fin"></select>
                     </td>
                     {% endfor %}
+                    <td>
+                        <button id="validateButtonC" type="button">Validar</button>
+                    </td>
                 </tr>
             </table>
 
             <br>
-            <button type="submit">Añadir Profesor</button>
+            <button type="submit">Añadir Docente</button>
             </form>
 
     <!-- FORMULARIO DE ASIGNATURAS - ADMINISTRACIÓN -->

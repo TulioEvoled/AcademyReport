@@ -11,6 +11,8 @@ document.getElementById('add-profesor-form').addEventListener('submit', function
         horas_a: parseInt(document.getElementById('horas_a').value) || 0,
         horas_b: parseInt(document.getElementById('horas_b').value) || 0,
         total_horas: parseInt(document.getElementById('total_horas').value) || 0,
+        total_horas_grupo: document.getElementById('total_horas_grupo').value,
+        total_horasE_grupo: document.getElementById('total_horasE_grupo').value,
     };
 
     // Agregar datos de asignaturas y horarios dinámicamente
@@ -250,17 +252,17 @@ function redirectTo(button) {
 
 // ELIMINAR PROFESOR - ELECTROMECÁNICA
 function deleteProfesor(id) {
-    if (confirm('¿Estás seguro de que deseas eliminar este profesor?')) {
+    if (confirm('¿Estás seguro de que deseas eliminar este Docente?')) {
         fetch(`/electromecanica/electromecanica_profesores/${id}`, {  // Se cambia la ruta a electromecanica_profesores
             method: 'DELETE'
         }).then(response => {
             if (response.ok) {
                 window.location.reload();
             } else {
-                alert('Error al eliminar al profesor');
+                alert('Error al eliminar al Docente');
             }
         }).catch(error => {
-            alert('Error al intentar eliminar al profesor');
+            alert('Error al intentar eliminar al Docente');
         });
     }
 }
@@ -284,17 +286,17 @@ function deleteAsignatura(id) {
 
 // ELIMINAR ASIGNATURA ESPECIAL - ELECTROMECÁNICA
 function deleteAsignaturaE(id) {
-    if (confirm('¿Estás seguro de que deseas eliminar esta asignatura especial?')) {
+    if (confirm('¿Estás seguro de que deseas eliminar este apoyo a la docencia?')) {
         fetch(`/electromecanica/electromecanica_asignaturasE/${id}`, {  // Se cambia la ruta a electromecanica_asignaturasE
             method: 'DELETE'
         }).then(response => {
             if (response.ok) {
                 window.location.reload();
             } else {
-                alert('Error al eliminar la asignatura especial');
+                alert('Error al eliminar apoyo a la docencia');
             }
         }).catch(error => {
-            alert('Error al intentar eliminar la asignatura especial');
+            alert('Error al intentar eliminar apoyo a la docencia');
         });
     }
 }
@@ -396,33 +398,35 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-/// HORARIOS PARA ELECTROMECÁNICA
+/// HORARIOS
 const horarios = ["", "07:00", "08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00"];
 
-// Función para llenar las opciones de cada select y seleccionar el valor existente
+let lastModifiedSelect = null; // Guardará el último select modificado
+
+// Función para llenar los select con opciones de horarios
 function populateSelectOptions(selectElement, options) {
-    const selectedValue = selectElement.value || selectElement.getAttribute("data-initial-value"); // Obtener el valor inicial si existe
+    const selectedValue = selectElement.value || selectElement.getAttribute("data-initial-value");
     selectElement.innerHTML = options
         .map(hora => `<option value="${hora}" ${hora === selectedValue ? "selected" : ""}>${hora}</option>`)
         .join("");
 
-    if (selectedValue) {
-        selectElement.value = selectedValue; // Restaurar selección
+    if (selectedValue && options.includes(selectedValue)) {
+        selectElement.value = selectedValue;
     }
 }
 
-// Convertir una hora a minutos para comparación
+// Convertir hora a minutos para comparación
 function getMinutes(timeString) {
+    if (!timeString) return null;
     const [hours, minutes] = timeString.split(":").map(Number);
     return hours * 60 + minutes;
 }
 
-// Función para verificar solapamientos y actualizar selectores
+// Función para verificar solapamientos y validar la lógica de horarios
 function checkOverlapAndDisable(day) {
     let timeRanges = [];
 
-    // Verificar solapamientos para asignaturas numeradas, con sufijo 'E' y cargo 'C'
-    for (let prefix of ['', 'E', 'C']) {
+    for (let prefix of ['', 'E', 'C']) { // '' = Asignatura normal, 'E' = Apoyo a la docencia, 'C' = Cargo Académico
         for (let asignatura = 1; asignatura <= 8; asignatura++) {
             const startSelect = document.getElementById(`hora_inicio${prefix}${asignatura}${day}`);
             const endSelect = document.getElementById(`hora_fin${prefix}${asignatura}${day}`);
@@ -435,79 +439,115 @@ function checkOverlapAndDisable(day) {
                     const startMinutes = getMinutes(startTime);
                     const endMinutes = getMinutes(endTime);
 
-                    // Verificar solapamiento
+                    // ✅ Verificar que la hora de inicio sea menor que la de fin
+                    if (startMinutes >= endMinutes) {
+                        alert(`⚠️ Error en ${getCategoryName(prefix)} ${asignatura} el día ${getDayName(day)}.\n\n⏳ La hora de inicio (${startTime}) debe ser menor que la hora de fin (${endTime}).`);
+
+                        // Borrar solo el último select modificado
+                        if (lastModifiedSelect) {
+                            lastModifiedSelect.value = "";
+                        }
+                        return false;
+                    }
+
+                    // 🔄 Verificar si hay solapamiento con horarios ya registrados
                     for (let range of timeRanges) {
                         if (
-                            (startMinutes < range.end && startMinutes >= range.start) ||
-                            (endMinutes <= range.end && endMinutes > range.start)
+                            (startMinutes < range.end && endMinutes > range.start) || // Solapamiento parcial o total
+                            (startMinutes === range.start && endMinutes === range.end) // Exactamente el mismo horario
                         ) {
-                            alert(`Solapamiento detectado en ${prefix === 'E' ? "asignatura especial" : (prefix === 'C' ? "cargo" : "asignatura")} ${asignatura} el día ${getDayName(day)}. Ajusta el horario.`);
+                            alert(`⚠️ Solapamiento detectado en ${getCategoryName(prefix)} ${asignatura} el día ${getDayName(day)}.\n\n⏳ Conflicto con ${getCategoryName(range.prefix)} ${range.asignatura} en el horario ${range.startTime} - ${range.endTime}.\n\nSe ha eliminado el horario ingresado.`);
+
+                            // ❌ Borrar solo el select **modificado recientemente**
+                            if (lastModifiedSelect) {
+                                lastModifiedSelect.value = "";
+                            }
                             return false;
                         }
                     }
 
-                    // Agregar rango de horario actual
-                    timeRanges.push({ start: startMinutes, end: endMinutes });
+                    // 📌 Guardar el horario actual para futuras comparaciones
+                    timeRanges.push({
+                        start: startMinutes,
+                        end: endMinutes,
+                        startTime: startTime,
+                        endTime: endTime,
+                        asignatura: asignatura,
+                        prefix: prefix
+                    });
                 }
             }
         }
     }
 
     // Deshabilitar horarios en conflicto
+    disableConflictingOptions(day, timeRanges);
+
+    return true;
+}
+
+// Función para deshabilitar horarios en conflicto
+function disableConflictingOptions(day, timeRanges) {
     for (let prefix of ['', 'E', 'C']) {
         for (let asignatura = 1; asignatura <= 8; asignatura++) {
             const startSelect = document.getElementById(`hora_inicio${prefix}${asignatura}${day}`);
             const endSelect = document.getElementById(`hora_fin${prefix}${asignatura}${day}`);
 
             if (startSelect && endSelect) {
-                disableConflictingOptions(startSelect, endSelect, timeRanges);
+                const selectedStart = startSelect.value;
+                const selectedEnd = endSelect.value;
+
+                horarios.forEach(hora => {
+                    const minutes = getMinutes(hora);
+                    const startOption = startSelect.querySelector(`option[value="${hora}"]`);
+                    const endOption = endSelect.querySelector(`option[value="${hora}"]`);
+
+                    if (startOption) startOption.disabled = false;
+                    if (endOption) endOption.disabled = false;
+
+                    // Deshabilitar opciones en conflicto
+                    timeRanges.forEach(({ start, end }) => {
+                        if (minutes > start && minutes < end) {
+                            if (startOption) startOption.disabled = true;
+                            if (endOption) endOption.disabled = true;
+                        }
+                    });
+                });
+
+                // Restaurar selección del usuario si sigue siendo válida
+                startSelect.value = horarios.includes(selectedStart) ? selectedStart : "";
+                endSelect.value = horarios.includes(selectedEnd) ? selectedEnd : "";
             }
         }
     }
-
-    return true;
 }
 
-// Obtener el nombre del día basado en el número (1-6)
-function getDayName(day) {
+// Función para obtener el nombre del día
+function getDayName(dayNumber) {
     const days = {
-        "1": "lunes",
-        "2": "martes",
-        "3": "miércoles",
-        "4": "jueves",
-        "5": "viernes",
-        "6": "sábado"
+        '1': 'Lunes',
+        '2': 'Martes',
+        '3': 'Miércoles',
+        '4': 'Jueves',
+        '5': 'Viernes',
+        '6': 'Sábado'
     };
-    return days[day] || "desconocido";
+    return days[dayNumber] || 'Día desconocido';
 }
 
-// Deshabilitar opciones en conflicto
-function disableConflictingOptions(startSelect, endSelect, timeRanges) {
-    const selectedStart = startSelect.value;
-    const selectedEnd = endSelect.value;
-
-    horarios.forEach(hora => {
-        const minutes = getMinutes(hora);
-        const startOption = startSelect.querySelector(`option[value="${hora}"]`);
-        const endOption = endSelect.querySelector(`option[value="${hora}"]`);
-
-        if (startOption) startOption.disabled = false;
-        if (endOption) endOption.disabled = false;
-
-        // Deshabilitar opciones en conflicto
-        timeRanges.forEach(({ start, end }) => {
-            if (minutes > start && minutes < end) {
-                if (startOption) startOption.disabled = true;
-                if (endOption) endOption.disabled = true;
-            }
-        });
-    });
-
-    startSelect.value = selectedStart;
-    endSelect.value = selectedEnd;
+// Función para obtener el tipo de asignación basado en el prefijo
+function getCategoryName(prefix) {
+    switch (prefix) {
+        case 'E':
+            return "Apoyo a la Docencia";
+        case 'C':
+            return "Cargo Académico";
+        default:
+            return "Asignatura";
+    }
 }
 
-// Inicializar horarios y agregar eventos de cambio para validar solapamientos
+// Inicializar eventos
 document.addEventListener("DOMContentLoaded", function() {
     const horaInicioSelects = document.querySelectorAll(".hora-inicio");
     const horaFinSelects = document.querySelectorAll(".hora-fin");
@@ -515,14 +555,23 @@ document.addEventListener("DOMContentLoaded", function() {
     horaInicioSelects.forEach(select => {
         select.setAttribute("data-initial-value", select.value);
         populateSelectOptions(select, horarios);
+        select.addEventListener("change", () => {
+            lastModifiedSelect = select; // Guardamos el select modificado
+            const day = select.id.slice(-1);
+            checkOverlapAndDisable(day);
+        });
     });
 
     horaFinSelects.forEach(select => {
         select.setAttribute("data-initial-value", select.value);
         populateSelectOptions(select, horarios);
+        select.addEventListener("change", () => {
+            lastModifiedSelect = select; // Guardamos el select modificado
+            const day = select.id.slice(-1);
+            checkOverlapAndDisable(day);
+        });
     });
 
-    // Agregar evento a cada selector para revisar y actualizar horarios
     [...horaInicioSelects, ...horaFinSelects].forEach(select => {
         select.addEventListener("change", () => {
             const day = select.id.slice(-1);
@@ -535,10 +584,10 @@ document.addEventListener("DOMContentLoaded", function() {
 const gruposPorCarrera = {
     "INDUSTRIAL": ["", "NG", "1101", "1102", "1151", "1152", "1181", "1201", "1202", "1251", "1252", "1281", "1301", "1302", "1351", "1352", "1381", "1401", "1402", "1451", "1452", "1481", "1501", "1502", "1551", "1552", "1581", "1601", "1602", "1651", "1652", "1681", "1751", "1752", "1781", "1851", "1852", "1881", "1951", "1952", "1981"],
     "SISTEMAS COMPUTACIONALES": ["", "NG", "4101", "4102", "4151", "4152", "4171", "4201", "4202", "4251", "4252", "4271", "4301", "4302", "4351", "4352", "4371", "4401", "4402", "4451", "4452", "4471", "4501", "4502", "4551", "4552", "4571", "4601", "4602", "4651", "4652", "4671", "4751", "4752", "4771", "4851", "4852", "4871", "4951", "4952", "4971"],
-    "INFORMÁTICA": ["", "NG", "6101", "6102", "6151", "6152", "6181", "6201", "6202", "6251", "6252", "6281", "6301", "6302", "6351", "6352", "6381", "6401", "6402", "6451", "6452", "6481", "6501", "6502", "6551", "6552", "6581"],
-    "ELECTRÓNICA": ["", "NG", "3101", "3102", "3151", "3152", "3181", "3201", "3202", "3251", "3252", "3281", "3301", "3302", "3351", "3352", "3381"],
-    "ELECTROMECÁNICA": ["", "NG", "2101", "2102", "2151", "2152", "2181", "2201", "2202", "2251", "2252", "2281", "2301", "2302", "2351", "2352", "2381"],
-    "ADMINISTRACIÓN": ["", "NG", "9101", "9102", "9151", "9152", "9181", "9201", "9202", "9251", "9252", "9281", "9301", "9302", "9351", "9352", "9381"]
+    "INFORMÁTICA": ["", "NG", "6101", "6102", "6151", "6152", "6201", "6202", "6251", "6252", "6301", "6302", "6351", "6352", "6401", "6402", "6451", "6452", "6501","6502", "6551", "6552", "6601", "6602", "6651", "6652", "6751", "6752", "6851", "6852", "6951", "6952"],
+    "ELECTRÓNICA": ["", "NG", "3101", "3102", "3151", "3152", "3201", "3202", "3251", "3252", "3301", "3302", "3351", "3352", "3401", "3402", "3451", "3452", "3501", "3502", "3551", "3552", "3601", "3602", "3651", "3652", "3751", "3752", "3851", "3852", "3951", "3952"],
+    "ELECTROMECÁNICA": ["", "NG", "2101", "2102", "2151", "2152", "2201", "2202", "2251", "2252", "2301", "2302", "2351", "2352", "2401", "2402", "2451", "2452", "2501", "2502", "2551", "2552", "2601", "2602", "2651", "2652", "2751", "2752", "2851", "2852", "2951", "2952"],
+    "ADMINISTRACIÓN": ["", "NG", "9101", "9102", "9151", "9152", "9201", "9202", "9251", "9252", "9301", "9302", "9351", "9352", "9401", "9402", "9451", "9452", "9501","9502", "9551", "9552", "9601", "9602", "9651", "9652", "9751", "9752", "9851", "9852", "9951", "9952"]
 };
 
 // Función para poblar los selects con los grupos según la carrera seleccionada, preservando selecciones previas
@@ -621,7 +670,6 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 ///VALIDAR HORAS ASIGNADAS
-let interactionCounter = 0; // Contador de interacciones
 
 // Función para calcular horas desde hora_inicio y hora_fin
 function calculateAssignedHours(prefix, asignatura) {
@@ -647,14 +695,12 @@ function calculateAssignedHours(prefix, asignatura) {
     return totalAssignedHours;
 }
 
-// Validar horas asignadas para todas las asignaturas
-function validateWeeklyHours() {
-    if (interactionCounter < 4) return; // No mostrar mensajes hasta que haya 4 interacciones
-
+// Función para validar horas asignadas de una asignatura específica
+function validateAssignedHours(prefix, asignatura) {
     let warnings = [];
 
     // Validar asignaturas normales
-    for (let asignatura = 1; asignatura <= 8; asignatura++) {
+    if (prefix === '') {
         const totalHoursInput = document.getElementById(`horas${asignatura}`);
         if (totalHoursInput) {
             const totalHours = parseFloat(totalHoursInput.value) || 0;
@@ -667,43 +713,59 @@ function validateWeeklyHours() {
     }
 
     // Validar asignaturas especiales
-    for (let asignatura = 1; asignatura <= 8; asignatura++) {
+    if (prefix === 'E') {
         const totalHoursInput = document.getElementById(`horasE${asignatura}`);
         if (totalHoursInput) {
             const totalHours = parseFloat(totalHoursInput.value) || 0;
             const assignedHours = calculateAssignedHours('E', asignatura);
 
             if (assignedHours !== totalHours) {
-                warnings.push(`Asignatura especial ${asignatura}: Horas asignadas (${assignedHours}) no coinciden con las configuradas (${totalHours}).`);
+                warnings.push(`Apoyo a la docencia ${asignatura}: Horas asignadas (${assignedHours}) no coinciden con las configuradas (${totalHours}).`);
             }
         }
     }
 
     // Validar horario del cargo
-    const totalCargoHoursInput = document.getElementById(`horasC`);
-    if (totalCargoHoursInput) {
-        const totalHours = parseFloat(totalCargoHoursInput.value) || 0;
-        const assignedHours = calculateAssignedHours('C', 1);
+    if (prefix === 'C') {
+        const totalCargoHoursInput = document.getElementById(`horasC`);
+        if (totalCargoHoursInput) {
+            const totalHours = parseFloat(totalCargoHoursInput.value) || 0;
+            const assignedHours = calculateAssignedHours('C', 1);
 
-        if (assignedHours !== totalHours) {
-            warnings.push(`Cargo: Horas asignadas (${assignedHours}) no coinciden con las configuradas (${totalHours}).`);
+            if (assignedHours !== totalHours) {
+                warnings.push(`Cargo: Horas asignadas (${assignedHours}) no coinciden con las configuradas (${totalHours}).`);
+            }
         }
     }
 
     if (warnings.length > 0) {
         alert(warnings.join('\n'));
+    } else {
+        alert("✅ Las horas asignadas son correctas.");
     }
 }
 
-// Escuchar cambios en horarios y totales
+// Agregar eventos a los botones de validación al cargar la página
 document.addEventListener("DOMContentLoaded", function() {
-    const hourSelectors = document.querySelectorAll("[id^='hora_inicio'], [id^='hora_fin'], [id^='horas']");
-    hourSelectors.forEach(selector => {
-        selector.addEventListener("change", () => {
-            interactionCounter++; // Incrementar contador en cada interacción
-            validateWeeklyHours();
-        });
-    });
+    for (let i = 1; i <= 8; i++) {
+        // Botones para asignaturas normales
+        const button = document.getElementById(`validateButton${i}`);
+        if (button) {
+            button.addEventListener("click", () => validateAssignedHours('', i));
+        }
+
+        // Botones para apoyo a la docencia
+        const buttonE = document.getElementById(`validateButtonE${i}`);
+        if (buttonE) {
+            buttonE.addEventListener("click", () => validateAssignedHours('E', i));
+        }
+    }
+
+    // Botón para validar cargo académico
+    const buttonC = document.getElementById(`validateButtonC`);
+    if (buttonC) {
+        buttonC.addEventListener("click", () => validateAssignedHours('C', 1));
+    }
 });
 
 // MANEJO DE HORAS DE TRANSMISIÓN PARA GRUPOS 71 EN ELECTROMECÁNICA

@@ -21,8 +21,16 @@
 
             <!-- 🔹 Botones alineados verticalmente -->
             <div class="button-group">
-                <button onclick="location.href='/index'" style="color: #111E48;">Asignación Académica</button>
-                <button onclick="location.href='/reporteador'" style="color: #111E48;">Reporteador</button>
+                <button class="tooltip-btn" data-tooltip="Sección para agregar, actualizar, visualizar y editar la información docente, asignaturas de la carrera y apoyo a la docencia." 
+                        onclick="location.href='/index'" style="color: #111E48;">
+                    Asignación Académica
+                </button>
+            
+                <button class="tooltip-btn" data-tooltip="Sección para realizar exportación de datos generales de docentes, exportación de académica de docentes y actualización de recursos. " 
+                        onclick="location.href='/reporteador'" style="color: #111E48;">
+                    Reporteador
+                </button>
+            
                 <button class="logout-btn" onclick="window.location.href='/auth/logout';">Cerrar Sesión</button>
             </div>
         </div>

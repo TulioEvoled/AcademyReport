@@ -5,23 +5,32 @@ document.getElementById('load-professors').addEventListener('click', function() 
         .then(response => response.json())
         .then(profesores => {
             const containers = [
-                document.getElementById('professor-list-container'),
-                document.getElementById('professor-list-container-pdf')
+                { container: document.getElementById('professor-list-container'), prefix: 'list1' },
+                { container: document.getElementById('professor-list-container-pdf'), prefix: 'list2' }
             ];
 
-            containers.forEach(container => {
+            containers.forEach(({ container, prefix }) => {
                 container.innerHTML = ''; // Limpiar la lista existente
 
                 profesores.forEach(profesor => {
-                    // Crear cada elemento de la lista
+                    // Crear cada elemento de la lista con alineación a la izquierda
                     const div = document.createElement('div');
+                    div.style.display = 'flex';
+                    div.style.alignItems = 'center';
+                    div.style.gap = '5px'; // Espacio mínimo entre checkbox y texto
+                    div.style.justifyContent = 'flex-start';
+                    div.style.width = '100%'; // Ocupar todo el ancho disponible
+
                     const checkbox = document.createElement('input');
                     checkbox.type = 'checkbox';
                     checkbox.name = 'profesor_ids';
                     checkbox.value = profesor._id;
+                    checkbox.id = `${prefix}_profesor_${profesor._id}`; // ID único por lista
 
                     const label = document.createElement('label');
                     label.textContent = profesor.nombre;
+                    label.style.cursor = 'pointer'; // Permite clic en el nombre para seleccionar
+                    label.setAttribute('for', checkbox.id); // Asignar correctamente el label al checkbox
 
                     div.appendChild(checkbox);
                     div.appendChild(label);
@@ -31,10 +40,9 @@ document.getElementById('load-professors').addEventListener('click', function() 
         });
 });
 
-// Seleccionar todos los profesores en ambos formularios
-document.getElementById('select-all').addEventListener('click', function() {
-    const checkboxes = document.querySelectorAll("input[name='profesor_ids']");
-    checkboxes.forEach(checkbox => checkbox.checked = true);
+    // Seleccionar todos los profesores en ambas listas
+    document.getElementById('select-all').addEventListener('click', function() {
+    document.querySelectorAll("input[name='profesor_ids']").forEach(checkbox => checkbox.checked = true);
 });
 
 // Función para mostrar mensajes emergentes
@@ -106,7 +114,7 @@ document.getElementById('updateTextFormDos').addEventListener('submit', function
         });
 });
 
-// EXPORTACION DE DATOS  EN EXCEL
+// EXPORTACION DE DATOS EN EXCEL
 document.getElementById('collection').addEventListener('change', function() {
     const collection = this.value;
     fetch(`/columns/${collection}`)
@@ -116,19 +124,27 @@ document.getElementById('collection').addEventListener('change', function() {
             container.innerHTML = ''; // Limpiar checkboxes previos
 
             columns.forEach(column => {
+                // Crear contenedor para cada opción
+                const div = document.createElement('div');
+                div.style.display = 'flex';
+                div.style.alignItems = 'center';
+                div.style.gap = '5px'; // Reducir espacio entre checkbox y nombre
+                div.style.justifyContent = 'flex-start'; // Alinear todo a la izquierda
+
                 const checkbox = document.createElement('input');
                 checkbox.type = 'checkbox';
-                checkbox.id = column;
+                checkbox.id = `col_${column}`;
                 checkbox.name = 'columns';
                 checkbox.value = column;
 
                 const label = document.createElement('label');
-                label.htmlFor = column;
+                label.htmlFor = `col_${column}`;
                 label.textContent = column;
+                label.style.cursor = 'pointer'; // Hacer el texto clickeable para seleccionar
 
-                container.appendChild(checkbox);
-                container.appendChild(label);
-                container.appendChild(document.createElement('br'));
+                div.appendChild(checkbox);
+                div.appendChild(label);
+                container.appendChild(div);
             });
 
             // 🔹 Agregar opciones de exportación de asignaciones si la colección es "profesores"
@@ -142,6 +158,13 @@ document.getElementById('collection').addEventListener('change', function() {
 
 // Función para agregar opciones especiales de asignaciones
 function addSpecialCheckbox(container, id, labelText) {
+    // Crear contenedor para cada opción especial
+    const div = document.createElement('div');
+    div.style.display = 'flex';
+    div.style.alignItems = 'center';
+    div.style.gap = '5px';
+    div.style.justifyContent = 'flex-start';
+
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
     checkbox.id = id;
@@ -151,10 +174,11 @@ function addSpecialCheckbox(container, id, labelText) {
     const label = document.createElement('label');
     label.htmlFor = id;
     label.textContent = labelText;
+    label.style.cursor = 'pointer';
 
-    container.appendChild(checkbox);
-    container.appendChild(label);
-    container.appendChild(document.createElement('br'));
+    div.appendChild(checkbox);
+    div.appendChild(label);
+    container.appendChild(div);
 }
 
 // Manejar la exportación de datos
@@ -184,4 +208,15 @@ document.getElementById('export-form').addEventListener('submit', function(event
             window.URL.revokeObjectURL(url);
         })
         .catch(error => console.error('Error:', error));
+});
+
+document.getElementById("exportarManual").addEventListener("click", function() {
+    fetch("/exportar-manual", {
+        method: "POST"
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(data.mensaje);
+    })
+    .catch(error => console.error("Error al exportar:", error));
 });

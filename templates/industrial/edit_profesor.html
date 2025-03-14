@@ -4,13 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Editar Profesor</title>
+    <title>Editar Docentes</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='industrial/css/styles.css') }}">
 </head>
 
 <body>
     <div class="header-container3">
-        <h1>Editar Profesor</h1>
+        <h1>Editar Docentes</h1>
         <div class="botones-container">
             <button onclick="window.location.href='/profesores';">Volver</button>
         </div>
@@ -45,9 +45,12 @@
 
         <label for="total_horas">Total Horas:</label>
         <input type="number" id="total_horas" name="total_horas" value="{{ profesor.total_horas }}" required><br>
+        
+        <!-- BOTÓN PARA LIMPIAR TODAS LAS TABLAS -->
+        <button id="btn-limpiar-todos" type="button">Limpiar Todos los Horarios</button>
 
         <!-- BOTÓN PARA LIMPIAR TABLA DE ASIGNATURAS -->
-        <button type="button" onclick="limpiarTabla('form-group')">Limpiar Asignaturas</button><br><br>
+        <button class="btn-limpiar-tabla" type="button" data-tabla="form-group">Limpiar Asignaturas</button><br><br>
 
         <!-- Nuevos campos para asignatura y horas -->
         <table class="form-group">
@@ -64,6 +67,7 @@
                     <th>Jueves</th>
                     <th>Viernes</th>
                     <th>Sábado</th>
+                    <th>Verificar Horas</th>
                 </tr>
             </thead>
             <tr>
@@ -207,6 +211,11 @@
                         {% endfor %}
                     </select>
                 </td>
+
+                <!-- Botón para validar Asignatura 1 -->
+                <td>
+                    <button id="validateButton1" type="button">Validar</button>
+                </td>
             </tr>
             <tr>
                 <td><label for="asignatura2">2.</label></td>
@@ -343,6 +352,9 @@
                         <option value="{{ horario }}" {% if profesor.hora_fin26 == horario %}selected{% endif %}>{{ horario }}</option>
                         {% endfor %}
                     </select>
+                </td>
+                <td>
+                    <button id="validateButton2" type="button">Validar</button>
                 </td>
             </tr>
             <tr>
@@ -481,6 +493,9 @@
                         {% endfor %}
                     </select>
                 </td>
+                <td>
+                    <button id="validateButton3" type="button">Validar</button>
+                </td>
             </tr>
             <tr>
                 <td><label for="asignatura1">4.</label></td>
@@ -617,6 +632,9 @@
                         <option value="{{ horario }}" {% if profesor.hora_fin46 == horario %}selected{% endif %}>{{ horario }}</option>
                         {% endfor %}
                         </select>
+                    </td>
+                    <td>
+                        <button id="validateButton4" type="button">Validar</button>
                     </td>
             </tr>
             <tr>
@@ -755,9 +773,12 @@
                         {% endfor %}
                         </select>
                     </td>
+                    <td>
+                        <button id="validateButton5" type="button">Validar</button>
+                    </td>
             </tr>
             <tr>
-                <td><label for="asignatura1">6.</label></td>
+                <td><label for="asignatura6">6.</label></td>
                 <td>
                     <select id="carrera6" name="carrera6" class="career" data-current-value="{{ profesor.carrera6 }}">
                         <option value=" " {% if profesor.carrera6 == " " %}selected{% endif %}> </option>
@@ -892,6 +913,9 @@
                         <option value="{{ horario }}" {% if profesor.hora_fin66 == horario %}selected{% endif %}>{{ horario }}</option>
                         {% endfor %}
                         </select>
+                    </td>
+                    <td>
+                        <button id="validateButton6" type="button">Validar</button>
                     </td>
             </tr>
             <tr>
@@ -1030,6 +1054,9 @@
                             {% endfor %}
                         </select>
                     </td>
+                    <td>
+                        <button id="validateButton7" type="button">Validar</button>
+                    </td>
             </tr>
             <tr>
                 <td><label for="asignatura1">8.</label></td>
@@ -1167,6 +1194,9 @@
                             {% endfor %}
                         </select>
                     </td>
+                    <td>
+                        <button id="validateButton8" type="button">Validar</button>
+                    </td>
             </tr>
         </table>
 
@@ -1174,7 +1204,7 @@
         <input type="number" id="total_horas_grupo" name="total_horas_grupo" value="{{ profesor.total_horas_grupo }}" readonly><br>
 
         <!-- BOTÓN PARA LIMPIAR TABLA DE ASIGNATURAS ESPECIALES -->
-        <button type="button" onclick="limpiarTabla('form-groupE')">Limpiar Asignaturas Especiales</button><br><br>
+        <button class="btn-limpiar-tabla" type="button" data-tabla="form-groupE">Limpiar Apoyo a la Docencia</button><br><br>
 
         <!-- Nuevos campos para asignatura especial y horas -->
         <table class="form-groupE">
@@ -1182,7 +1212,7 @@
                 <tr>
                     <th></th>
                     <th>Carrera</th>
-                    <th>Asignatura</th>
+                    <th>Apoyo a la Docencia</th>
                     <th>Grupo</th>
                     <th>Horas</th>
                     <th>Lunes</th>
@@ -1191,6 +1221,7 @@
                     <th>Jueves</th>
                     <th>Viernes</th>
                     <th>Sábado</th>
+                    <th>Verificar Horas</th>
                 </tr>
             </thead>
             <tr>
@@ -1316,6 +1347,10 @@
                         {% endfor %}
                     </select>
                 </td>
+                <td>
+                    <!-- Botón para validar Apoyo a la Docencia 1 -->
+                    <button id="validateButtonE1" type="button">Validar</button>
+                </td>
             </tr>
 
             <tr>
@@ -1438,6 +1473,9 @@
                         <option value="{{ horario }}" {% if profesor.hora_finE26 == horario %}selected{% endif %}>{{ horario }}</option>
                         {% endfor %}
                     </select>
+                </td>
+                <td>
+                    <button id="validateButtonE2" type="button">Validar</button>
                 </td>
             </tr>
 
@@ -1563,6 +1601,9 @@
                         {% endfor %}
                     </select>
                 </td>
+                <td>
+                    <button id="validateButtonE3" type="button">Validar</button>
+                </td>
             </tr>
 
             <tr>
@@ -1685,6 +1726,9 @@
                             <option value="{{ horario }}" {% if profesor.hora_finE46 == horario %}selected{% endif %}>{{ horario }}</option>
                             {% endfor %}
                         </select>
+                    </td>
+                    <td>
+                        <button id="validateButtonE4" type="button">Validar</button>
                     </td>
             </tr>
 
@@ -1809,6 +1853,9 @@
                             {% endfor %}
                         </select>
                     </td>
+                    <td>
+                        <button id="validateButtonE5" type="button">Validar</button>
+                    </td>
             </tr>
 
             <tr>
@@ -1931,6 +1978,9 @@
                             <option value="{{ horario }}" {% if profesor.hora_finE66 == horario %}selected{% endif %}>{{ horario }}</option>
                             {% endfor %}
                         </select>
+                    </td>
+                    <td>
+                        <button id="validateButtonE6" type="button">Validar</button>
                     </td>
             </tr>
 
@@ -2055,6 +2105,9 @@
                             {% endfor %}
                         </select>
                     </td>
+                    <td>
+                        <button id="validateButtonE7" type="button">Validar</button>
+                    </td>
             </tr>
 
             <tr>
@@ -2178,6 +2231,9 @@
                             {% endfor %}
                         </select>
                     </td>
+                    <td>
+                        <button id="validateButtonE8" type="button">Validar</button>
+                    </td>
             </tr>
 
         </table>
@@ -2186,7 +2242,7 @@
         <input type="number" id="total_horasE_grupo" name="total_horasE_grupo" value="{{ profesor.total_horasE_grupo }}" readonly><br>
 
         <!-- BOTÓN PARA LIMPIAR TABLA DE CARGOS -->
-        <button type="button" onclick="limpiarTabla('form-groupC')">Limpiar Cargo</button><br><br>
+        <button class="btn-limpiar-tabla" type="button" data-tabla="form-groupC">Limpiar Cargo</button><br><br>
 
         <!-- Nuevos campos para cargo -->
         <table class="form-groupC">
@@ -2194,7 +2250,7 @@
                 <tr>
                     <th></th>
                     <th>Carrera</th>
-                    <th>Cargo</th>
+                    <th>Cargo Académico</th>
                     <th>Vigencia</th>
                     <th>Horas</th>
                     <th>Lunes</th>
@@ -2203,6 +2259,7 @@
                     <th>Jueves</th>
                     <th>Viernes</th>
                     <th>Sábado</th>
+                    <th>Verificar Horas</th>
                 </tr>
             </thead>
             <tr>
@@ -2220,8 +2277,10 @@
                 <td>
                     <select id="cargo" name="cargo" required>
                         <option value=" " {% if profesor.cargo == " " %}selected{% endif %}> </option>
-                        <option value="PRESINDENTE DE ACADÉMIA" {% if profesor.cargo == "PRESINDENTE DE ACADÉMIA" %}selected{% endif %}>PRESINDENTE DE ACADEMIA</option>
+                        <option value="PRESIDENTE DE ACADÉMIA" {% if profesor.cargo == "PRESIDENTE DE ACADÉMIA" %}selected{% endif %}>PRESIDENTE DE ACADEMIA</option>
+                        <option value="PRESIDENTA DE ACADÉMIA" {% if profesor.cargo == "PRESIDENTA DE ACADÉMIA" %}selected{% endif %}>PRESIDENTA DE ACADEMIA</option>
                         <option value="SECRETARIO DE ACADÉMIA" {% if profesor.cargo == "SECRETARIO DE ACADÉMIA" %}selected{% endif %}>SECRETARIO DE ACADEMIA</option>
+                        <option value="SECRETARIA DE ACADÉMIA" {% if profesor.cargo == "SECRETARIA DE ACADÉMIA" %}selected{% endif %}>SECRETARIA DE ACADEMIA</option>
                 </select>
                 </td>
                 <!-- VIGENCIA CARGO -->
@@ -2327,6 +2386,10 @@
                         <option value="{{ horario }}" {% if profesor.hora_finC16 == horario %}selected{% endif %}>{{ horario }}</option>
                         {% endfor %}
                     </select>
+                </td>
+                <td>
+                    <!-- Botón para validar Cargo -->
+                    <button id="validateButtonC" type="button">Validar</button>
                 </td>
             </tr>
         </table>

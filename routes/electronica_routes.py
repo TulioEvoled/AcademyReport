@@ -1,8 +1,9 @@
-from flask import Blueprint, request, jsonify, send_file, render_template, redirect, url_for, send_from_directory
+from flask import Blueprint, request, jsonify, send_file, render_template, redirect, url_for, session, send_from_directory, Response
 from pymongo import MongoClient
 from bson import ObjectId
 import pandas as pd
 from io import BytesIO, StringIO
+import io
 import openpyxl
 from openpyxl.drawing.image import Image
 from openpyxl.styles import Border, Side, PatternFill, Font
@@ -12,6 +13,7 @@ import pythoncom
 from datetime import datetime
 import subprocess
 import time
+import gridfs
 from routes.auth_routes import login_required
 
 # Definir el Blueprint para Ingeniería en Electrónica
@@ -20,6 +22,7 @@ electronica_bp = Blueprint('electronica', __name__, url_prefix='/electronica')
 # Conexión a MongoDB
 client = MongoClient('mongodb+srv://ivan:tuliogaymer077@cluster0.bkahq7u.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
 db = client.tecnologico
+fs = gridfs.GridFS(db)  # Inicializa GridFS para almacenamiento de archivos
 
 # Colecciones específicas de Ingeniería en Electrónica
 electronica_profesores = db['profesores']
@@ -72,7 +75,7 @@ ELECTRONICA_ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg"}
 def add_profesor():
     data = request.json
     electronica_profesores.insert_one(data)
-    return jsonify({'msg': 'Profesor añadido'}), 201
+    return jsonify({'msg': 'Docente añadido'}), 201
 
 @electronica_bp.route('/electronica_profesores/Add_Profesor')
 @login_required('Electronica')
@@ -91,7 +94,7 @@ def get_profesor(id):
 def update_profesor(id):
     data = request.json
     electronica_profesores.update_one({'_id': ObjectId(id)}, {'$set': data})
-    return jsonify({'msg': 'Profesor actualizado'})
+    return jsonify({'msg': 'Docente actualizado'})
 
 @electronica_bp.route('/electronica_profesores/edit/<id>', methods=['GET'])
 @login_required('Electronica')
@@ -104,7 +107,7 @@ def edit_profesor(id):
 @login_required('Electronica')
 def delete_profesor(id):
     electronica_profesores.delete_one({'_id': ObjectId(id)})
-    return jsonify({'msg': 'Profesor eliminado'})
+    return jsonify({'msg': 'Docente eliminado'})
 
 @electronica_bp.route('/electronica_profesores', methods=['GET'])
 @login_required('Electronica')
@@ -212,7 +215,7 @@ def get_all_asignaturas():
 def add_asignaturaE():
     data = request.json
     electronica_asignaturasE.insert_one(data)
-    return jsonify({'msg': 'Asignatura Especial añadida'}), 201
+    return jsonify({'msg': 'Apoyo a la docencia añadida'}), 201
 
 @electronica_bp.route('/electronica_asignaturasE/<id>', methods=['GET'])
 @login_required('Electronica')
@@ -235,9 +238,9 @@ def update_asignaturaE(id):
         )
 
         if result.modified_count > 0:
-            return jsonify({"msg": "Asignatura Especial actualizada"}), 200
+            return jsonify({"msg": "Apoyo a la docencia actualizada"}), 200
         else:
-            return jsonify({"msg": "No se pudo actualizar la Asignatura Especial"}), 400
+            return jsonify({"msg": "No se pudo actualizar Apoyo a la docencia"}), 400
     else:
         return jsonify({"msg": "Datos inválidos"}), 400
 
@@ -252,7 +255,7 @@ def edit_asignaturaE(id):
 @login_required('Electronica')
 def delete_asignaturaE(id):
     electronica_asignaturasE.delete_one({'_id': ObjectId(id)})
-    return jsonify({'msg': 'Asignatura Especial eliminada'})
+    return jsonify({'msg': 'Apoyo a la docencia eliminada'})
 
 @electronica_bp.route('/electronica_asignaturasE/json', methods=['GET'])
 def get_all_asignaturasE_json():
@@ -308,17 +311,22 @@ def export_data():
     else:
         return jsonify({"error": "Colección no válida"}), 400
 
-    cursor = collection.find({
-        "$or": [
-            {"carrera1": "ELECTRÓNICA"}, {"carrera2": "ELECTRÓNICA"}, {"carrera3": "ELECTRÓNICA"},
-            {"carrera4": "ELECTRÓNICA"}, {"carrera5": "ELECTRÓNICA"}, {"carrera6": "ELECTRÓNICA"},
-            {"carrera7": "ELECTRÓNICA"}, {"carrera8": "ELECTRÓNICA"},
-            {"carreraE1": "ELECTRÓNICA"}, {"carreraE2": "ELECTRÓNICA"}, {"carreraE3": "ELECTRÓNICA"},
-            {"carreraE4": "ELECTRÓNICA"}, {"carreraE5": "ELECTRÓNICA"}, {"carreraE6": "ELECTRÓNICA"},
-            {"carreraE7": "ELECTRÓNICA"}, {"carreraE8": "ELECTRÓNICA"},
-            {"carreraC": "ELECTRÓNICA"}
-        ]
-    })
+    # Filtrar los datos según la colección seleccionada
+    if collection_name == "profesores":
+        cursor = collection.find({
+            "$or": [
+                {"carrera1": "ELECTRÓNICA"}, {"carrera2": "ELECTRÓNICA"}, {"carrera3": "ELECTRÓNICA"},
+                {"carrera4": "ELECTRÓNICA"}, {"carrera5": "ELECTRÓNICA"}, {"carrera6": "ELECTRÓNICA"},
+                {"carrera7": "ELECTRÓNICA"}, {"carrera8": "ELECTRÓNICA"},
+                {"carreraE1": "ELECTRÓNICA"}, {"carreraE2": "ELECTRÓNICA"}, {"carreraE3": "ELECTRÓNICA"},
+                {"carreraE4": "ELECTRÓNICA"}, {"carreraE5": "ELECTRÓNICA"}, {"carreraE6": "ELECTRÓNICA"},
+                {"carreraE7": "ELECTRÓNICA"}, {"carreraE8": "ELECTRÓNICA"},
+                {"carreraC": "ELECTRÓNICA"}
+            ]
+        })
+    else:
+        cursor = collection.find({})  # Para asignaturas y asignaturasE, no aplicamos filtros específicos
+
     df = pd.DataFrame(list(cursor))
 
     # Reemplazar valores NaN e Inf en el DataFrame antes de exportarlo
@@ -341,131 +349,184 @@ def export_data():
             int(row.get(f"horasE{i}", 0) or 0) for i in range(1, 9) if row.get(f"carreraE{i}") == "ELECTRÓNICA"
         ), axis=1)
 
-    output = BytesIO()
+    if collection_name == "profesores":
+        output = BytesIO()
+        if export_format == 'xlsx':
+            with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+                workbook = writer.book
+                sheet = workbook.add_worksheet('Datos')
 
-    if export_format == 'xlsx':
-        with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
-            workbook = writer.book
-            sheet = workbook.add_worksheet('Datos')
+                # Definir colores alternos
+                format_white = workbook.add_format({'bg_color': '#FFFFFF'})  # Blanco
+                format_gray = workbook.add_format({'bg_color': '#F2F2F2'})  # Gris claro
+                format_header = workbook.add_format({'bold': True, 'bg_color': '#4472C4', 'font_color': '#FFFFFF'})
+                format_red = workbook.add_format({'bg_color': '#FF0000', 'font_color': '#FFFFFF'})  # Rojo para errores
 
-            # Definir colores alternos
-            format_white = workbook.add_format({'bg_color': '#FFFFFF'})  # Blanco
-            format_gray = workbook.add_format({'bg_color': '#F2F2F2'})  # Gris claro
-            format_header = workbook.add_format({'bold': True, 'bg_color': '#4472C4', 'font_color': '#FFFFFF'})
-            format_red = workbook.add_format({'bg_color': '#FF0000', 'font_color': '#FFFFFF'})  # Rojo para errores
+                # **📌 Filtrar solo las columnas seleccionadas**
+                selected_columns_filtered = [col for col in selected_columns if col not in [
+                    "asignacion_horas_frente_grupo", "asignacion_horas_descarga_otras_actividades", "asignacion_horas_cargo_academico"
+                ]]
 
-            # **📌 Filtrar solo las columnas seleccionadas**
-            selected_columns_filtered = [col for col in selected_columns if col not in [
-                "asignacion_horas_frente_grupo", "asignacion_horas_descarga_otras_actividades", "asignacion_horas_cargo_academico"
-            ]]
+                # Escribir encabezados
+                sheet.write_row(0, 0, selected_columns_filtered, format_header)
 
-            # Escribir encabezados
-            sheet.write_row(0, 0, selected_columns_filtered, format_header)
+                # Escribir datos con colores alternos
+                for row_num, row in enumerate(df[selected_columns_filtered].values, start=1):
+                    color_format = format_gray if row_num % 2 == 0 else format_white
 
-            # Escribir datos con colores alternos
-            for row_num, row in enumerate(df[selected_columns_filtered].values, start=1):
-                color_format = format_gray if row_num % 2 == 0 else format_white
+                    # Escribir toda la fila normalmente
+                    sheet.write_row(row_num, 0, row, color_format)
 
-                # Escribir toda la fila normalmente
-                sheet.write_row(row_num, 0, row, color_format)
+                    # Verificar si "total_horas" debe ser pintado de rojo
+                    if "total_horas" in selected_columns_filtered:
+                        total_horas_index = selected_columns_filtered.index("total_horas")
+                        total_horas = int(row[total_horas_index]) if row[total_horas_index] else 0
+                        horas_asignatura = int(row[selected_columns_filtered.index("Horas de Asignatura")]) if "Horas de Asignatura" in selected_columns_filtered else 0
+                        horas_descarga = int(row[selected_columns_filtered.index("Horas Descarga")]) if "Horas Descarga" in selected_columns_filtered else 0
 
-                # Verificar si "total_horas" debe ser pintado de rojo
-                if "total_horas" in selected_columns_filtered:
-                    total_horas_index = selected_columns_filtered.index("total_horas")
-                    total_horas = int(row[total_horas_index]) if row[total_horas_index] else 0
-                    horas_asignatura = int(row[selected_columns_filtered.index("Horas de Asignatura")]) if "Horas de Asignatura" in selected_columns_filtered else 0
-                    horas_descarga = int(row[selected_columns_filtered.index("Horas Descarga")]) if "Horas Descarga" in selected_columns_filtered else 0
+                        # Verificar si la diferencia es distinta de 0
+                        if (horas_asignatura + horas_descarga) != total_horas:
+                            sheet.write(row_num, selected_columns_filtered.index("total_horas"), total_horas, format_red)
 
-                    # Verificar si la diferencia es distinta de 0
-                    if (horas_asignatura + horas_descarga) != total_horas:
-                        sheet.write(row_num, selected_columns_filtered.index("total_horas"), total_horas, format_red)
+                # **📌 1. Horas Frente a Grupo**
+                if 'asignacion_horas_frente_grupo' in selected_columns:
+                    sheet_horarios = workbook.add_worksheet("Horas Frente a Grupo")
+                    headers = ["Carrera", "Asignatura", "Grupo", "Horas", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"]
+                    sheet_horarios.write_row(0, 0, headers, format_header)
 
-            # **📌 1. Horas Frente a Grupo**
-            if 'asignacion_horas_frente_grupo' in selected_columns:
-                sheet_horarios = workbook.add_worksheet("Horas Frente a Grupo")
-                headers = ["Carrera", "Asignatura", "Grupo", "Horas", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"]
-                sheet_horarios.write_row(0, 0, headers, format_header)
+                    row_num = 1
+                    for index, profesor in enumerate(df.to_dict(orient="records")):
+                        color_format = format_gray if index % 2 == 0 else format_white
+                        for i in range(1, 9):
+                            sheet_horarios.write(row_num, 0, profesor.get(f"carrera{i}", ""), color_format)
+                            sheet_horarios.write(row_num, 1, profesor.get(f"asignatura{i}", ""), color_format)
+                            sheet_horarios.write(row_num, 2, profesor.get(f"grupo{i}", ""), color_format)
+                            sheet_horarios.write(row_num, 3, profesor.get(f"horas{i}", 0), color_format)
 
-                row_num = 1
-                for index, profesor in enumerate(df.to_dict(orient="records")):
-                    color_format = format_gray if index % 2 == 0 else format_white
-                    for i in range(1, 9):
-                        sheet_horarios.write(row_num, 0, profesor.get(f"carrera{i}", ""), color_format)
-                        sheet_horarios.write(row_num, 1, profesor.get(f"asignatura{i}", ""), color_format)
-                        sheet_horarios.write(row_num, 2, profesor.get(f"grupo{i}", ""), color_format)
-                        sheet_horarios.write(row_num, 3, profesor.get(f"horas{i}", 0), color_format)
+                            # Horarios por día (Lunes - Sábado)
+                            for j in range(1, 7):  
+                                horario_inicio = profesor.get(f"hora_inicio{i}{j}", "")
+                                horario_fin = profesor.get(f"hora_fin{i}{j}", "")
+                                sheet_horarios.write(row_num, 3 + j, f"{horario_inicio} - {horario_fin}", color_format)
 
-                        # Horarios por día (Lunes - Sábado)
-                        for j in range(1, 7):  
-                            horario_inicio = profesor.get(f"hora_inicio{i}{j}", "")
-                            horario_fin = profesor.get(f"hora_fin{i}{j}", "")
-                            sheet_horarios.write(row_num, 3 + j, f"{horario_inicio} - {horario_fin}", color_format)
+                            row_num += 1
 
-                        row_num += 1
+                # **📌 2. Horas Descarga Otras Actividades**
+                if 'asignacion_horas_descarga_otras_actividades' in selected_columns:
+                    sheet_descarga = workbook.add_worksheet("Horas Descarga")
+                    headers_descarga = ["Carrera", "Asignatura", "Grupo", "Horas", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"]
+                    sheet_descarga.write_row(0, 0, headers_descarga, format_header)
 
-            # **📌 2. Horas Descarga Otras Actividades**
-            if 'asignacion_horas_descarga_otras_actividades' in selected_columns:
-                sheet_descarga = workbook.add_worksheet("Horas Descarga")
-                headers_descarga = ["Carrera", "Asignatura", "Grupo", "Horas", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"]
-                sheet_descarga.write_row(0, 0, headers_descarga, format_header)
+                    row_num = 1
+                    for index, profesor in enumerate(df.to_dict(orient="records")):
+                        color_format = format_gray if index % 2 == 0 else format_white
+                        for i in range(1, 9):
+                            sheet_descarga.write(row_num, 0, profesor.get(f"carreraE{i}", ""), color_format)
+                            sheet_descarga.write(row_num, 1, profesor.get(f"asignaturaE{i}", ""), color_format)
+                            sheet_descarga.write(row_num, 2, profesor.get(f"grupoE{i}", ""), color_format)
+                            sheet_descarga.write(row_num, 3, profesor.get(f"horasE{i}", 0), color_format)
 
-                row_num = 1
-                for index, profesor in enumerate(df.to_dict(orient="records")):
-                    color_format = format_gray if index % 2 == 0 else format_white
-                    for i in range(1, 9):
-                        sheet_descarga.write(row_num, 0, profesor.get(f"carreraE{i}", ""), color_format)
-                        sheet_descarga.write(row_num, 1, profesor.get(f"asignaturaE{i}", ""), color_format)
-                        sheet_descarga.write(row_num, 2, profesor.get(f"grupoE{i}", ""), color_format)
-                        sheet_descarga.write(row_num, 3, profesor.get(f"horasE{i}", 0), color_format)
+                            for j in range(1, 7):
+                                horario_inicio = profesor.get(f"hora_inicioE{i}{j}", "")
+                                horario_fin = profesor.get(f"hora_finE{i}{j}", "")
+                                sheet_descarga.write(row_num, 3 + j, f"{horario_inicio} - {horario_fin}", color_format)
+
+                            row_num += 1
+
+                # **📌 3. Horas Cargo Académico**
+                if 'asignacion_horas_cargo_academico' in selected_columns:
+                    sheet_cargo = workbook.add_worksheet("Horas Cargo Académico")
+                    headers_cargo = ["Carrera", "Cargo", "Vigencia", "Horas", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"]
+                    sheet_cargo.write_row(0, 0, headers_cargo, format_header)
+
+                    row_num = 1
+                    for index, profesor in enumerate(df.to_dict(orient="records")):
+                        color_format = format_gray if index % 2 == 0 else format_white
+                        sheet_cargo.write(row_num, 0, profesor.get("carreraC", ""), color_format)  # Primera carrera registrada
+                        sheet_cargo.write(row_num, 1, profesor.get("cargo", ""), color_format)
+                        sheet_cargo.write(row_num, 2, profesor.get("vigenciaCargo", ""), color_format)
+                        sheet_cargo.write(row_num, 3, profesor.get("horasC", 0), color_format)
 
                         for j in range(1, 7):
-                            horario_inicio = profesor.get(f"hora_inicioE{i}{j}", "")
-                            horario_fin = profesor.get(f"hora_finE{i}{j}", "")
-                            sheet_descarga.write(row_num, 3 + j, f"{horario_inicio} - {horario_fin}", color_format)
+                            horario_inicio = profesor.get(f"hora_inicioC1{j}", "")
+                            horario_fin = profesor.get(f"hora_finC1{j}", "")
+                            sheet_cargo.write(row_num, 3 + j, f"{horario_inicio} - {horario_fin}", color_format)
 
                         row_num += 1
 
-            # **📌 3. Horas Cargo Académico**
-            if 'asignacion_horas_cargo_academico' in selected_columns:
-                sheet_cargo = workbook.add_worksheet("Horas Cargo Académico")
-                headers_cargo = ["Carrera", "Cargo", "Vigencia", "Horas", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"]
-                sheet_cargo.write_row(0, 0, headers_cargo, format_header)
+            output.seek(0)
+            return send_file(output, as_attachment=True, download_name=f"{collection_name}.xlsx")
+    else:
+        output = BytesIO()
+        if export_format == 'xlsx':
+            with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+                workbook = writer.book
+                sheet = workbook.add_worksheet('Datos')
 
-                row_num = 1
-                for index, profesor in enumerate(df.to_dict(orient="records")):
-                    color_format = format_gray if index % 2 == 0 else format_white
-                    sheet_cargo.write(row_num, 0, profesor.get("carreraC", ""), color_format)  # Primera carrera registrada
-                    sheet_cargo.write(row_num, 1, profesor.get("cargo", ""), color_format)
-                    sheet_cargo.write(row_num, 2, profesor.get("vigenciaCargo", ""), color_format)
-                    sheet_cargo.write(row_num, 3, profesor.get("horasC", 0), color_format)
+                # 📌 Definir formatos
+                format_white = workbook.add_format({'bg_color': '#FFFFFF'})
+                format_gray = workbook.add_format({'bg_color': '#F2F2F2'})
+                format_header = workbook.add_format({'bold': True, 'bg_color': '#4472C4', 'font_color': '#FFFFFF'})
 
-                    for j in range(1, 7):
-                        horario_inicio = profesor.get(f"hora_inicioC1{j}", "")
-                        horario_fin = profesor.get(f"hora_finC1{j}", "")
-                        sheet_cargo.write(row_num, 3 + j, f"{horario_inicio} - {horario_fin}", color_format)
+                # 📌 Filtrar solo las columnas seleccionadas
+                selected_columns_filtered = [col for col in selected_columns]
 
-                    row_num += 1
+                # 📌 Escribir encabezados
+                sheet.write_row(0, 0, selected_columns_filtered, format_header)
 
-        output.seek(0)
-        return send_file(output, as_attachment=True, download_name=f"{collection_name}.xlsx")
+                # 📌 Escribir datos con colores alternos
+                for row_num, row in enumerate(df[selected_columns_filtered].values, start=1):
+                    color_format = format_gray if row_num % 2 == 0 else format_white
+                    sheet.write_row(row_num, 0, row, color_format)
+
+            output.seek(0)
+            return send_file(output, as_attachment=True, download_name=f"{collection_name}.xlsx")
 
 #RUTAS PARA MOSTRAR Y DESCARGAR ARCHIVOS AUTOMATICOS
 @electronica_bp.route('/historial')
 @login_required('Electronica')
 def historial_exportaciones():
-    """Muestra la lista de archivos exportados en la carpeta historial."""
-    files = os.listdir(HISTORIAL_PATH)
+    """Muestra la lista de archivos exportados almacenados en GridFS para Sistemas Computacionales."""
+    files = list(db.fs.files.find(
+        {"filename": {"$regex": "^Datos_Electronica_"}},
+        {"filename": 1, "uploadDate": 1}
+    ).sort("uploadDate", -1))  # Orden descendente por fecha
     return render_template("electronica/historial.html", files=files)
 
 @electronica_bp.route('/historial/download/<filename>')
 @login_required('Electronica')
 def download_file(filename):
-    """Permite descargar los archivos almacenados en historial."""
-    return send_from_directory(HISTORIAL_PATH, filename, as_attachment=True)
+    file = db.fs.files.find_one({"filename": filename})
 
-# 📌 Ruta para guardar los archivos exportados
-HISTORIAL_PATH = os.path.join("static", "electronica", "historial")
-os.makedirs(HISTORIAL_PATH, exist_ok=True)  # Asegurar que la carpeta exista
+    if not file:
+        return "Archivo no encontrado", 404
+
+    file_data = fs.get(file["_id"])  # Obtener el archivo desde GridFS
+
+    # Enviar archivo como respuesta para descarga
+    return Response(
+        file_data.read(),
+        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-Disposition": f"attachment;filename={filename}"}
+    )
+
+# 📌 Ruta para eliminar archivos de GridFS en ELECTRONICA
+@electronica_bp.route('/historial/delete/<filename>', methods=['DELETE'])
+@login_required('Electronica')
+def delete_file(filename):
+    """Elimina un archivo de GridFS correspondiente a Sistemas Computacionales"""
+    try:
+        # Buscar el archivo en GridFS
+        file_to_delete = fs.find_one({"filename": filename})
+
+        if file_to_delete:
+            fs.delete(file_to_delete._id)  # Eliminar el archivo de GridFS
+            return jsonify({"success": True, "message": "Archivo eliminado correctamente."})
+        else:
+            return jsonify({"success": False, "message": "Archivo no encontrado."}), 404
+
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
 
 #EXPORTACION DE DATOS AUTOMATICA
 def export_data_auto():
@@ -475,19 +536,22 @@ def export_data_auto():
     current_year = current_date.year
 
     # 📌 Definir el semestre basado en la fecha actual
-    if current_date.month == 6 and current_date.day == 10:
+    if 2 <= current_date.month <= 7:
         period = "1"
-    elif current_date.month == 10 and current_date.day == 29:
+    elif 8 <= current_date.month <= 1:
         period = "2"
-    elif current_date.month == 3 and current_date.day == 3:
-        period = "3"
     else:
         print("📌 No es una fecha de exportación automática. Se cancela la ejecución.")
         return
-
+    
     # 📌 Nombre del archivo
     filename = f"Datos_Electronica_{current_year}-{period}.xlsx"
-    filepath = os.path.join(HISTORIAL_PATH, filename)
+
+    # 📌 Eliminar archivo previo si ya existe en GridFS
+    existing_file = db.fs.files.find_one({"filename": filename})
+    if existing_file:
+        fs.delete(existing_file["_id"])
+        print(f"📌 Archivo previo {filename} eliminado de GridFS.")
 
     # 📌 Columnas a exportar
     selected_columns = [
@@ -539,8 +603,9 @@ def export_data_auto():
         int(row.get(f"horasE{i}", 0) or 0) for i in range(1, 9) if row.get(f"carreraE{i}") == "INDUSTRIAL"
     ), axis=1)
 
-    # 📌 Exportar a Excel
-    with pd.ExcelWriter(filepath, engine='xlsxwriter') as writer:
+    # 📌 Crear un archivo en memoria para almacenar el Excel
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
         workbook = writer.book
         sheet = workbook.add_worksheet('Datos')
 
@@ -611,7 +676,17 @@ def export_data_auto():
             color_format)
             row_num += 1
 
-    print(f"✅ Exportación automática completada: {filepath}")
+    # 📌 Guardar el archivo en GridFS
+    output.seek(0)
+    file_id = fs.put(output.read(), filename=filename, content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+
+    print(f"✅ Exportación automática completada y guardada en GridFS con ID: {file_id}")
+
+@electronica_bp.route("/exportar-manual", methods=["POST"])
+@login_required("Electronica")
+def exportar_manual():
+    export_data_auto()
+    return jsonify({"mensaje": f"Exportación manual realizada con éxito"})
 
 # Rutas de la interfaz de usuario para Ingeniería en Electrónica
 @electronica_bp.route('/electronica_index')
@@ -727,7 +802,7 @@ def export_selected():
     texto_a54 = open(texto_a54_path, "r", encoding="utf-8").read().strip() if os.path.exists(texto_a54_path) else ""
 
     # Obtener el nombre y cargo del encargado de dirección académica y general
-    encargado = administrativos.find_one({'cargo': {'$in': ["ENCARGADO DEL DESPACHO DE DIRECCIÓN ACADÉMICA", "ENCARGADA DEL DESPACHO DE DIRECCIÓN ACADÉMICA"]}})
+    encargado = administrativos.find_one({'cargo': {'$in': ["ENCARGADO DEL DESPACHO DE DIRECCIÓN ACADÉMICA", "ENCARGADA DEL DESPACHO DE DIRECCIÓN ACADÉMICA", "DIRECTOR ACADÉMICO", "DIRECTORA ACADÉMICA"]}})
     direccion = administrativos.find_one({'cargo': {'$in': ["DIRECTOR GENERAL", "DIRECTORA GENERAL"]}})
 
     nombre_encargado = encargado["nombre"] if encargado else ""
@@ -904,12 +979,12 @@ def export_selected():
             encargado = administrativos.find_one({
                 'cargo': {'$in': cargo_mapping[carrera]}
             })
-            nombre_encargado = encargado["nombre"] if encargado else ""
-            cargo_encargado = encargado["cargo"] if encargado else ""
+            nombre_encargado1 = encargado["nombre"] if encargado else ""
+            cargo_encargado1 = encargado["cargo"] if encargado else ""
             
             # Asignar valores en las celdas
-            sheet["A43"] = cargo_encargado
-            sheet["A46"] = nombre_encargado
+            sheet["A43"] = cargo_encargado1
+            sheet["A46"] = nombre_encargado1
         
         # Si hay exactamente dos valores en carreras_detectadas
         elif len(carreras_detectadas) == 2:
@@ -1041,7 +1116,7 @@ def export_selected_pdf_electronica():
     texto_a54 = open(texto_a54_path, "r", encoding="utf-8").read().strip() if os.path.exists(texto_a54_path) else ""
 
     # Obtener el nombre y cargo del encargado de dirección académica y general
-    encargado = administrativos.find_one({'cargo': {'$in': ["ENCARGADO DEL DESPACHO DE DIRECCIÓN ACADÉMICA", "ENCARGADA DEL DESPACHO DE DIRECCIÓN ACADÉMICA"]}})
+    encargado = administrativos.find_one({'cargo': {'$in': ["ENCARGADO DEL DESPACHO DE DIRECCIÓN ACADÉMICA", "ENCARGADA DEL DESPACHO DE DIRECCIÓN ACADÉMICA", "DIRECTOR ACADÉMICO", "DIRECTORA ACADÉMICA"]}})
     direccion = administrativos.find_one({'cargo': {'$in': ["DIRECTOR GENERAL", "DIRECTORA GENERAL"]}})
 
     nombre_encargado = encargado["nombre"] if encargado else ""
@@ -1218,12 +1293,12 @@ def export_selected_pdf_electronica():
             encargado = administrativos.find_one({
                 'cargo': {'$in': cargo_mapping[carrera]}
             })
-            nombre_encargado = encargado["nombre"] if encargado else ""
-            cargo_encargado = encargado["cargo"] if encargado else ""
+            nombre_encargado1 = encargado["nombre"] if encargado else ""
+            cargo_encargado1 = encargado["cargo"] if encargado else ""
             
             # Asignar valores en las celdas
-            sheet["A43"] = cargo_encargado
-            sheet["A46"] = nombre_encargado
+            sheet["A43"] = cargo_encargado1
+            sheet["A46"] = nombre_encargado1
         
         # Si hay exactamente dos valores en carreras_detectadas
         elif len(carreras_detectadas) == 2:

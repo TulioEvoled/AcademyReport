@@ -1,4 +1,4 @@
-from flask import Blueprint, request, render_template, redirect, url_for, session, flash, jsonify
+from flask import Blueprint, request, render_template, redirect, url_for, session, flash, jsonify, render_template_string
 from pymongo import MongoClient
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
@@ -56,7 +56,7 @@ cargo_mapping = {
     "SISTEMAS COMPUTACIONALES": ["JEFA DE DIVISIÓN DE ING. EN SISTEMAS COMPUTACIONALES", "JEFE DE DIVISIÓN DE ING. EN SISTEMAS COMPUTACIONALES"],
     "INFORMÁTICA": ["JEFA DE DIVISIÓN DE ING. INFORMÁTICA", "JEFE DE DIVISIÓN DE ING. INFORMÁTICA"],
     "ADMINISTRACIÓN": ["JEFA DE DIVISIÓN DE ING. ADMINISTRACIÓN", "JEFE DE DIVISIÓN DE ING. ADMINISTRACIÓN"],
-    "DIRECCIÓN": ["DIRECTOR GENERAL", "DIRECTORA GENERAL", "ENCARGADA DEL DESPACHO DE DIRECCIÓN ACADÉMICA", "ENCARGADO DEL DESPACHO DE DIRECCIÓN ACADÉMICA"]
+    "DIRECCIÓN": ["DIRECTOR GENERAL", "DIRECTORA GENERAL", "ENCARGADA DEL DESPACHO DE DIRECCIÓN ACADÉMICA", "ENCARGADO DEL DESPACHO DE DIRECCIÓN ACADÉMICA", "DIRECTOR ACADÉMICO", "DIRECTORA ACADÉMICA"]
 }
 
 # **📌 Redirección por usuario**
@@ -82,14 +82,11 @@ def login():
         session['usuario'] = usuario
         session['cargo'] = user['cargo']
 
-        if usuario in user_redirects:
-            return redirect(url_for(user_redirects[usuario]))  # Redirección a su dashboard
-        else:
-            flash("Acceso denegado", "error")
-            return redirect(url_for('auth.login_form'))
+        return jsonify({"success": True, "redirect_url": url_for(user_redirects.get(usuario, 'auth.login_form'))})
 
-    flash("Usuario o contraseña incorrectos", "error")
-    return redirect(url_for('auth.login_form'))
+    # 📌 Si las credenciales son incorrectas, enviar error con código 401
+    return jsonify({"success": False, "error": "Usuario o contraseña incorrectos."}), 401
+
 
 # **📌 Ruta para cerrar sesión**
 @auth_bp.route('/logout')

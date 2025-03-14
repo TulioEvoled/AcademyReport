@@ -13,10 +13,19 @@
         <h1>Lista de Asignaturas</h1>
         <div class="botones-container">
             <button onclick="window.location.href='/index';">Volver</button>
+            <button onclick="toggleSearchBar()">🔍 Buscar</button>
         </div>
-        
     </div>
-    <table>
+    <!-- 🔹 Barra de búsqueda fija arriba -->
+    <div id="searchBar" class="search-bar hide">
+        <input type="text" id="searchInput" placeholder="🔍 Buscar...">
+        <button onclick="searchText()">Buscar</button>
+        <button onclick="prevMatch()">⬅ Anterior</button>
+        <button onclick="nextMatch()">Siguiente ➡</button>
+        <button onclick="toggleSearchBar()">❌ Cerrar</button>
+        <p id="matchCount" style="margin-left: 10px"></p>
+    </div>
+    <table id="asignaturasTable">
         <thead>
             <tr>
                 <!-- <th>ID</th> -->
@@ -40,6 +49,81 @@
         </tbody>
     </table>
 
+    <script>
+        let matches = [];
+        let currentIndex = -1;
+
+        // Mostrar/Ocultar la barra de búsqueda
+        function toggleSearchBar() {
+            let searchBar = document.getElementById("searchBar");
+            searchBar.classList.toggle("hide");
+            if (!searchBar.classList.contains("hide")) {
+                document.getElementById("searchInput").focus();
+            }
+        }
+
+        function searchText() {
+            let text = document.getElementById("searchInput").value.trim();
+            if (text === "") return;
+
+            clearHighlights();
+            let regex = new RegExp(text, "gi");
+
+            matches = [];
+            currentIndex = -1;
+
+            document.querySelectorAll("#asignaturasTable tbody td").forEach(td => {
+                let originalText = td.innerHTML;
+                let newHTML = originalText.replace(regex, match => {
+                    matches.push(td);
+                    return `<mark>${match}</mark>`;
+                });
+                td.innerHTML = newHTML;
+            });
+
+            if (matches.length > 0) {
+                currentIndex = 0;
+                updateMatchInfo();
+                scrollToMatch();
+            } else {
+                document.getElementById("matchCount").textContent = "⚠ No se encontraron coincidencias.";
+            }
+        }
+
+        function clearHighlights() {
+            document.querySelectorAll("mark").forEach(mark => {
+                let parent = mark.parentNode;
+                parent.replaceChild(document.createTextNode(mark.textContent), mark);
+            });
+            document.getElementById("matchCount").textContent = "";
+        }
+
+        function updateMatchInfo() {
+            document.getElementById("matchCount").textContent = `Coincidencia ${currentIndex + 1} de ${matches.length}`;
+        }
+
+        function scrollToMatch() {
+            if (matches.length > 0) {
+                matches[currentIndex].scrollIntoView({ behavior: "smooth", block: "center" });
+            }
+        }
+
+        function nextMatch() {
+            if (matches.length > 0 && currentIndex < matches.length - 1) {
+                currentIndex++;
+                updateMatchInfo();
+                scrollToMatch();
+            }
+        }
+
+        function prevMatch() {
+            if (matches.length > 0 && currentIndex > 0) {
+                currentIndex--;
+                updateMatchInfo();
+                scrollToMatch();
+            }
+        }
+    </script>
     <script src="{{ url_for('static', filename='industrial/js/app.js') }}"></script>
 </body>
 
