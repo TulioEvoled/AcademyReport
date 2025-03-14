@@ -548,10 +548,10 @@ def export_data_auto():
     filename = f"Datos_Informatica_{current_year}-{period}.xlsx"
 
     # 📌 Eliminar archivo previo si ya existe en GridFS
-    existing_file = db.fs.files.find_one({"filename": filename})
-    if existing_file:
-        fs.delete(existing_file["_id"])
-        print(f"📌 Archivo previo {filename} eliminado de GridFS.")
+    #existing_file = db.fs.files.find_one({"filename": filename})
+    #if existing_file:
+    #    fs.delete(existing_file["_id"])
+    #    print(f"📌 Archivo previo {filename} eliminado de GridFS.")
 
     # 📌 Columnas a exportar
     selected_columns = [
