@@ -20,7 +20,7 @@ from routes.auth_routes import login_required
 administracion_bp = Blueprint('administracion', __name__, url_prefix='/administracion')
 
 # Conexión a MongoDB
-client = MongoClient("mongodb+srv://tecnologico:tecno077@cluster0.tjkln.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+client = MongoClient("Link con Cluster de MongoBD")
 db = client.tecnologico
 fs = gridfs.GridFS(db)  # Inicializa GridFS para almacenamiento de archivos
 
